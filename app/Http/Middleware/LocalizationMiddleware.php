@@ -19,10 +19,10 @@ class LocalizationMiddleware
         if (! Schema::hasTable('users')) {
             return $next($request);
         }
-        $locale = 'en';
+        $locale = config('app.locale');
         $user = auth()->user();
         if ($user) {
-            $locale = $user->profile->locale ?? 'en';
+            $locale = $user->profile->locale ?? $locale;
         }
         config(['app.locale' => $locale]);
         app()->setLocale($locale);
