@@ -100,10 +100,13 @@ class TenantPanelProvider extends PanelProvider
             fn () => view('meta')
         );
 
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::GLOBAL_SEARCH_AFTER,
-            fn () => view('version-indicator')
-        );
+        /** @DISABLE this temporary when env is not local **/
+        if (config('app.env') === 'local') {
+            FilamentView::registerRenderHook(
+                PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+                fn () => view('version-indicator')
+            );
+        }
 
         if (app()->environment('demo')) {
             $arraySupport = [
@@ -169,10 +172,10 @@ class TenantPanelProvider extends PanelProvider
             $this->generateNavigationItem(Cashier::class),
             $this->generateNavigationItem(POS::class, PosV2::class),
             $this->generateNavigationItem(SellingResource::class),
-            $this->generateNavigationItem(SupplierResource::class, Supplier::class),
+            //$this->generateNavigationItem(SupplierResource::class, Supplier::class),
             $this->generateNavigationItem(MemberResource::class, Member::class),
             $this->generateNavigationItem(PaymentMethodResource::class, PaymentMethod::class),
-            $this->generateNavigationItem(ReceivableResource::class, Receivable::class),
+            //$this->generateNavigationItem(ReceivableResource::class, Receivable::class),
         ];
     }
 
@@ -180,16 +183,19 @@ class TenantPanelProvider extends PanelProvider
     {
         return [
             NavigationGroup::make(__('Inventory'))->items([
-                $this->generateNavigationItem(PurchasingResource::class, Purchasing::class),
+                // @DISABLE
+                //$this->generateNavigationItem(PurchasingResource::class, Purchasing::class),
                 $this->generateNavigationItem(StockOpnameResource::class, StockOpname::class),
                 $this->generateNavigationItem(ProductResource::class),
                 $this->generateNavigationItem(CategoryResource::class),
-                $this->generateNavigationItem(TableResource::class)->hidden(About::first() && About::first()->business_type != 'fnb'),
+                // @DISABLE
+                //$this->generateNavigationItem(TableResource::class)->hidden(About::first() && About::first()->business_type != 'fnb'),
             ]),
             NavigationGroup::make(__('User'))->items([
                 $this->generateNavigationItem(UserResource::class, User::class),
                 $this->generateNavigationItem(RoleResource::class, Role::class),
-                $this->generateNavigationItem(PermissionResource::class, Permission::class),
+                // @DISABLE
+                //$this->generateNavigationItem(PermissionResource::class, Permission::class),
             ]),
             NavigationGroup::make(__('Report'))->label('')->collapsible(false)->items([
                 $this->generateNavigationItem(
@@ -198,7 +204,8 @@ class TenantPanelProvider extends PanelProvider
                         SellingReport::class,
                         ProductReport::class,
                         CashierReport::class,
-                        PurchasingReport::class,
+                        // @DISABLE
+                        //PurchasingReport::class,
                     ]
                 ),
             ]),
