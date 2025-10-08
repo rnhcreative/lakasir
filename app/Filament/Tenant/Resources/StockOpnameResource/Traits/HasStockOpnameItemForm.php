@@ -5,6 +5,7 @@ namespace App\Filament\Tenant\Resources\StockOpnameResource\Traits;
 use App\Models\Tenants\Product;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -86,6 +87,10 @@ trait HasStockOpnameItemForm
                 ->translateLabel()
                 ->readOnly()
                 ->numeric(),
+            Textarea::make('notes')
+                ->translateLabel()
+                ->rows(3)
+                ->maxLength(65535),
             FileUpload::make('attachment')
                 ->translateLabel()
                 ->maxWidth(10)

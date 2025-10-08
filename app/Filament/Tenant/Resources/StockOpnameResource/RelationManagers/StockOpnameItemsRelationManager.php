@@ -71,6 +71,8 @@ class StockOpnameItemsRelationManager extends RelationManager
                     }),
                 Tables\Columns\TextColumn::make('missing_stock')
                     ->translateLabel(),
+                Tables\Columns\TextColumn::make('notes')
+                    ->translateLabel(),
                 Tables\Columns\ImageColumn::make('attachment')
                     ->translateLabel(),
             ])

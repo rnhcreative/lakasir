@@ -20,6 +20,7 @@ return new class extends Migration
             $table->double('amount');
             $table->double('amount_after_adjustment');
             $table->string('attachment')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
