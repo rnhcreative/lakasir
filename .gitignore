@@ -4,6 +4,7 @@
 /public/tmp
 /storage/*.key
 /storage/debugbar
+/storage/backup
 /vendor
 /public/js/
 /public/css/
@@ -25,3 +26,4 @@ tinker.php
 _ide_helper.php
 .phpunit.cache/test-results
 .herd.yml
+.DS_Store

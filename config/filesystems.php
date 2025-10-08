@@ -64,6 +64,11 @@ return [
             'throw' => false,
         ],
 
+        // Disk Google Drive
+        'google' => [
+            'driver' => 'google',
+            'folder_id' => env('GOOGLE_DRIVE_FOLDER_ID'), // optional
+        ],
     ],
 
     /*
