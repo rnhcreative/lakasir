@@ -100,10 +100,12 @@ class GeneralSetting extends Page implements HasActions, HasForms
                     Tabs\Tab::make('About')
                         ->statePath('about')
                         ->translateLabel()
+                        ->visible(can('can update app'))
                         ->schema(About::form()),
                     Tabs\Tab::make('App')
                         ->statePath('setting')
                         ->translateLabel()
+                        ->visible(can('can update app'))
                         ->schema([
                             Select::make('currency')
                                 ->options([
@@ -132,27 +134,28 @@ class GeneralSetting extends Page implements HasActions, HasForms
                                     ->action('saveApp'),
                             ]),
                         ]),
-                    Tabs\Tab::make('Feature')
-                        ->statePath('feature')
-                        ->visible(can('access feature flag'))
-                        ->translateLabel()
-                        ->schema([
-                            Section::make([
-                                Checkbox::make('supplier')->inline(),
-                                Checkbox::make('purchasing')->inline(),
-                                Checkbox::make('receivable')->inline(),
-                                Checkbox::make('stock-opname')->inline(),
-                                Checkbox::make('voucher')->inline(),
-                                Checkbox::make('pos-v2')->label("POS V2")->inline(),
-                                Checkbox::make('product-import')->inline(),
-                            ]),
-                            Actions::make([
-                                Action::make('Save')
-                                    ->translateLabel()
-                                    ->requiresConfirmation()
-                                    ->action('saveFeature'),
-                            ]),
-                        ]),
+                    // @DISABLE
+                    // Tabs\Tab::make('Feature')
+                    //     ->statePath('feature')
+                    //     ->visible(can('access feature flag'))
+                    //     ->translateLabel()
+                    //     ->schema([
+                    //         Section::make([
+                    //             Checkbox::make('supplier')->inline(),
+                    //             Checkbox::make('purchasing')->inline(),
+                    //             Checkbox::make('receivable')->inline(),
+                    //             Checkbox::make('stock-opname')->inline(),
+                    //             Checkbox::make('voucher')->inline(),
+                    //             Checkbox::make('pos-v2')->label("POS V2")->inline(),
+                    //             Checkbox::make('product-import')->inline(),
+                    //         ]),
+                    //         Actions::make([
+                    //             Action::make('Save')
+                    //                 ->translateLabel()
+                    //                 ->requiresConfirmation()
+                    //                 ->action('saveFeature'),
+                    //         ]),
+                    //     ]),
                     Tabs\Tab::make('Profile')
                         ->statePath('profile')
                         ->translateLabel()
