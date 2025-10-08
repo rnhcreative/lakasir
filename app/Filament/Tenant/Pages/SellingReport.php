@@ -2,18 +2,20 @@
 
 namespace App\Filament\Tenant\Pages;
 
-use App\Filament\Tenant\Pages\Traits\HasReportPageSidebar;
-use App\Services\Tenants\SellingReportService;
-use App\Traits\HasTranslatableResource;
-use Filament\Actions\Action;
-use Filament\Actions\Contracts\HasActions;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
+use Carbon\Carbon;
 use Filament\Forms\Form;
-use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Pages\Page;
+use Filament\Actions\Action;
 use Livewire\Attributes\Url;
+use App\Exports\SellingReportExport;
+use Filament\Forms\Contracts\HasForms;
+use App\Traits\HasTranslatableResource;
+use Filament\Forms\Components\DatePicker;
+use Filament\Actions\Contracts\HasActions;
+use App\Services\Tenants\SellingReportService;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Pages\Concerns\InteractsWithFormActions;
+use App\Filament\Tenant\Pages\Traits\HasReportPageSidebar;
 
 class SellingReport extends Page implements HasActions, HasForms
 {
@@ -69,15 +71,14 @@ class SellingReport extends Page implements HasActions, HasForms
         return [
             Action::make(__('Generate'))
                 ->action('generate'),
-            Action::make(__('Print'))
-                ->color('warning')
-                ->extraAttributes([
-                    'id' => 'print-btn',
-                ])
-                ->icon('heroicon-o-printer'),
             Action::make('download-pdf')
                 ->label(__('Download as PDF'))
                 ->action('downloadPdf')
+                ->color('warning')
+                ->icon('heroicon-o-arrow-down-on-square'),
+            Action::make('download-xls')
+                ->label(__('Download as XLS'))
+                ->action('downloadSheet')
                 ->color('warning')
                 ->icon('heroicon-o-arrow-down-on-square'),
         ];
@@ -101,5 +102,20 @@ class SellingReport extends Page implements HasActions, HasForms
         ]);
 
         return $this->redirectRoute('selling-report.generate', $this->data);
+    }
+
+    public function downloadSheet(SellingReportService $sellingReportService)
+    {
+        $this->validate([
+            'data.start_date' => 'required',
+            'data.end_date' => 'required',
+        ]);
+
+        $filename = 'selling-report-'. Carbon::parse($this->data['start_date'])->format('d-m-Y') . '_' . Carbon::parse($this->data['end_date'])->format('d-m-Y')  .'.xlsx';
+
+        return (new SellingReportExport(
+            sellingReportService: $sellingReportService,
+            data: $this->data
+        ))->download($filename);
     }
 }

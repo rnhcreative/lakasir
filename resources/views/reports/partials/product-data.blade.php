@@ -8,7 +8,7 @@
     <x-table-header>
       <x-table-header-cell>SKU</x-table-header-cell>
       <x-table-header-cell>{{ __('Product Name') }}</x-table-header-cell>
-      <x-table-header-cell style="width: 100px;" class="number">{{ __('Price') }}</x-table-header-cell>
+      <!--<x-table-header-cell style="width: 100px;" class="number">{{ __('Price') }}</x-table-header-cell> -->
       <x-table-header-cell>{{ __('Qty') }}</x-table-header-cell>
       <x-table-header-cell style="width: 100px;" class="number">{{ __('Selling') }}</x-table-header-cell>
       <x-table-header-cell style="width: 100px;" class="number">{{ __('Discount') }}</x-table-header-cell>
@@ -23,7 +23,7 @@
           <x-table-cell>{{ $report['sku'] }}</x-table-cell>
           <x-table-cell>{{ $report['name'] }}</x-table-cell>
           <!-- <td class="number">{{ $report['initial_price'] }}</td> -->
-          <x-table-cell class="number">{{ $report['selling_price'] }}</x-table-cell>
+          <!--<x-table-cell class="number">{{ $report['selling_price'] }}</x-table-cell> -->
           <x-table-cell>{{ $report['qty'] }}</x-table-cell>
           <x-table-cell class="number">{{ $report['selling'] }}</x-table-cell>
           <x-table-cell class="number">{{ $report['discount_price'] }}</x-table-cell>
@@ -34,7 +34,7 @@
         </x-table-row>
       @endforeach
       <x-table-row>
-        <x-table-cell colspan="3">{{ __('Total') }}</x-table-cell>
+        <x-table-cell colspan="2">{{ __('Total') }}</x-table-cell>
         <x-table-cell class="number">{{ $footer['total_qty'] }}</x-table-cell>
         <x-table-cell class="number">{{ $footer['total_gross'] }}</x-table-cell>
         <x-table-cell class="number">{{ $footer['total_all_discount_per_item'] }}</x-table-cell>
@@ -45,6 +45,7 @@
     </tbody>
   </x-table>
 
+  <!--
   <x-table class="w-full table-fixed mt-4">
     <x-table-header>
       <x-table-row>
@@ -74,5 +75,6 @@
       </x-table-row>
     </tbody>
   </x-table>
+  -->
 
 </div>

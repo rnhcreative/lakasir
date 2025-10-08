@@ -44,6 +44,7 @@
     </tbody>
   </x-table>
 
+  <!--
   <x-table class="w-full table-fixed mt-4">
     <x-table-header>
       <x-table-row>
@@ -73,5 +74,6 @@
       </x-table-row>
     </tbody>
   </x-table>
+  -->
 </div>
 
