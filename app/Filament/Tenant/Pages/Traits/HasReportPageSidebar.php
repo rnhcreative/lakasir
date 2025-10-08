@@ -3,6 +3,7 @@
 namespace App\Filament\Tenant\Pages\Traits;
 
 use App\Filament\Tenant\Pages\CashierReport;
+use App\Filament\Tenant\Pages\MemberReport;
 use App\Filament\Tenant\Pages\ProductReport;
 use App\Filament\Tenant\Pages\PurchasingReport;
 use App\Filament\Tenant\Pages\SellingReport;
@@ -25,8 +26,10 @@ trait HasReportPageSidebar
             ->setNavigationItems([
                 static::generateNavigationItem(SellingReport::class),
                 static::generateNavigationItem(ProductReport::class),
+                static::generateNavigationItem(MemberReport::class),
                 static::generateNavigationItem(CashierReport::class),
-                static::generateNavigationItem(PurchasingReport::class),
+                // @DISABLE
+                //static::generateNavigationItem(PurchasingReport::class),
             ]);
     }
 

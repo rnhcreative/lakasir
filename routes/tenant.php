@@ -23,6 +23,7 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CashierReportController;
+use App\Http\Controllers\MemberReportController;
 use App\Http\Controllers\PrinterController;
 use App\Http\Controllers\ProductReportController;
 use App\Http\Controllers\SellingReportController;
@@ -47,6 +48,8 @@ Route::middleware([
             ->name('selling-report.generate');
         Route::get('/member/product-report/generate', ProductReportController::class)
             ->name('product-report.generate');
+        Route::get('/member/member-report/generate', MemberReportController::class)
+            ->name('member-report.generate');
         Route::get('/member/cashier-report/generate', CashierReportController::class)
             ->name('cashier-report.generate');
         Route::view('/member/sellings/{selling}/print', 'filament.tenant.pages.selling.print-receipt')
