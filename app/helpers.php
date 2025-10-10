@@ -50,7 +50,7 @@ if (! function_exists('price_format')) {
         return Number::currency(
             number: $price,
             in: Setting::get('currency', 'IDR'),
-            locale: Profile::get()->locale ?? 'en'
+            locale: Profile::get()->locale ?? config('app.locale')
         );
     }
 }

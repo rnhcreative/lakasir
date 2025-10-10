@@ -59,7 +59,7 @@ class PriceUnitsRelationManager extends RelationManager
                     ->translateLabel()
                     ->money(
                         currency: Setting::get('currency', 'IDR'),
-                        locale: Profile::get()->locale
+                        locale: Profile::get()->locale ?? config('app.locale')
                     ),
             ])
             ->headerActions([
