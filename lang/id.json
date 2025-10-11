@@ -366,5 +366,12 @@
     "Point the cursor to this input first then scan the barcode": "Arahkan kursor ke input ini dan lalu scan barkodenya",
     "Profile": "Profil",
     "Notes": "Catatan",
-    "Language": "Bahasa"
+    "Language": "Bahasa",
+    "Top Products": "Produk Terlaris",
+    "Today": "Hari ini",
+    "This Week": "Minggu Ini",
+    "Last Week": "Minggu Lalu",
+    "This Month": "Bulan Ini",
+    "Last Month": "Bulan Lalu",
+    "This Year": "Tahun Ini"
 }
