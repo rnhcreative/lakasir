@@ -40,11 +40,13 @@ class MemberResource extends Resource
                     ->label(__('Name'))
                     ->required(),
                 TextInput::make('code')
-                    ->label(__('Code')),
+                    ->label(__('Code'))
+                    ->unique(ignoreRecord: true),
                 TextInput::make('address')
                     ->label(__('Address')),
                 TextInput::make('email')
                     ->label(__('Contact'))
+                    ->unique(ignoreRecord: true)
                     ->placeholder(__('Please provide a valid email address or whatsapp/phone number.')),
                 DatePicker::make('joined_date')
                     ->translateLabel(),

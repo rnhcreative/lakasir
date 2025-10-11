@@ -60,8 +60,10 @@ class StockOpnameResource extends Resource
                     ->label(__('Item amounts'))
                     ->counts('stockOpnameItems'),
                 TextColumn::make('date')
+                    ->translateLabel()
                     ->date(),
                 TextColumn::make('approved_at')
+                    ->translateLabel()
                     ->dateTime(timezone: Profile::get()->timezone),
                 TextColumn::make('status')
                     ->translateLabel()

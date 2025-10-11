@@ -8,6 +8,7 @@ use Filament\Tables\Actions\Action;
 use App\Models\Tenants\SellingDetail;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Contracts\Support\Htmlable;
@@ -15,11 +16,6 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class BestSellingProduct extends BaseWidget
 {
-    protected function getTableHeading(): string|Htmlable|null
-    {
-        return __('Top Products');
-    }
-
     public function table(Table $table): Table
     {
         $startDate = today()->startOfDay();
@@ -94,6 +90,10 @@ class BestSellingProduct extends BaseWidget
             ->filtersLayout(FiltersLayout::AboveContent)
             ->filtersFormColumns(2)
             ->hiddenFilterIndicators()
+            ->heading(__('Top Products'))
+            ->recordUrl(
+                fn (Model $record): string => route('filament.tenant.resources.products.view', ['record' => $record]),
+            )
             ->paginated(false);
     }
 }

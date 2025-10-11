@@ -183,8 +183,7 @@ class TenantPanelProvider extends PanelProvider
     {
         return [
             NavigationGroup::make(__('Inventory'))->items([
-                // @DISABLE
-                //$this->generateNavigationItem(PurchasingResource::class, Purchasing::class),
+                $this->generateNavigationItem(PurchasingResource::class, Purchasing::class),
                 $this->generateNavigationItem(StockOpnameResource::class, StockOpname::class),
                 $this->generateNavigationItem(ProductResource::class),
                 $this->generateNavigationItem(CategoryResource::class),
@@ -204,8 +203,7 @@ class TenantPanelProvider extends PanelProvider
                         SellingReport::class,
                         ProductReport::class,
                         CashierReport::class,
-                        // @DISABLE
-                        //PurchasingReport::class,
+                        PurchasingReport::class,
                     ]
                 ),
             ]),

@@ -59,24 +59,32 @@ class SellingResource extends Resource
                 TextColumn::make('date')
                     ->dateTime(timezone: Profile::get()->timezone)
                     ->translateLabel(),
-                TextColumn::make('grand_total_price')
+                TextColumn::make('total_price')
+                    ->label('Sub Total')
                     ->translateLabel()
                     ->sortable()
                     ->money(Setting::get('currency', 'IDR')),
-                TextColumn::make('total_price')
+                TextColumn::make('discount_price')
+                    ->label('Discount')
                     ->translateLabel()
-                    ->sortable()
                     ->money(Setting::get('currency', 'IDR')),
                 TextColumn::make('tax_price')
+                    ->label('Tax')
                     ->translateLabel()
                     ->sortable()
                     ->visible(feature(ProductInitialPrice::class))
                     ->money(Setting::get('currency', 'IDR')),
-                TextColumn::make('total_cost')
+                TextColumn::make('grand_total_price')
+                    ->label('Total')
                     ->translateLabel()
                     ->sortable()
-                    ->visible(feature(ProductInitialPrice::class))
                     ->money(Setting::get('currency', 'IDR')),
+                // @DISABLED
+                    // TextColumn::make('total_cost')
+                //     ->translateLabel()
+                //     ->sortable()
+                //     ->visible(feature(ProductInitialPrice::class))
+                //     ->money(Setting::get('currency', 'IDR')),
             ])
             ->searchPlaceholder('Search (Code, User, Customer Number')
             ->header(view('filament.tenant.resources.sellings.headers.overview', [

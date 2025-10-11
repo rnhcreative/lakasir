@@ -13,6 +13,7 @@ use App\Models\Tenants\Setting;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Set;
@@ -120,30 +121,31 @@ trait HasProductForm
             ->visible(function ($operation) {
                 return Feature::active(ProductStock::class) && $operation == 'create';
             })
-            ->disabled(function ($get) {
-                return $get('is_non_stock') || $get('type') == 'service';
-            })
+            // ->disabled(function ($get) {
+            //     return $get('is_non_stock') || $get('type') == 'service';
+            // })
             ->required();
     }
 
-    public function generateTypeFormComponent(): Select
+    public function generateTypeFormComponent(): Hidden
     {
-        return Select::make('type')
-            ->translateLabel()
-            ->options([
-                'product' => 'Product',
-                'service' => 'Service',
-            ])
-            ->visible(Feature::active(ProductType::class))
-            ->afterStateUpdated(function (mixed $state, Set $set) {
-                if ($state == 'service') {
-                    $set('stock', 0);
-                }
-            })
-            ->live()
-            ->default('product')
-            ->columnSpan(2)
-            ->required();
+        return Hidden::make('type')
+            ->default('product');
+            // ->translateLabel()
+            // ->options([
+            //     'product' => 'Product',
+            //     'service' => 'Service',
+            // ])
+            // ->visible(Feature::active(ProductType::class))
+            // ->afterStateUpdated(function (mixed $state, Set $set) {
+            //     if ($state == 'service') {
+            //         $set('stock', 0);
+            //     }
+            // })
+            // ->live()
+            // ->default('product')
+            // ->columnSpan(2)
+            // ->required();
     }
 
     public function generateBarcodeFormComponent(): TextInput

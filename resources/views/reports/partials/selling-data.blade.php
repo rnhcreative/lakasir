@@ -14,8 +14,8 @@
       <x-table-header-cell>@lang('Selling')</x-table-header-cell>
       <x-table-header-cell>@lang('Discount')</x-table-header-cell>
       <x-table-header-cell>@lang('Net Selling')</x-table-header-cell>
-      <x-table-header-cell>@lang('Gross Profit')</x-table-header-cell>
-      <x-table-header-cell>@lang('Net Profit')</x-table-header-cell>
+      <!--<x-table-header-cell>@lang('Gross Profit')</x-table-header-cell>-->
+      <!--<x-table-header-cell>@lang('Net Profit')</x-table-header-cell>-->
     </x-table-header>
 
     <tbody>
@@ -28,8 +28,8 @@
           <x-table-cell class="number">{{ $report['selling'] }}</x-table-cell>
           <x-table-cell class="number">{{ $report['discount_price'] }}</x-table-cell>
           <x-table-cell class="number">{{ $report['total_after_discount'] }}</x-table-cell>
-          <x-table-cell class="number">{{ $report['gross_profit'] }}</x-table-cell>
-          <x-table-cell class="number">{{ $report['net_profit'] }}</x-table-cell>
+          <!--<x-table-cell class="number">{{ $report['gross_profit'] }}</x-table-cell>-->
+          <!--<x-table-cell class="number">{{ $report['net_profit'] }}</x-table-cell>-->
         </x-table-row>
       @endforeach
       <x-table-row>
@@ -38,8 +38,8 @@
         <x-table-cell class="number">{{ $footer['total_gross'] }}</x-table-cell>
         <x-table-cell class="number">{{ $footer['total_discount_per_item'] }}</x-table-cell>
         <x-table-cell class="number">{{ $footer['total_net_price_after_discount_per_item'] }}</x-table-cell>
-        <x-table-cell class="number">{{ $footer['total_gross_profit'] }}</x-table-cell>
-        <x-table-cell class="number">{{ $footer['total_net_profit_before_discount_selling'] }}</x-table-cell>
+        <!--<x-table-cell class="number">{{ $footer['total_gross_profit'] }}</x-table-cell>-->
+        <!--<x-table-cell class="number">{{ $footer['total_net_profit_before_discount_selling'] }}</x-table-cell>-->
       </x-table-row>
     </tbody>
   </x-table>

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 return [
     'accept'          => 'Menerima',
-    'action'          => 'Tindakan',
-    'actions'         => 'Tindakan',
+    'action'          => 'Aksi',
+    'actions'         => 'Aksi',
     'add'             => 'Menambahkan',
     'admin'           => 'Admin',
     'agree'           => 'Setuju',

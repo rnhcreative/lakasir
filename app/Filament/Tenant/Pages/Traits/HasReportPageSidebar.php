@@ -14,6 +14,7 @@ use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use App\Features\Purchasing as PurchasingFeature;
 
 trait HasReportPageSidebar
 {
@@ -21,16 +22,21 @@ trait HasReportPageSidebar
 
     public static function sidebar(): FilamentPageSidebar
     {
+        $items = [
+            static::generateNavigationItem(SellingReport::class),
+            static::generateNavigationItem(ProductReport::class),
+            static::generateNavigationItem(MemberReport::class),
+            // @DISABLED
+            //static::generateNavigationItem(CashierReport::class),
+        ];
+
+        if (feature(PurchasingFeature::class)) {
+            $items[] = static::generateNavigationItem(PurchasingReport::class);
+        }
+
         return FilamentPageSidebar::make()
             ->topbarNavigation()
-            ->setNavigationItems([
-                static::generateNavigationItem(SellingReport::class),
-                static::generateNavigationItem(ProductReport::class),
-                static::generateNavigationItem(MemberReport::class),
-                static::generateNavigationItem(CashierReport::class),
-                // @DISABLE
-                //static::generateNavigationItem(PurchasingReport::class),
-            ]);
+            ->setNavigationItems($items);
     }
 
     private static function generateNavigationItem(string $resource, ?string $feature = null): PageNavigationItem
