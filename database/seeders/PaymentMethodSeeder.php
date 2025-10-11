@@ -20,7 +20,7 @@ class PaymentMethodSeeder extends Seeder
     {
         return [
             [
-                'name' => 'Cash',
+                'name' => __('Cash'),
                 'is_cash' => true,
                 'is_debit' => false,
                 'is_credit' => false,
