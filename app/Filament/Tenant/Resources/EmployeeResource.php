@@ -7,15 +7,19 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Tenants\Employee;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use App\Traits\HasTranslatableResource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Tenant\Resources\EmployeeResource\Pages;
 use App\Filament\Tenant\Resources\EmployeeResource\RelationManagers;
+use App\Filament\Tenant\Resources\EmployeeResource\RelationManagers\SellingsRelationManager;
+use Filament\Resources\RelationManagers\RelationManager;
 
 class EmployeeResource extends Resource
 {
@@ -58,6 +62,7 @@ class EmployeeResource extends Resource
                     //
                 ])
                 ->actions([
+                    Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                 ])
                 ->bulkActions([
@@ -67,10 +72,19 @@ class EmployeeResource extends Resource
                 ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                TextEntry::make('name')->translateLabel(),
+                TextEntry::make('email')->label(__('Contact')),
+            ]);
+    }
+
     public static function getRelations(): array
     {
         return [
-            //
+            SellingsRelationManager::class,
         ];
     }
 
@@ -78,6 +92,7 @@ class EmployeeResource extends Resource
     {
         return [
             'index' => Pages\ListEmployees::route('/'),
+            'view' => Pages\ViewEmployee::route('/{record}'),
             'create' => Pages\CreateEmployee::route('/create'),
             'edit' => Pages\EditEmployee::route('/{record}/edit'),
         ];

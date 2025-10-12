@@ -21,4 +21,12 @@ class EditEmployee extends EditRecord
     {
         return '/member/employees';
     }
+
+     /**
+     * Hide all relation managers on this page
+     */
+    public function getRelationManagers(): array
+    {
+        return [];
+    }
 }

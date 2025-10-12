@@ -4,16 +4,24 @@ namespace App\Filament\Tenant\Resources\EmployeeResource\Pages;
 
 use App\Filament\Tenant\Resources\EmployeeResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Contracts\Support\Htmlable;
 
-class ListEmployees extends ListRecords
+class ViewEmployee extends ViewRecord
 {
     protected static string $resource = EmployeeResource::class;
+
+    public function getTitle(): string |Htmlable
+    {
+        $employee = $this->record;
+
+        return 'Karyawan: '.$employee->name;
+    }
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\EditAction::make(),
         ];
     }
 }
