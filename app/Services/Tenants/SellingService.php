@@ -55,17 +55,19 @@ class SellingService
             $productsCollection = collect($data['products']);
             $productsCollection->each(
                 function ($product) use (&$total_price, &$total_cost, &$total_price_after_discount, &$total_discount_per_item) {
-                    if (isset($product['price_unit_id']) && $product['price_unit_id'] != null) {
-                        $product['price'] = PriceUnit::whereId($product['price_unit_id'])->first()->selling_price * $product['qty'];
-                    }
+                    // if (isset($product['price_unit_id']) && $product['price_unit_id'] != null && $product['price_unit_id'] != 0) {
+                    //     $product['price'] = PriceUnit::whereId($product['price_unit_id'])->first()->selling_price * $product['qty'];
+                    // }
                     $modelProduct = Product::find($product['product_id']);
-                    $total_price += $product['price'] ?? $modelProduct->selling_price * $product['qty'];
+                    $total_price += $product['price'] ? $product['price'] * $product['qty'] : $modelProduct->selling_price * $product['qty'];
+
                     $total_discount_per_item += ($product['discount_price'] ?? 0);
                     $total_price_after_discount = $total_price - ($product['discount_price'] ?? 0);
                     $total_cost += $modelProduct->initial_price * $product['qty'];
                 }
             );
             $total_price = ($tax_price = $total_price * ($tax = $data['tax'] ?? 0) / 100) + $total_price;
+
             $total_qty = collect($data['products'])->sum('qty');
             $discount_price = $data['discount_price'] ?? 0;
             if ($data['voucher'] ?? false) {

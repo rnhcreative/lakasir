@@ -28,14 +28,14 @@ class SellingDetail extends Model
     public function pricePerUnit(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->price / $this->qty,
+            get: fn () => $this->price,
         );
     }
 
     public function totalPrice(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->price - $this->discount_price,
+            get: fn () => ($this->price  * $this->qty) - $this->discount_price,
         );
     }
 }

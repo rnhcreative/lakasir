@@ -37,6 +37,11 @@ class Selling extends Model
         return $this->belongsTo(Member::class);
     }
 
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

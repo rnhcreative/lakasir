@@ -53,6 +53,9 @@ class SellingResource extends Resource
                 TextColumn::make('member.name')
                     ->translateLabel()
                     ->default('-'),
+                TextColumn::make('employee.name')
+                    ->translateLabel()
+                    ->default('-'),
                 TextColumn::make('customer_number')
                     ->translateLabel()
                     ->default('-'),
