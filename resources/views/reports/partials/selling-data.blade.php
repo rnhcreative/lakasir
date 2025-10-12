@@ -11,9 +11,9 @@
       <x-table-header-cell>@lang('Product Name')</x-table-header-cell>
       <x-table-header-cell>@lang('Price')</x-table-header-cell>
       <x-table-header-cell>@lang('Qty')</x-table-header-cell>
-      <x-table-header-cell>@lang('Selling')</x-table-header-cell>
+      <x-table-header-cell>@lang('Sub Total')</x-table-header-cell>
       <x-table-header-cell>@lang('Discount')</x-table-header-cell>
-      <x-table-header-cell>@lang('Net Selling')</x-table-header-cell>
+      <x-table-header-cell>@lang('Total')</x-table-header-cell>
       <!--<x-table-header-cell>@lang('Gross Profit')</x-table-header-cell>-->
       <!--<x-table-header-cell>@lang('Net Profit')</x-table-header-cell>-->
     </x-table-header>
