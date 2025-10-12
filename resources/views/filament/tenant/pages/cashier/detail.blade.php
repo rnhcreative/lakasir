@@ -71,5 +71,15 @@
     <div>{{ $cartDetail['discount_price'] ?? '-' }}</div>
   </div>
   @endfeature
+  <div class="flex justify-between hover:underline cursor-pointer"
+      x-on:mousedown="$dispatch('open-modal', {
+        id: 'edit-detail',
+        inputId: 'employeeSelect',
+        index: 4,
+        title: '@lang('Search employee')'
+      })">
+      <p>{{ __('Employee') }}</p>
+      <p class="font-bold">{{ $cartDetail['employee_label'] ?? __('No Employee Selected') }}</p>
+    </div>
 </div>
 

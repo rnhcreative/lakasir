@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Features\Employee;
 use App\Features\Member;
 use App\Features\PaymentMethod;
 use App\Features\Permission;
@@ -25,6 +26,7 @@ use App\Filament\Tenant\Pages\Report;
 use App\Filament\Tenant\Pages\SellingReport;
 use App\Filament\Tenant\Pages\TenantLogin;
 use App\Filament\Tenant\Resources\CategoryResource;
+use App\Filament\Tenant\Resources\EmployeeResource;
 use App\Filament\Tenant\Resources\MemberResource;
 use App\Filament\Tenant\Resources\PaymentMethodResource;
 use App\Filament\Tenant\Resources\PermissionResource;
@@ -174,8 +176,9 @@ class TenantPanelProvider extends PanelProvider
             $this->generateNavigationItem(SellingResource::class),
             //$this->generateNavigationItem(SupplierResource::class, Supplier::class),
             $this->generateNavigationItem(MemberResource::class, Member::class),
+            $this->generateNavigationItem(EmployeeResource::class, Employee::class),
             $this->generateNavigationItem(PaymentMethodResource::class, PaymentMethod::class),
-            //$this->generateNavigationItem(ReceivableResource::class, Receivable::class),
+            $this->generateNavigationItem(ReceivableResource::class, Receivable::class),
         ];
     }
 

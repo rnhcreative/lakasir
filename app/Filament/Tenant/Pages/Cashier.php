@@ -9,6 +9,7 @@ use App\Filament\Tenant\Pages\Traits\TableProduct;
 use App\Filament\Tenant\Resources\Traits\RefreshThePage;
 use App\Models\Tenants\About;
 use App\Models\Tenants\CartItem;
+use App\Models\Tenants\Employee;
 use App\Models\Tenants\Member;
 use App\Models\Tenants\PaymentMethod;
 use App\Models\Tenants\Selling;
@@ -57,6 +58,8 @@ class Cashier extends Page implements HasForms, HasTable
 
     public CollectionSupport $members;
 
+    public CollectionSupport $employees;
+
     public float $tax;
 
     public string $currency;
@@ -101,6 +104,11 @@ class Cashier extends Page implements HasForms, HasTable
             ->toArray();
 
         $this->members = Member::query()
+            ->select('id', 'name')
+            ->get()
+            ->pluck('name', 'id');
+
+        $this->employees = Employee::query()
             ->select('id', 'name')
             ->get()
             ->pluck('name', 'id');
@@ -168,6 +176,21 @@ class Cashier extends Page implements HasForms, HasTable
                     ])
                     ->hiddenLabel()
                     ->label(__('Manual Discount')),
+                Select::make('employee_id')
+                    ->label('Employee')
+                    ->getSearchResultsUsing(function (string $search): array {
+                        return Employee::query()
+                            ->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->hiddenLabel()
+                    ->extraAttributes([
+                        'id' => 'employeeSelect',
+                        'class' => 'hidden',
+                    ])
+                    ->searchable(),
             ])
             ->statePath('cartDetail')
             ->model(Selling::class);
@@ -189,6 +212,7 @@ class Cashier extends Page implements HasForms, HasTable
             $this->total_price = $this->sub_total + ($this->sub_total * $this->tax / 100) - $this->discount_price;
         }
         $this->fillMember();
+        $this->fillEmployee();
         $this->fillPayemntMethod();
 
         $this->dispatch('close-modal', id: 'edit-detail');
@@ -210,6 +234,14 @@ class Cashier extends Page implements HasForms, HasTable
             return $key == $this->cartDetail['member_id'];
         })->first();
         $this->cartDetail['member_label'] = $member;
+    }
+
+    private function fillEmployee()
+    {
+        $employee = $this->employees->filter(function (string $value, int $key) {
+            return $key == $this->cartDetail['employee_id'];
+        })->first();
+        $this->cartDetail['employee_label'] = $employee;
     }
 
     public function proceedThePayment(SellingService $sellingService): void
