@@ -28,6 +28,7 @@ class PaymentMethodResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->translateLabel()
+                    ->required()
                     ->columnSpanFull(),
                 Card::make([
                     Checkbox::make('is_cash')->inline(),
