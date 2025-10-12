@@ -13,7 +13,7 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
         <div class="flex justify-between items-center" x-data="fullscreen">
           <p class="text-xl font-semibold">{{ __('Orders details') }}</p>
           <div class="flex items-center">
-            <div class="xl:flex gap-x-2 hidden items-center">
+            <div class="xl:flex gap-x-2 items-center">
               <a
                 href="/member/sellings"
                 class="py-1 px-4 flex justify-center items-center bg-gray-100 rounded-lg gap-x-1 text-gray-500">
