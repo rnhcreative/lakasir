@@ -207,7 +207,6 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
             class="w-full p-2 border border-gray-300 rounded-md text-lg text-right dark:bg-gray-900 bg-white dark:text-white text-black @error('payed_money') 'border-danger-500' @enderror"
             focus
             :disabled="isTouchScreen"
-            x-mask:dynamic="$money($input)"
             x-on:keyup="changes"
             x-ref="payedMoney"
             inputMode="numeric"
@@ -449,7 +448,7 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
       cartDetail: @js($cartDetail),
       subtotal: $wire.entangle('total_price'),
       shortcut(number) {
-        this.$refs.payedMoney.value = moneyFormat(number);
+        this.$refs.payedMoney.value = number;
         this.changes();
         return;
       },
