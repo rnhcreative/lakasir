@@ -2,19 +2,20 @@
 
 namespace App\Filament\Tenant\Pages\Traits;
 
-use App\Filament\Tenant\Pages\CashierReport;
-use App\Filament\Tenant\Pages\MemberReport;
-use App\Filament\Tenant\Pages\ProductReport;
-use App\Filament\Tenant\Pages\PurchasingReport;
-use App\Filament\Tenant\Pages\SellingReport;
-use AymanAlhattami\FilamentPageWithSidebar\FilamentPageSidebar;
-use AymanAlhattami\FilamentPageWithSidebar\PageNavigationItem;
-use AymanAlhattami\FilamentPageWithSidebar\Traits\HasPageSidebar;
 use Filament\Pages\Page;
+use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
+use App\Filament\Tenant\Pages\MemberReport;
+use App\Filament\Tenant\Pages\CashierReport;
+use App\Filament\Tenant\Pages\ProductReport;
+use App\Filament\Tenant\Pages\SellingReport;
+use App\Filament\Tenant\Pages\EmployeeReport;
+use App\Filament\Tenant\Pages\PurchasingReport;
 use App\Features\Purchasing as PurchasingFeature;
+use AymanAlhattami\FilamentPageWithSidebar\PageNavigationItem;
+use AymanAlhattami\FilamentPageWithSidebar\FilamentPageSidebar;
+use AymanAlhattami\FilamentPageWithSidebar\Traits\HasPageSidebar;
 
 trait HasReportPageSidebar
 {
@@ -26,6 +27,7 @@ trait HasReportPageSidebar
             static::generateNavigationItem(SellingReport::class),
             static::generateNavigationItem(ProductReport::class),
             static::generateNavigationItem(MemberReport::class),
+            static::generateNavigationItem(EmployeeReport::class),
             // @DISABLED
             //static::generateNavigationItem(CashierReport::class),
         ];

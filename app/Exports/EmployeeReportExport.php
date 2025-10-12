@@ -7,11 +7,11 @@ use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use App\Services\Tenants\MemberReportService;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use App\Services\Tenants\EmployeeReportService;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 
-class MemberReportExport
+class EmployeeReportExport
     implements FromArray,
     ShouldAutoSize,
     WithHeadings,
@@ -23,11 +23,11 @@ class MemberReportExport
     protected array $results;
 
     public function __construct(
-        public MemberReportService $memberReportService,
+        public EmployeeReportService $employeeReportService,
         public array $data
     )
     {
-        $this->results = $this->memberReportService->generate($this->data);
+        $this->results = $this->employeeReportService->generate($this->data);
     }
 
     public function headings(): array
@@ -36,7 +36,7 @@ class MemberReportExport
             __('Name'),
             __('Contact'),
             'Total ' . __('Transaction'),
-            'Total ' . __('Purchasing'),
+            'Total ' . __('Selling'),
         ];
     }
 
@@ -74,7 +74,7 @@ class MemberReportExport
                 $sheet = $event->sheet->getDelegate();
 
                 /** Header Row */
-                $sheet->setCellValue('A1', 'Laporan Pelanggan');
+                $sheet->setCellValue('A1', 'Laporan Karyawan');
                 $sheet->mergeCells('A1:D1');
 
                 $sheet->setCellValue('A2', $header['shop_name']);

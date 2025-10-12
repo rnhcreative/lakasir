@@ -2,36 +2,37 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Api\Tenants\AboutController;
-use App\Http\Controllers\Api\Tenants\Master\CategoryController;
-use App\Http\Controllers\Api\Tenants\Master\MemberController;
-use App\Http\Controllers\Api\Tenants\Master\Product\StockController;
-use App\Http\Controllers\Api\Tenants\Master\ProductController;
-use App\Http\Controllers\Api\Tenants\Master\SupplierController;
-use App\Http\Controllers\Api\Tenants\NotificationController;
-use App\Http\Controllers\Api\Tenants\PaymentMethodController;
-use App\Http\Controllers\Api\Tenants\ProfileController;
-use App\Http\Controllers\Api\Tenants\RegisterFCMTokenController;
-use App\Http\Controllers\Api\Tenants\Reports\PurchasingReportController;
-use App\Http\Controllers\Api\Tenants\Settings\SecureInitialPriceController;
-use App\Http\Controllers\Api\Tenants\Transaction\CashDrawerController;
-use App\Http\Controllers\Api\Tenants\Transaction\DashboardController;
-use App\Http\Controllers\Api\Tenants\Transaction\SellingController;
-use App\Http\Controllers\Api\Tenants\UploadController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\EmailVerificationNotificationController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\VerifyEmailController;
-use App\Http\Controllers\CashierReportController;
-use App\Http\Controllers\MemberReportController;
+use Illuminate\Http\Request;
+use App\Livewire\ResetPassword;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrinterController;
+use App\Http\Controllers\MemberReportController;
+use App\Http\Controllers\CashierReportController;
 use App\Http\Controllers\ProductReportController;
 use App\Http\Controllers\SellingReportController;
+use App\Http\Controllers\EmployeeReportController;
 use App\Http\Middleware\InitializeTenancyByDomain;
-use App\Livewire\ResetPassword;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Api\Tenants\AboutController;
+use App\Http\Controllers\Api\Tenants\UploadController;
+use App\Http\Controllers\Api\Tenants\ProfileController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Api\Tenants\NotificationController;
+use App\Http\Controllers\Api\Tenants\Master\MemberController;
+use App\Http\Controllers\Api\Tenants\PaymentMethodController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Api\Tenants\Master\ProductController;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
+use App\Http\Controllers\Api\Tenants\Master\CategoryController;
+use App\Http\Controllers\Api\Tenants\Master\SupplierController;
+use App\Http\Controllers\Api\Tenants\RegisterFCMTokenController;
+use App\Http\Controllers\Api\Tenants\Transaction\SellingController;
+use App\Http\Controllers\Api\Tenants\Master\Product\StockController;
+use App\Http\Controllers\Api\Tenants\Transaction\DashboardController;
+use App\Http\Controllers\Api\Tenants\Transaction\CashDrawerController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Api\Tenants\Reports\PurchasingReportController;
+use App\Http\Controllers\Api\Tenants\Settings\SecureInitialPriceController;
 
 Route::middleware([
     'web',
@@ -52,6 +53,8 @@ Route::middleware([
             ->name('member-report.generate');
         Route::get('/member/cashier-report/generate', CashierReportController::class)
             ->name('cashier-report.generate');
+        Route::get('/member/employee-report/generate', EmployeeReportController::class)
+            ->name('employee-report.generate');
         Route::view('/member/sellings/{selling}/print', 'filament.tenant.pages.selling.print-receipt')
             ->name('selling.print');
         Route::get('/reset-password/{token}', ResetPassword::class)
