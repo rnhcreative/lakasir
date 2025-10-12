@@ -19,4 +19,9 @@ class Member extends Model
     {
         return $this->hasMany(Receivable::class);
     }
+
+    public function sellings(): HasMany
+    {
+        return $this->hasMany(Selling::class);
+    }
 }

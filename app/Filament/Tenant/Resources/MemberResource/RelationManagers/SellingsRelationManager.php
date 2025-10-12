@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Tenant\Resources\EmployeeResource\RelationManagers;
+namespace App\Filament\Tenant\Resources\MemberResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Tables;
@@ -35,7 +35,7 @@ class SellingsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('code')->translateLabel()
                     ->searchable(),
-                TextColumn::make('member.name')->translateLabel()
+                TextColumn::make('employee.name')->translateLabel()
                     ->searchable(),
                 TextColumn::make('date')
                     ->dateTime(timezone: Profile::get()->timezone)
@@ -73,7 +73,7 @@ class SellingsRelationManager extends RelationManager
             ->bulkActions([
 
             ])
-            ->heading(__('Selling'))
+            ->heading(__('Selling Transactions'))
             ->searchPlaceholder('Kode, Pelanggan')
             ->recordUrl(fn (Model $record): string => route('filament.tenant.resources.sellings.view', $record));
     }

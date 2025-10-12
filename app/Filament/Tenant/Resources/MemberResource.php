@@ -2,17 +2,20 @@
 
 namespace App\Filament\Tenant\Resources;
 
-use App\Filament\Tenant\Resources\MemberResource\Pages;
-use App\Models\Tenants\Member;
-use App\Traits\HasTranslatableResource;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\Tenants\Member;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
+use App\Traits\HasTranslatableResource;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Infolists\Components\TextEntry;
+use App\Filament\Tenant\Resources\MemberResource\Pages;
+use App\Filament\Tenant\Resources\MemberResource\RelationManagers\SellingsRelationManager;
 
 class MemberResource extends Resource
 {
@@ -85,6 +88,7 @@ class MemberResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -94,10 +98,22 @@ class MemberResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                TextEntry::make('name')->translateLabel(),
+                TextEntry::make('code')->translateLabel(),
+                TextEntry::make('identity_number')->translateLabel(),
+                TextEntry::make('email')->label(__('Contact')),
+                TextEntry::make('address')->translateLabel(),
+            ]);
+    }
+
     public static function getRelations(): array
     {
         return [
-            //
+            SellingsRelationManager::class,
         ];
     }
 
@@ -105,6 +121,7 @@ class MemberResource extends Resource
     {
         return [
             'index' => Pages\ListMembers::route('/'),
+            'view' => Pages\ViewMember::route('/{record}'),
             'create' => Pages\CreateMember::route('/create'),
             'edit' => Pages\EditMember::route('/{record}/edit'),
         ];
