@@ -322,12 +322,9 @@ class Cashier extends Page implements HasForms, HasTable
 
         $this->discount_price = 0;
         $this->cartItems->each(function (CartItem $item) {
-            $priceUnit = $item->priceUnit?->selling_price;
-            if ($priceUnit) {
-                $priceUnit = $priceUnit * $item->qty;
-            }
+            $priceUnit = $item->price;
 
-            $this->sub_total += $priceUnit ?? $item->price;
+            $this->sub_total += $priceUnit * $item->qty;
             if ($item->discount_price && $item->discount_price > 0) {
                 $this->discount_price += $item->discount_price;
             }

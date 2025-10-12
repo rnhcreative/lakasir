@@ -44,9 +44,6 @@ class CartItem extends Model
     public function getPriceFormatMOneyAttribute()
     {
         $priceUnit = $this->priceUnit?->selling_price;
-        if ($priceUnit) {
-            $priceUnit = $priceUnit * $this->qty;
-        }
 
         return price_format($priceUnit ?? $this->price);
     }

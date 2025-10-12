@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained();
             $table->double('selling_price')->default(0);
-            $table->double('stock');
+            $table->double('stock')->default(1);
             $table->string('unit');
             $table->timestamps();
         });

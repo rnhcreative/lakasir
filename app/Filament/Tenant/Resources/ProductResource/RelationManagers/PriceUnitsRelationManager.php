@@ -23,15 +23,6 @@ class PriceUnitsRelationManager extends RelationManager
         return $form
             ->columns(1)
             ->schema([
-                Forms\Components\TextInput::make('stock')
-                    ->translateLabel()
-                    ->helperText(__('Amount that sold or that filled in unit'))
-                    ->numeric()
-                    ->visible(Feature::active(ProductStock::class))
-                    ->disabled(function ($get) {
-                        return $get('is_non_stock') || $get('type') == 'service';
-                    })
-                    ->required(),
                 Forms\Components\TextInput::make('unit')
                     ->translateLabel()
                     ->placeholder(__('Meter(m), Box or what you want'))
@@ -51,8 +42,6 @@ class PriceUnitsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('selling_price')
             ->columns([
-                Tables\Columns\TextColumn::make('stock')
-                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('unit')
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('selling_price')

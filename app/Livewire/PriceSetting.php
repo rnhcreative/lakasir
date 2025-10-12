@@ -12,13 +12,27 @@ class PriceSetting extends Component
 
     public CartItem $cartItem;
 
-    public $unit;
+    public $unit = null;
+
+    public $customPrice = null;
 
     public function changeThePrice(): void
     {
         $this->cartItem->update([
             'price_unit_id' => $this->unit,
         ]);
+
+        if ($this->cartItem->priceUnit) {
+            $this->cartItem->update([
+                'price' => $this->cartItem->priceUnit->selling_price,
+            ]);
+        }
+
+        if ($this->unit == 0 && $this->customPrice) {
+            $this->cartItem->update([
+                'price' => $this->customPrice,
+            ]);
+        }
 
         $this->refreshPage();
 
@@ -29,7 +43,11 @@ class PriceSetting extends Component
     {
         $this->cartItem->update([
             'price_unit_id' => null,
+            'price' => $this->cartItem->product->selling_price,
         ]);
+
+        $this->unit = null;
+        $this->customPrice = null;
 
         $this->refreshPage();
 
