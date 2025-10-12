@@ -36,6 +36,10 @@ class StockService
             $lastStock->stock = $lastStock->stock + $qty;
             $lastStock->save();
         } else {
+            $lastStock = $product->stocks()->latest()->first();
+            $lastStock->stock = $lastStock->stock + $qty;
+            $lastStock->save();
+
             $product->stock = $product->stock + $qty;
             $product->save();
         }
