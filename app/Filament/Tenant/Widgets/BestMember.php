@@ -25,7 +25,7 @@ class BestMember extends BaseWidget
             ->whereNotNull('member_id')
             ->limit(5)
             ->groupBy('member_id')
-            ->orderBy('total_qty', 'desc')
+            ->orderBy(DB::raw('SUM(total_price)'), 'desc')
             ->with('member');
 
         return $table
