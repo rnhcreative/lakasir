@@ -21,8 +21,4 @@
       @endif
     </div>
 </x-filament-panels::page>
-@script()
-<script>
 
-</script>
-@endscript
