@@ -119,7 +119,7 @@ class SellingOverview extends BaseWidget
 
     private function getReadableSuffix($totalRevenue)
     {
-        return Number::abbreviate($totalRevenue);
+        return Number::currency($totalRevenue, locale: 'id', in: 'IDR');
     }
 
     private function getTrendData($totalYesterdayRevenue, $totalTodayRevenue)
