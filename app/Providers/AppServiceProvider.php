@@ -3,11 +3,12 @@
 namespace App\Providers;
 
 use App\Models\Tenants\User;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\ServiceProvider;
 use Laravel\Pennant\Feature;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -64,5 +65,9 @@ class AppServiceProvider extends ServiceProvider
 
         Feature::resolveScopeUsing(fn ($driver) => null);
         Feature::discover();
+
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
     }
 }
