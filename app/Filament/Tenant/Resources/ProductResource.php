@@ -98,23 +98,11 @@ class ProductResource extends Resource
                     ->visible(Feature::active(ProductInitialPrice::class))
                     ->translateLabel()
                     ->sortable()
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
                 TextColumn::make('selling_price')
                     ->translateLabel()
                     ->sortable()
-                    ->money(Setting::get('currency', 'IDR')),
-                // TextColumn::make('net_profit')
-                //     ->visible(Feature::active(ProductInitialPrice::class))
-                //     ->translateLabel()
-                //     ->sortable()
-                //     ->money(Setting::get('currency', 'IDR')),
-                // TextColumn::make('type')
-                //     ->visible(Feature::active(ProductType::class))
-                //     ->translateLabel(),
-                // ToggleColumn::make('is_non_stock')
-                //     ->toggleable()
-                //     ->visible(Feature::active(ProductStock::class))
-                //     ->translateLabel(),
+                    ->money(config('setting.currency')),
             ])
             ->searchPlaceholder(__('Search (SKU, name, barcode)'))
             ->filters([
@@ -203,27 +191,14 @@ class ProductResource extends Resource
                 ->translateLabel(),
             Infolists\Components\TextEntry::make('barcode')
                 ->translateLabel(),
-//            Infolists\Components\TextEntry::make('stocks_sum_stock')
-//                                    ->sum('stocks', 'stock')
-//                                    ->label("stocks")
-//                ->icon(fn (int $state) => $state <= Setting::get('minimum_stock_nofication', 0) ? 'heroicon-s-exclamation-triangle' : '')
-//                ->iconColor(Color::Yellow)
-//                ->translateLabel(),
-            // Infolists\Components\TextEntry::make('is_non_stock')
-            //     ->badge()
-            //     ->getStateUsing(function (Product $product) {
-            //         return $product->is_non_stock ? __('Yes') : __('No');
-            //     })
-            //     ->color('primary')
-            //     ->translateLabel(),
             Infolists\Components\TextEntry::make('unit')
                 ->translateLabel(),
             Infolists\Components\TextEntry::make('initial_price')
-                ->money(Setting::get('currency', 'IDR'))
+                ->money(config('setting.currency'))
                 ->size(TextEntry\TextEntrySize::Large)
                 ->translateLabel(),
             Infolists\Components\TextEntry::make('selling_price')
-                ->money(Setting::get('currency', 'IDR'))
+                ->money(config('setting.currency'))
                 ->size(TextEntry\TextEntrySize::Large)
                 ->translateLabel(),
         ]);

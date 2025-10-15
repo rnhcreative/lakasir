@@ -30,7 +30,7 @@ class ReceivablesRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('selling.date')
                     ->label(__('Date'))
-                    ->dateTime(timezone: Profile::get()->timezone)
+                    ->dateTime(timezone: config('setting.timezone'))
                     ->translateLabel(),
                 TextColumn::make('selling.code')
                     ->translateLabel()

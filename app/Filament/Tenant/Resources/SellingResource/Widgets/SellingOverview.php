@@ -37,7 +37,7 @@ class SellingOverview extends BaseWidget
 
     private function getDiscountToday()
     {
-        $carbon = now(Profile::get()->timezone);
+        $carbon = now(config('setting.timezone'));
         $today = $carbon->startOfDay()->format('Y-m-d H:i:s e');
         $startDate = Carbon::parse($today)->setTimezone('UTC');
         $endDate = Carbon::parse($today)->setTimezone('UTC')->addDay();
@@ -55,9 +55,9 @@ class SellingOverview extends BaseWidget
 
     private function getSalesToday()
     {
-        $carbon = now(Profile::get()->timezone);
+        $carbon = now(config('setting.timezone'));
         $today = $carbon->startOfDay()->format('Y-m-d H:i:s e');
-        $startDate = Carbon::parse($today)->setTimezone(Profile::get()->timezone ?? 'UTC');
+        $startDate = Carbon::parse($today)->setTimezone(config('setting.timezone') ?? 'UTC');
 
         $salesToday = Selling::whereDate('date', $startDate)->count();
 
@@ -66,7 +66,7 @@ class SellingOverview extends BaseWidget
 
     private function getTotalRevenue()
     {
-        $carbon = now(Profile::get()->timezone);
+        $carbon = now(config('setting.timezone'));
         $startOfDay = $carbon->startOfDay();
         $startOfYesterday = $startOfDay->copy()->subDay();
 

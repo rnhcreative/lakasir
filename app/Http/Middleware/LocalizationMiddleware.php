@@ -20,11 +20,7 @@ class LocalizationMiddleware
             return $next($request);
         }
         $locale = config('app.locale');
-        $user = auth()->user();
-        if ($user) {
-            $locale = $user->profile->locale ?? $locale;
-        }
-        config(['app.locale' => $locale]);
+
         app()->setLocale($locale);
 
         return $next($request);

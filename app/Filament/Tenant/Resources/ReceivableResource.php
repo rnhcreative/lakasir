@@ -59,16 +59,16 @@ class ReceivableResource extends Resource
                 TextColumn::make('receivables_sum_total_receivable')
                     ->sum('receivables', 'total_receivable')
                     ->label(__('Total Debt'))
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
                 TextColumn::make('receivables_sum_total_paid')
                     ->getStateUsing(fn (Model $record): float => $record->receivables()->sum('total_receivable') - $record->receivables()->sum('rest_receivable'))
                     ->label(__('Total Paid'))
-                    ->money(Setting::get('currency', 'IDR'))
+                    ->money(config('setting.currency'))
                     ->translateLabel(),
                 TextColumn::make('receivables_sum_rest_receivable')
                     ->sum('receivables', 'rest_receivable')
                     ->label(__('Rest Debt'))
-                    ->money(Setting::get('currency', 'IDR'))
+                    ->money(config('setting.currency'))
                     ->translateLabel(),
                 TextColumn::make('status')
                     ->badge()
@@ -129,15 +129,15 @@ class ReceivableResource extends Resource
             TextEntry::make('total_receivable')
                 ->getStateUsing(fn (Model $record): float => $record->receivables()->sum('total_receivable'))
                 ->label(__('Total Debt'))
-                ->money(Setting::get('currency', 'IDR')),
+                ->money(config('setting.currency')),
             TextEntry::make('rest_receivable')
                 ->getStateUsing(fn (Model $record): float => $record->receivables()->sum('rest_receivable'))
                 ->label(__('Rest Debt'))
-                ->money(Setting::get('currency', 'IDR')),
+                ->money(config('setting.currency')),
             TextEntry::make('total_paid')
                 ->getStateUsing(fn (Model $record): float => $record->receivables()->sum('total_receivable') - $record->receivables()->sum('rest_receivable'))
                 ->label(__('Total Paid'))
-                ->money(Setting::get('currency', 'IDR')),
+                ->money(config('setting.currency')),
             TextEntry::make('status')
                 ->label(__('Status'))
                 ->getStateUsing(function (Model $record) {

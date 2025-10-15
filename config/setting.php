@@ -11,4 +11,6 @@ return [
         'minimum_stock_nofication',
     ],
     'currency' => env('CURRENCY', 'IDR'),
+    'locale' => env('APP_LOCALE', 'id'),
+    'timezone' => env('APP_TIMEZONE', 'Asia/Jakarta')
 ];

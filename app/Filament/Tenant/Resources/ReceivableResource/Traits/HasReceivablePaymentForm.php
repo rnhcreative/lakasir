@@ -24,7 +24,7 @@ trait HasReceivablePaymentForm
                 ->translateLabel()
                 ->mask(RawJs::make('$money($input)'))
                 ->stripCharacters(',')
-                ->prefix(Setting::get('currency', 'IDR'))
+                ->prefix(config('setting.currency'))
                 ->lte($receivable->rest_receivable, true)
                 ->required(),
             DatePicker::make('date')
@@ -46,7 +46,7 @@ trait HasReceivablePaymentForm
                 ->translateLabel()
                 ->mask(RawJs::make('$money($input)'))
                 ->stripCharacters(',')
-                ->prefix(Setting::get('currency', 'IDR'))
+                ->prefix(config('setting.currency'))
                 ->lte($member->receivables->sum('rest_receivable'), true)
                 ->required(),
             DatePicker::make('date')

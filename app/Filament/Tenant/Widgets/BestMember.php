@@ -39,7 +39,7 @@ class BestMember extends BaseWidget
                     ->label(__('Contact')),
                 TextColumn::make('total_purchasing')
                     ->translateLabel()
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
             ])
             ->filters([
                 SelectFilter::make('period')

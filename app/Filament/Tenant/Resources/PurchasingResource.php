@@ -100,7 +100,7 @@ class PurchasingResource extends Resource
                     ->label(__('Item amounts'))
                     ->counts('stocks'),
                 TextColumn::make('approved_at')
-                    ->dateTime(timezone: Profile::get()->timezone)
+                    ->dateTime(timezone: config('setting.timezone'))
                     ->translateLabel(),
                 TextColumn::make('payment_status')
                     ->badge()
@@ -166,13 +166,13 @@ class PurchasingResource extends Resource
                         DatePicker::make('start_date')
                             ->native(false)
                             ->format('Y-m-d')
-                            ->timezone(Profile::get()->timezone)
+                            ->timezone(config('setting.timezone'))
                             ->date()
                             ->closeOnDateSelection(),
                         DatePicker::make('end_date')
                             ->native(false)
                             ->format('Y-m-d')
-                            ->timezone(Profile::get()->timezone)
+                            ->timezone(config('setting.timezone'))
                             ->date()
                             ->closeOnDateSelection(),
                     ])
@@ -186,7 +186,7 @@ class PurchasingResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         $startDate = $data['start_date'];
                         $endDate = $data['end_date'];
-                        if ($timezone = Profile::get()->timezone) {
+                        if ($timezone = config('setting.timezone')) {
                             if (! $startDate && ! $endDate) {
                                 return $query;
                             }

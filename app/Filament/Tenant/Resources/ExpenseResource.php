@@ -81,7 +81,7 @@ class ExpenseResource extends Resource
             ->columns([
                 TextColumn::make('expense_date')
                     ->label(__('Date'))
-                    ->date(timezone: Profile::get()->timezone)
+                    ->date(timezone: config('setting.timezone'))
                     ->sortable(),
                 TextColumn::make('expenseType.name')
                     ->label(__('Type'))
@@ -89,7 +89,7 @@ class ExpenseResource extends Resource
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label(__('Amount'))
-                    ->money(Setting::get('currency', 'IDR'))
+                    ->money(config('setting.currency'))
                     ->sortable(),
                 TextColumn::make('note')
                     ->label(__('Note'))

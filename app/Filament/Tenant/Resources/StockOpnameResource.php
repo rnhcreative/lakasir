@@ -64,7 +64,7 @@ class StockOpnameResource extends Resource
                     ->date(),
                 TextColumn::make('approved_at')
                     ->translateLabel()
-                    ->dateTime(timezone: Profile::get()->timezone),
+                    ->dateTime(timezone: config('setting.timezone')),
                 TextColumn::make('status')
                     ->translateLabel()
                     ->badge()
@@ -82,13 +82,13 @@ class StockOpnameResource extends Resource
                         DatePicker::make('start_date')
                             ->native(false)
                             ->format('Y-m-d')
-                            ->timezone(Profile::get()->timezone)
+                            ->timezone(config('setting.timezone'))
                             ->date()
                             ->closeOnDateSelection(),
                         DatePicker::make('end_date')
                             ->native(false)
                             ->format('Y-m-d')
-                            ->timezone(Profile::get()->timezone)
+                            ->timezone(config('setting.timezone'))
                             ->date()
                             ->closeOnDateSelection(),
                     ])
@@ -102,7 +102,7 @@ class StockOpnameResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         $startDate = $data['start_date'];
                         $endDate = $data['end_date'];
-                        if ($timezone = Profile::get()->timezone) {
+                        if ($timezone = config('setting.timezone')) {
                             if (! $startDate && ! $endDate) {
                                 return $query;
                             }

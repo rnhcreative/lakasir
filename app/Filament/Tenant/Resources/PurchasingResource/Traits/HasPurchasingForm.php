@@ -31,14 +31,14 @@ trait HasPurchasingForm
                 }),
             ...Stock::form(),
             TextInput::make('total_initial_price')
-                ->prefix(Setting::get('currency', 'IDR'))
+                ->prefix(config('setting.currency'))
                 ->mask(RawJs::make('$money($input)'))
                 ->stripCharacters(',')
                 ->numeric()
                 ->readOnly(),
             TextInput::make('total_selling_price')
                 ->live()
-                ->prefix(Setting::get('currency', 'IDR'))
+                ->prefix(config('setting.currency'))
                 ->mask(RawJs::make('$money($input)'))
                 ->stripCharacters(',')
                 ->numeric()

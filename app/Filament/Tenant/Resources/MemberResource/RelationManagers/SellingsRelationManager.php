@@ -38,29 +38,29 @@ class SellingsRelationManager extends RelationManager
                 TextColumn::make('employee.name')->translateLabel()
                     ->searchable(),
                 TextColumn::make('date')
-                    ->dateTime(timezone: Profile::get()->timezone)
+                    ->dateTime(timezone: config('setting.timezone'))
                     ->translateLabel()
                     ->sortable(),
                 TextColumn::make('total_price')
                     ->label('Sub Total')
                     ->translateLabel()
                     ->sortable()
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
                 TextColumn::make('discount_price')
                     ->label('Discount')
                     ->translateLabel()
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
                 TextColumn::make('tax_price')
                     ->label('Tax')
                     ->translateLabel()
                     ->sortable()
                     ->visible(feature(ProductInitialPrice::class))
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
                 TextColumn::make('grand_total_price')
                     ->label('Total')
                     ->translateLabel()
                     ->sortable()
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
             ])
             ->filters([
                 //

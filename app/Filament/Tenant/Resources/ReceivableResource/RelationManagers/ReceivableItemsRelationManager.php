@@ -21,10 +21,10 @@ class ReceivableItemsRelationManager extends RelationManager
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('price')
                     ->translateLabel()
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
                 Tables\Columns\TextColumn::make('subtotal')
                     ->translateLabel()
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
             ])
             ->filters([
                 //

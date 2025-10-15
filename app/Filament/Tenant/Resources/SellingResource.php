@@ -55,28 +55,28 @@ class SellingResource extends Resource
                     ->translateLabel()
                     ->default('-'),
                 TextColumn::make('date')
-                    ->dateTime(timezone: Profile::get()->timezone)
+                    ->dateTime(timezone: config('setting.timezone'))
                     ->translateLabel(),
                 TextColumn::make('total_price')
                     ->label('Sub Total')
                     ->translateLabel()
                     ->sortable()
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
                 TextColumn::make('discount_price')
                     ->label('Discount')
                     ->translateLabel()
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
                 TextColumn::make('tax_price')
                     ->label('Tax')
                     ->translateLabel()
                     ->sortable()
                     ->visible(feature(ProductInitialPrice::class))
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
                 TextColumn::make('grand_total_price')
                     ->label('Total')
                     ->translateLabel()
                     ->sortable()
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
             ])
             ->searchPlaceholder('Search (Code, User, Customer Number')
             ->header(view('filament.tenant.resources.sellings.headers.overview', [
@@ -92,13 +92,13 @@ class SellingResource extends Resource
                         DatePicker::make('start_date')
                             ->native(false)
                             ->format('Y-m-d')
-                            ->timezone(Profile::get()->timezone)
+                            ->timezone(config('setting.timezone'))
                             ->date()
                             ->closeOnDateSelection(),
                         DatePicker::make('end_date')
                             ->native(false)
                             ->format('Y-m-d')
-                            ->timezone(Profile::get()->timezone)
+                            ->timezone(config('setting.timezone'))
                             ->date()
                             ->closeOnDateSelection(),
                     ])
@@ -112,7 +112,7 @@ class SellingResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         $startDate = $data['start_date'];
                         $endDate = $data['end_date'];
-                        if ($timezone = Profile::get()->timezone) {
+                        if ($timezone = config('setting.timezone')) {
                             if (! $startDate && ! $endDate) {
                                 return $query;
                             }

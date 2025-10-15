@@ -64,7 +64,7 @@ class PrintLabel extends Page implements HasForms
                 'name' => $product->name,
                 'sku' => $product->sku,
                 'unit' => $product->unit,
-                'price' => Number::currency($product->selling_price, Setting::get('currency', 'IDR')),
+                'price' => Number::currency($product->selling_price, config('setting.currency')),
             ]);
         }
 

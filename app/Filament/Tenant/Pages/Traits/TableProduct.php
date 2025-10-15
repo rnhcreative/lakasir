@@ -54,7 +54,7 @@ trait TableProduct
                         ->height(100),
                     TextColumn::make('selling_price')
                         ->color('primary')
-                        ->money(Setting::get('currency', 'IDR'))
+                        ->money(config('setting.currency'))
                         ->columnStart(0),
                     TextColumn::make('name')
                         ->size('lg')

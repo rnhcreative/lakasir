@@ -77,7 +77,7 @@ class PriceUnitsRelationManager extends RelationManager
                     ->mask(RawJs::make('$money($input)'))
                     ->stripCharacters(',')
                     ->numeric()
-                    ->prefix(Setting::get('currency', 'IDR'))
+                    ->prefix(config('setting.currency'))
                     ->required(),
             ]);
     }
@@ -93,8 +93,8 @@ class PriceUnitsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('selling_price')
                     ->translateLabel()
                     ->money(
-                        currency: Setting::get('currency', 'IDR'),
-                        locale: Profile::get()->locale ?? config('app.locale')
+                        currency: config('setting.currency'),
+                        locale: config('setting.locale')
                     ),
             ])
             ->headerActions([

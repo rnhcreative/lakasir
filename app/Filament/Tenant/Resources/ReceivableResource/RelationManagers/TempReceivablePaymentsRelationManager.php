@@ -49,12 +49,12 @@ class TempReceivablePaymentsRelationManager extends RelationManager
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('amount')
                     ->translateLabel()
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
                 Tables\Columns\TextColumn::make('paymentMethod.name')
                     ->translateLabel(),
                 Tables\Columns\TextColumn::make('last_receivable')
                     ->translateLabel()
-                    ->money(Setting::get('currency', 'IDR')),
+                    ->money(config('setting.currency')),
                 Tables\Columns\TextColumn::make('date')
                     ->translateLabel()
                     ->date(),
