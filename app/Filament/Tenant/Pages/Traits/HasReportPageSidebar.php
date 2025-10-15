@@ -13,6 +13,7 @@ use App\Filament\Tenant\Pages\SellingReport;
 use App\Filament\Tenant\Pages\EmployeeReport;
 use App\Filament\Tenant\Pages\PurchasingReport;
 use App\Features\Purchasing as PurchasingFeature;
+use App\Filament\Tenant\Pages\ReceivableReport;
 use AymanAlhattami\FilamentPageWithSidebar\PageNavigationItem;
 use AymanAlhattami\FilamentPageWithSidebar\FilamentPageSidebar;
 use AymanAlhattami\FilamentPageWithSidebar\Traits\HasPageSidebar;
@@ -28,6 +29,7 @@ trait HasReportPageSidebar
             static::generateNavigationItem(ProductReport::class),
             static::generateNavigationItem(MemberReport::class),
             static::generateNavigationItem(EmployeeReport::class),
+            static::generateNavigationItem(ReceivableReport::class),
             // @DISABLED
             //static::generateNavigationItem(CashierReport::class),
         ];

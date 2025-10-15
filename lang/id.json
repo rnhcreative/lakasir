@@ -404,5 +404,8 @@
     "Total Unpaid": "Total belum dibayar",
     "Payments": "Pembayaran",
     "Selling Code": "Kode Penjualan",
-    "The amount must be less than or equal to :value.": "Jumlah harus kurang dari atau sama dengan :value."
+    "Receivable Report": "Laporan Piutang",
+    "Total Rest Debt": "Total Sisa Utang",
+    "Debt": "Utang",
+    "Total Payment": "Total Pembayaran"
 }
