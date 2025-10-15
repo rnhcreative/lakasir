@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrinterController;
 use App\Http\Controllers\MemberReportController;
 use App\Http\Controllers\CashierReportController;
+use App\Http\Controllers\ExpenseReportController;
 use App\Http\Controllers\ProductReportController;
 use App\Http\Controllers\SellingReportController;
 use App\Http\Controllers\EmployeeReportController;
 use App\Http\Middleware\InitializeTenancyByDomain;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\ReceivableReportController;
 use App\Http\Controllers\Api\Tenants\AboutController;
 use App\Http\Controllers\Api\Tenants\UploadController;
 use App\Http\Controllers\Api\Tenants\ProfileController;
@@ -33,7 +35,6 @@ use App\Http\Controllers\Api\Tenants\Transaction\CashDrawerController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Api\Tenants\Reports\PurchasingReportController;
 use App\Http\Controllers\Api\Tenants\Settings\SecureInitialPriceController;
-use App\Http\Controllers\ReceivableReportController;
 
 Route::middleware([
     'web',
@@ -58,6 +59,8 @@ Route::middleware([
             ->name('employee-report.generate');
         Route::get('/member/receivable-report/generate', ReceivableReportController::class)
             ->name('receivable-report.generate');
+        Route::get('/member/expense-report/generate', ExpenseReportController::class)
+            ->name('expense-report.generate');
         Route::view('/member/sellings/{selling}/print', 'filament.tenant.pages.selling.print-receipt')
             ->name('selling.print');
         Route::get('/reset-password/{token}', ResetPassword::class)

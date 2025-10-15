@@ -7,13 +7,13 @@ use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Route;
 use App\Filament\Tenant\Pages\MemberReport;
-use App\Filament\Tenant\Pages\CashierReport;
+use App\Filament\Tenant\Pages\ExpenseReport;
 use App\Filament\Tenant\Pages\ProductReport;
 use App\Filament\Tenant\Pages\SellingReport;
 use App\Filament\Tenant\Pages\EmployeeReport;
 use App\Filament\Tenant\Pages\PurchasingReport;
-use App\Features\Purchasing as PurchasingFeature;
 use App\Filament\Tenant\Pages\ReceivableReport;
+use App\Features\Purchasing as PurchasingFeature;
 use AymanAlhattami\FilamentPageWithSidebar\PageNavigationItem;
 use AymanAlhattami\FilamentPageWithSidebar\FilamentPageSidebar;
 use AymanAlhattami\FilamentPageWithSidebar\Traits\HasPageSidebar;
@@ -30,6 +30,7 @@ trait HasReportPageSidebar
             static::generateNavigationItem(MemberReport::class),
             static::generateNavigationItem(EmployeeReport::class),
             static::generateNavigationItem(ReceivableReport::class),
+            static::generateNavigationItem(ExpenseReport::class),
             // @DISABLED
             //static::generateNavigationItem(CashierReport::class),
         ];
