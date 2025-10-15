@@ -2,6 +2,7 @@
 
 namespace App\Services\Tenants;
 
+use App\Models\Tenants\Member;
 use App\Models\Tenants\Receivable;
 use App\Models\Tenants\ReceivablePayment;
 use Exception;
@@ -35,6 +36,42 @@ class ReceivablePaymentService
         }
 
         return null;
+    }
+
+    public function createByMember(Member $member, array $data)
+    {
+        $receivables = $member->receivables()->where('rest_receivable', '>', 0)->orderBy('created_at', 'asc')->get();
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($receivables as $receivable) {
+                if ($data['amount'] <= 0) {
+                    break;
+                }
+                $paymentAmount = min($data['amount'], $receivable->rest_receivable);
+                $paymentData = array_merge($data, [
+                    'amount' => $paymentAmount,
+                    'user_id' => Filament::auth()->id(),
+                    'last_receivable' => $receivable->rest_receivable,
+                    'receivable_id' => $receivable->getKey(),
+                ]);
+                ReceivablePayment::query()->create($paymentData);
+                $receivable->last_billing_date = $data['date'];
+                $receivable->rest_receivable -= $paymentAmount;
+                $payedreceivable = $receivable->fresh()->receivablePayments->sum('amount');
+                if ($payedreceivable == $receivable->total_receivable) {
+                    $receivable->status = true;
+                }
+                $receivable->save();
+                $data['amount'] -= $paymentAmount;
+            }
+            DB::commit();
+
+            $member->fresh();
+        } catch (Exception) {
+            DB::rollBack();
+        }
     }
 
     public function update(ReceivablePayment $receivablePayment, array $data)

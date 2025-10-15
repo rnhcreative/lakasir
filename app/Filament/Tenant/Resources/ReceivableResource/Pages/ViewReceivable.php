@@ -2,15 +2,17 @@
 
 namespace App\Filament\Tenant\Resources\ReceivableResource\Pages;
 
-use App\Filament\Tenant\Resources\ReceivableResource;
-use App\Filament\Tenant\Resources\ReceivableResource\Traits\HasReceivablePaymentForm;
-use App\Filament\Tenant\Resources\Traits\RefreshThePage;
-use App\Models\Tenants\Receivable;
-use App\Models\Tenants\ReceivablePayment;
-use App\Services\Tenants\ReceivablePaymentService;
+use Livewire\Attributes\On;
 use Filament\Actions\Action;
+use App\Models\Tenants\Member;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use App\Models\Tenants\ReceivablePayment;
 use Illuminate\Contracts\Support\Htmlable;
+use App\Services\Tenants\ReceivablePaymentService;
+use App\Filament\Tenant\Resources\ReceivableResource;
+use App\Filament\Tenant\Resources\Traits\RefreshThePage;
+use App\Filament\Tenant\Resources\ReceivableResource\Traits\HasReceivablePaymentForm;
 
 class ViewReceivable extends ViewRecord
 {
@@ -33,25 +35,43 @@ class ViewReceivable extends ViewRecord
                 ->icon('heroicon-s-credit-card')
                 ->model(ReceivablePayment::class)
                 ->visible(function () {
-                    if (! $this->record->status && can('create receivable payment')) {
+                    $restReceivable = $this->record->receivables->sum('rest_receivable');
+                    if ($restReceivable > 0 && can('create receivable payment')) {
                         return true;
                     }
 
                     return false;
                 })
-                ->form($this->getFormPayment($this->record))
-                ->action(function (array $data, Receivable $receivable): void {
-                    $this->dPService->create($receivable, $data);
-                    $this->refreshPage();
+                ->form($this->getFormPaymentByMember($this->record))
+                ->action(function (array $data, Member $member): void {
+                    $this->dPService->createByMember($member, $data);
+
+                    // Show success notification
+                    Notification::make()
+                        ->title('Pembayaran utang berhasil ditambahkan')
+                        ->body('Data pembayaran baru telah disimpan.')
+                        ->success()
+                        ->send();
+
+                    // Reload the record from the database
+                    $this->record->refresh();
+
+                    // Force Livewire to re-render this page
+                    $this->dispatch('refreshPage', bubbles: true);
                 }),
         ];
     }
 
+    #[On('refreshPage')]
+    public function refreshPage(): void
+    {
+        $this->record->refresh();
+    }
+
     public function getTitle(): string|Htmlable
     {
-        /** @var receivable $receivable */
-        $receivable = $this->record;
+        $record = $this->record;
 
-        return '#'.$receivable->selling->code;
+        return 'Piutang dari: '.$record->name;
     }
 }

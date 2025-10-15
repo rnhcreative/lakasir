@@ -41,15 +41,10 @@ class SellingResource extends Resource
                 TextColumn::make('code')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('user.name')
-                    ->label(__('Cashier'))
-                    ->searchable(query: function (Builder $query, string $search): Builder {
-                        return $query->whereHas('user', function (Builder $query) use ($search) {
-                            return $query
-                                ->where('email', 'like', "%{$search}%")
-                                ->orWhere('name', 'like', "%{$search}%");
-                        });
-                    }),
+                TextColumn::make('paymentMethod.name')
+                    ->searchable()
+                    ->label(__('Payment Method'))
+                    ->sortable(),
                 TextColumn::make('member.name')
                     ->translateLabel()
                     ->default('-'),
@@ -82,12 +77,6 @@ class SellingResource extends Resource
                     ->translateLabel()
                     ->sortable()
                     ->money(Setting::get('currency', 'IDR')),
-                // @DISABLED
-                    // TextColumn::make('total_cost')
-                //     ->translateLabel()
-                //     ->sortable()
-                //     ->visible(feature(ProductInitialPrice::class))
-                //     ->money(Setting::get('currency', 'IDR')),
             ])
             ->searchPlaceholder('Search (Code, User, Customer Number')
             ->header(view('filament.tenant.resources.sellings.headers.overview', [

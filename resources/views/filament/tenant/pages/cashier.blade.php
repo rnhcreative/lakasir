@@ -186,18 +186,6 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
               </div>
             </template>
           </div>
-          <x-filament::input.wrapper
-            x-show="paymentMethods.filter((pm) => pm.is_credit)[0]?.id == cartDetail['payment_method_id']"
-            :valid="! $errors->has('due_date')"
-            class="mb-2">
-            <x-slot name="prefix">
-              {{ __('Due date') }}
-            </x-slot>
-            <x-filament::input
-              type="date"
-              wire:model="cartDetail.due_date"
-            />
-          </x-filament::input.wrapper>
           <div class="mb-4">
             @include('filament.tenant.pages.cashier.total')
           </div>
@@ -252,9 +240,11 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
       </div>
       <div class="overflow-y-scroll max-h-[80vh] hidden md:block">
         @if ($errors->any())
+          <div class="mb-4 !bg-danger-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
           @foreach ($errors->all() as $error)
-            <p class="error text-danger-500 text-lg text-center w-full">{{ $error }}</p>
+            <p class="error text-danger-500 text-lg text-center w-full text-sm">{{ $error }}</p>
           @endforeach
+          </div>
         @endif
         @include('filament.tenant.pages.cashier.items')
       </div>

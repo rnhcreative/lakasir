@@ -16,7 +16,6 @@ class ReceivableService
         $receivable->fill([
             'total_receivable' => $selling->total_price,
             'rest_receivable' => $selling->total_price - $selling->payed_money,
-            'due_date' => $data['due_date'] ?? now()->addWeek(2),
         ]);
         $receivable->selling()->associate($selling);
         $receivable->member()->associate($selling->member);

@@ -2,62 +2,78 @@
 
 namespace App\Filament\Tenant\Resources;
 
-use App\Filament\Tenant\Resources\ReceivableResource\Pages;
-use App\Filament\Tenant\Resources\ReceivableResource\RelationManagers\ReceivableItemsRelationManager;
-use App\Filament\Tenant\Resources\ReceivableResource\RelationManagers\ReceivablePaymentsRelationManager;
-use App\Filament\Tenant\Resources\ReceivableResource\Traits\HasReceivablePaymentForm;
-use App\Models\Tenants\Receivable;
-use App\Models\Tenants\ReceivablePayment;
-use App\Models\Tenants\Setting;
-use App\Services\Tenants\ReceivablePaymentService;
-use App\Traits\HasTranslatableResource;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
-use Filament\Resources\RelationManagers\RelationGroup;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use App\Models\Tenants\Member;
+use App\Models\Tenants\Setting;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use App\Traits\HasTranslatableResource;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
+use Filament\Infolists\Components\TextEntry;
+use App\Services\Tenants\ReceivablePaymentService;
+use Filament\Resources\RelationManagers\RelationGroup;
+use App\Filament\Tenant\Resources\ReceivableResource\Pages;
+use App\Filament\Tenant\Resources\ReceivableResource\Traits\HasReceivablePaymentForm;
+use App\Filament\Tenant\Resources\ReceivableResource\RelationManagers\ReceivablesRelationManager;
+use App\Filament\Tenant\Resources\ReceivableResource\RelationManagers\ReceivablePaymentsRelationManager;
 
 class ReceivableResource extends Resource
 {
     use HasReceivablePaymentForm, HasTranslatableResource;
 
-    protected static ?string $model = Receivable::class;
+    protected static ?string $model = Member::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
+
+    public static function getModelLabel(): string
+    {
+        return __('Receivable');
+    }
+
+    public static function getLabel(): string
+    {
+        return __('Receivable');
+    }
 
     public static function table(Table $table): Table
     {
         $self = new self();
 
+        $query = Member::query()
+            ->with('receivables')
+            ->whereHas('receivables');
+
         return $table
-            ->defaultSort('created_at', 'desc')
+            ->query($query)
             ->columns([
-                TextColumn::make('selling.code')
-                    ->translateLabel()
-                    ->searchable()
-                    ->prefix('#'),
-                TextColumn::make('member.name')
+                TextColumn::make('name')
                     ->translateLabel()
                     ->searchable(),
-                TextColumn::make('total_receivable')
+                TextColumn::make('email')
+                    ->label(__('Contact'))
+                    ->searchable(),
+                TextColumn::make('receivables_sum_total_receivable')
+                    ->sum('receivables', 'total_receivable')
+                    ->label(__('Total Debt'))
+                    ->money(Setting::get('currency', 'IDR')),
+                TextColumn::make('receivables_sum_total_paid')
+                    ->getStateUsing(fn (Model $record): float => $record->receivables()->sum('total_receivable') - $record->receivables()->sum('rest_receivable'))
+                    ->label(__('Total Paid'))
                     ->money(Setting::get('currency', 'IDR'))
                     ->translateLabel(),
-                TextColumn::make('rest_receivable')
+                TextColumn::make('receivables_sum_rest_receivable')
+                    ->sum('receivables', 'rest_receivable')
+                    ->label(__('Rest Debt'))
                     ->money(Setting::get('currency', 'IDR'))
                     ->translateLabel(),
-                TextColumn::make('due_date')
-                    ->translateLabel()
-                    ->date(),
-                TextColumn::make('last_billing_date')
-                    ->translateLabel()
-                    ->date(),
                 TextColumn::make('status')
                     ->badge()
-                    ->getStateUsing(function (Receivable $receivable) {
-                        return $receivable->status ? __('Paid off') : __('Unpaid');
+                    ->getStateUsing(function (Model $record) {
+                        return ($record->receivables->sum('rest_receivable')) == 0 ? __('Paid off') : __('Unpaid');
                     })
                     ->iconColor(fn (string $state): string => match ($state) {
                         __('Unpaid') => 'danger',
@@ -77,17 +93,27 @@ class ReceivableResource extends Resource
                 Action::make('add_payment')
                     ->translateLabel()
                     ->icon('heroicon-s-credit-card')
-                    ->model(ReceivablePayment::class)
+                    ->model(Member::class)
                     ->visible(function ($record) {
-                        if (! $record->status && can('create receivable payment')) {
+                        if ($record->receivables->sum('rest_receivable') > 0 && can('create receivable payment')) {
                             return true;
                         }
 
                         return false;
                     })
-                    ->form(fn ($record) => $self->getFormPayment($record))
-                    ->action(function (array $data, Receivable $receivable, ReceivablePaymentService $dpService): void {
-                        $dpService->create($receivable, $data);
+                    ->form(fn ($record) => $self->getFormPaymentByMember($record))
+                    ->action(function (array $data, Member $member, ReceivablePaymentService $dpService, $livewire): void {
+                        $dpService->createByMember($member, $data);
+
+                        // Show success notification
+                        Notification::make()
+                            ->title('Pembayaran utang berhasil ditambahkan')
+                            ->body('Data pembayaran baru telah disimpan.')
+                            ->success()
+                            ->send();
+
+                        // Force Livewire to re-render this page
+                        $livewire->dispatch('$refresh', bubbles: true);
                     }),
             ]);
     }
@@ -95,29 +121,27 @@ class ReceivableResource extends Resource
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist->schema([
-            TextEntry::make('member.name')
+            TextEntry::make('name')
                 ->translateLabel(),
-            TextEntry::make('member.email')
+            TextEntry::make('email')
+                ->label(__('Contact'))
                 ->translateLabel(),
             TextEntry::make('total_receivable')
-                ->translateLabel()
+                ->getStateUsing(fn (Model $record): float => $record->receivables()->sum('total_receivable'))
+                ->label(__('Total Debt'))
                 ->money(Setting::get('currency', 'IDR')),
             TextEntry::make('rest_receivable')
-                ->translateLabel()
+                ->getStateUsing(fn (Model $record): float => $record->receivables()->sum('rest_receivable'))
+                ->label(__('Rest Debt'))
                 ->money(Setting::get('currency', 'IDR')),
-            TextEntry::make('due_date')
-                ->translateLabel()
-                ->date(),
-            TextEntry::make('total_billing_via_whatsapp')
-                ->hidden()
-                ->translateLabel(),
-            TextEntry::make('last_billing_date')
-                ->translateLabel()
-                ->date(),
+            TextEntry::make('total_paid')
+                ->getStateUsing(fn (Model $record): float => $record->receivables()->sum('total_receivable') - $record->receivables()->sum('rest_receivable'))
+                ->label(__('Total Paid'))
+                ->money(Setting::get('currency', 'IDR')),
             TextEntry::make('status')
-                ->translateLabel()
-                ->getStateUsing(function (Receivable $receivable) {
-                    return $receivable->status ? __('Paid off') : __('Unpaid');
+                ->label(__('Status'))
+                ->getStateUsing(function (Model $record) {
+                    return ($record->receivables->sum('rest_receivable')) == 0 ? __('Paid off') : __('Unpaid');
                 })
                 ->color(fn (string $state): string => match ($state) {
                     __('Unpaid') => 'danger',
@@ -140,7 +164,7 @@ class ReceivableResource extends Resource
     {
         return [
             RelationGroup::make('', [
-                ReceivableItemsRelationManager::make(),
+                ReceivablesRelationManager::make(),
                 ReceivablePaymentsRelationManager::make(),
             ]),
         ];

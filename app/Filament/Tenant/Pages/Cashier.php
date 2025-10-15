@@ -278,7 +278,6 @@ class Cashier extends Page implements HasForms, HasTable
             'fee' => ['numeric'],
             'payment_method_id' => ['required'],
             'member_id' => Rule::requiredIf(fn () => $pMethod->is_credit),
-            'due_date' => Rule::requiredIf(fn () => $pMethod->is_credit),
             'payed_money' => [
                 ! $pMethod->is_credit ? 'gte:total_price' : null,
                 Rule::requiredIf(fn () => ! $pMethod->is_credit),
@@ -290,6 +289,8 @@ class Cashier extends Page implements HasForms, HasTable
             'products.*.product_id' => ['required', 'exists:products,id'],
             'products.*.price' => ['required_if:friend_price,true', 'numeric'],
             'products.*.qty' => ['required', 'numeric', 'min:1', new CheckProductStock],
+        ], [
+            'member_id.*' => __('Member is required when payment method is credit'),
         ]);
         if ($validator->fails()) {
             throw ValidationException::withMessages($validator->messages()->toArray());

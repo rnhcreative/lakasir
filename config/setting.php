@@ -10,4 +10,5 @@ return [
         'default_tax',
         'minimum_stock_nofication',
     ],
+    'currency' => env('CURRENCY', 'IDR'),
 ];

@@ -35,6 +35,12 @@ return [
     'integer' => 'Isian :attribute harus merupakan bilangan bulat.',
     'ip' => 'Isian :attribute harus berupa alamat IP yang valid.',
     'json' => 'Isian :attribute harus berupa JSON string yang valid.',
+    'lte' => [
+        'numeric' => ':Attribute harus kurang dari atau sama dengan :value.',
+        'file'    => ':Attribute harus kurang dari atau sama dengan :value kb.',
+        'string'  => ':Attribute harus kurang dari atau sama dengan :value karakter.',
+        'array'   => ':Attribute tidak boleh memiliki lebih dari :value item.',
+    ],
     'max' => [
         'numeric' => 'Isian :attribute seharusnya tidak lebih dari :max.',
         'file' => 'Isian :attribute seharusnya tidak lebih dari :max kilobytes.',

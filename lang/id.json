@@ -294,7 +294,7 @@
     "Grand total price": "Total harga keseluruhan",
     "Sold": "Terjual",
     "Revenue" : "Pendapatan",
-    "Total rest receivable" : "Total sisa hutang",
+    "Total rest receivable" : "Total sisa utang",
     "Total revenue" : "Total pendapatan",
     "Inactivate": "Non-aktifkan",
     "Activate": "Aktifkan",
@@ -394,5 +394,15 @@
     "Employee Report": "Laporan Karyawan",
     "Selling Transactions": "Transaksi Penjualan",
     "Unit Name": "Nama Satuan",
-    "Add Unit Name": "Tambah Nama Satuan"
+    "Add Unit Name": "Tambah Nama Satuan",
+    "Member is required when payment method is credit": "Pelanggan wajib diisi ketika metode pembayaran kredit/utang",
+    "Total Receivable": "Total Piutang",
+    "Rest Debt": "Sisa Utang",
+    "Total Debt": "Total Utang",
+    "Total Transactions": "Total Transaksi",
+    "Total Paid": "Total dibayar",
+    "Total Unpaid": "Total belum dibayar",
+    "Payments": "Pembayaran",
+    "Selling Code": "Kode Penjualan",
+    "The amount must be less than or equal to :value.": "Jumlah harus kurang dari atau sama dengan :value."
 }
