@@ -174,7 +174,8 @@ class TenantPanelProvider extends PanelProvider
         return [
             ...Pages\Dashboard::getNavigationItems(),
             $this->generateNavigationItem(Cashier::class),
-            $this->generateNavigationItem(POS::class, PosV2::class),
+            // @DISABLE
+            // $this->generateNavigationItem(POS::class, PosV2::class),
             $this->generateNavigationItem(SellingResource::class),
             $this->generateNavigationItem(MemberResource::class, Member::class),
             $this->generateNavigationItem(EmployeeResource::class, Employee::class),
@@ -188,7 +189,8 @@ class TenantPanelProvider extends PanelProvider
     {
         return [
             NavigationGroup::make(__('Inventory'))->items([
-                $this->generateNavigationItem(PurchasingResource::class, Purchasing::class),
+                // @DISABLE
+                // $this->generateNavigationItem(PurchasingResource::class, Purchasing::class),
                 $this->generateNavigationItem(StockOpnameResource::class, StockOpname::class),
                 $this->generateNavigationItem(ProductResource::class),
                 $this->generateNavigationItem(CategoryResource::class),
@@ -283,7 +285,7 @@ class TenantPanelProvider extends PanelProvider
 
     private function generateNavigationItem(string $resource, ?string $feature = null, ?array $activeWhen = []): NavigationItem
     {
-        $canAccess = $feature ? feature($feature) && $resource::canAccess() : $resource::canAccess();
+        $canAccess = true;//$feature ? feature($feature) && $resource::canAccess() : $resource::canAccess();
 
         $active = false;
         if ((new $resource) instanceof Page) {
