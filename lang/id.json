@@ -407,5 +407,7 @@
     "Receivable Report": "Laporan Piutang",
     "Total Rest Debt": "Total Sisa Utang",
     "Debt": "Utang",
-    "Total Payment": "Total Pembayaran"
+    "Total Payment": "Total Pembayaran",
+    "Expense": "Pengeluaran",
+    "Expense Type": "Tipe Pengeluaran"
 }
