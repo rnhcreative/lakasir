@@ -35,6 +35,7 @@ use App\Filament\Tenant\Pages\Cashier;
 use App\Filament\Tenant\Pages\Printer;
 use Illuminate\Support\Facades\Schema;
 use App\Filament\Tenant\Pages\CartItem;
+use App\Filament\Tenant\Pages\Cashflow;
 use Filament\Navigation\NavigationItem;
 use Filament\Navigation\NavigationGroup;
 use Filament\Forms\Components\DatePicker;
@@ -182,6 +183,7 @@ class TenantPanelProvider extends PanelProvider
             $this->generateNavigationItem(PaymentMethodResource::class, PaymentMethod::class),
             $this->generateNavigationItem(ReceivableResource::class, Receivable::class),
             $this->generateNavigationItem(ExpenseResource::class, Expense::class),
+            $this->generateNavigationItem(Cashflow::class),
         ];
     }
 

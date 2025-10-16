@@ -35,6 +35,7 @@ use App\Http\Controllers\Api\Tenants\Transaction\CashDrawerController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Api\Tenants\Reports\PurchasingReportController;
 use App\Http\Controllers\Api\Tenants\Settings\SecureInitialPriceController;
+use App\Http\Controllers\CashflowController;
 
 Route::middleware([
     'web',
@@ -61,6 +62,8 @@ Route::middleware([
             ->name('receivable-report.generate');
         Route::get('/member/expense-report/generate', ExpenseReportController::class)
             ->name('expense-report.generate');
+        Route::get('/member/cashflow/generate', CashflowController::class)
+            ->name('cashflow.generate');
         Route::view('/member/sellings/{selling}/print', 'filament.tenant.pages.selling.print-receipt')
             ->name('selling.print');
         Route::get('/reset-password/{token}', ResetPassword::class)

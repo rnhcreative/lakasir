@@ -1,0 +1,153 @@
+<?php
+
+namespace App\Services\Tenants;
+use App\Models\Tenants\About;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Number;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
+class CashflowService
+{
+    public function generate(array $data)
+    {
+        $timezone = config('setting.timezone');
+        $about = About::first();
+        $tzName = Carbon::parse($data['start_date'])->getTimezone()->getName();
+        $startDate = Carbon::parse($data['start_date'], $timezone)->setTimezone('UTC');
+        $endDate = Carbon::parse($data['end_date'], $timezone)->addDay()->setTimezone('UTC');
+
+        // Implementation for generating cashflow report
+        $inCashflow = collect();
+
+        $inCashflow = $inCashflow
+            ->merge(
+                DB::table('sellings')
+                    ->join('payment_methods', 'sellings.payment_method_id', '=', 'payment_methods.id')
+                    ->join('members', 'sellings.member_id', '=', 'members.id')
+                    ->where(function ($q) {
+                        $q->where('payment_methods.is_cash', true)
+                            ->orWhere('payment_methods.is_debit', true)
+                            ->orWhere('payment_methods.is_wallet', true);
+                    })
+                    ->select(
+                        'sellings.date',
+                        DB::raw('(sellings.total_price - sellings.discount_price - sellings.tax_price) as amount'),
+                        DB::raw("'Penjualan' as source"),
+                        DB::raw("'debit' as type"),
+                        DB::raw("CONCAT('Penjualan #', sellings.code, ' a/n ', members.name) as note"),
+                        DB::raw('payment_methods.id as payment_method_id'),
+                        DB::raw('payment_methods.name as payment_method_name')
+                    )
+                    ->whereBetween('sellings.date', [$startDate, $endDate])
+                    ->get()
+            )
+            ->merge(
+                DB::table('receivable_payments')
+                    ->join('payment_methods', 'receivable_payments.payment_method_id', '=', 'payment_methods.id')
+                    ->join('receivables', 'receivable_payments.receivable_id', '=', 'receivables.id')
+                    ->join('members', 'receivables.member_id', '=', 'members.id')
+                    ->where(function ($q) {
+                        $q->where('payment_methods.is_cash', true)
+                            ->orWhere('payment_methods.is_debit', true)
+                            ->orWhere('payment_methods.is_wallet', true);
+                    })
+                    ->whereBetween('receivable_payments.date', [$startDate, $endDate])
+                    ->select(
+                        'receivable_payments.date',
+                        'receivable_payments.amount',
+                        DB::raw("'Pelunasan Piutang' as source"),
+                        DB::raw("'debit' as type"),
+                        DB::raw("CONCAT('Pembayaran Utang dari ', members.name) as note"),
+                        DB::raw('payment_methods.id as payment_method_id'),
+                        DB::raw('payment_methods.name as payment_method_name'),
+                    )
+                    ->get()
+            );
+
+        $outCashflow = collect();
+
+        $outCashflow = $outCashflow
+            ->merge(
+                DB::table('expenses')
+                    ->join('payment_methods', 'expenses.payment_method_id', '=', 'payment_methods.id')
+                    ->select(
+                        DB::raw('expenses.expense_date as date'),
+                        'expenses.amount',
+                        DB::raw("'Pengeluaran' as source"),
+                        DB::raw("'credit' as type"),
+                        DB::raw("note"),
+                        DB::raw('payment_methods.id as payment_method_id'),
+                        DB::raw('payment_methods.name as payment_method_name')
+                    )
+                    ->whereBetween('expenses.expense_date', [$startDate, $endDate])
+                    ->get()
+            );
+
+        // Gabungkan semua jadi satu daftar arus kas
+        $cashFlows = $inCashflow->merge($outCashflow)
+            ->sortBy('date');
+
+        $groupedCashFlows = $cashFlows->groupBy('payment_method_name');
+
+        Log::info('CashFlows data', compact('cashFlows'));
+
+        $reports = $groupedCashFlows->map(function ($items, $paymentMethodName) {
+            $saldo = 0;
+            $rows = $items->sortBy('date')->map(function ($row) use (&$saldo) {
+                $saldo += ($row->type === 'debit' ? $row->amount : -$row->amount);
+                return (object)[
+                    'date' => Carbon::parse($row->date)->setTimezone(config('setting.timezone'))->format('d/m/Y'),
+                    'source' => $row->source,
+                    'debit' => $row->type === 'debit' ? $this->formatCurrency($row->amount) : '',
+                    'credit' => $row->type === 'credit' ? $this->formatCurrency($row->amount) : '',
+                    'origin_debit' => $row->type === 'debit' ? $row->amount : 0,
+                    'origin_credit' => $row->type === 'credit' ? $row->amount : 0,
+                    'saldo' => $this->formatCurrency($saldo),
+                    'note' => $row->note,
+                ];
+            });
+
+            return [
+                'method' => $paymentMethodName,
+                'rows' => $rows,
+                'total_debit' => $this->formatCurrency($rows->sum('origin_debit')),
+                'total_credit' => $this->formatCurrency($rows->sum('origin_credit')),
+                'ending_balance' => $this->formatCurrency($saldo),
+            ];
+        });
+
+        return [
+            'header' => [
+                'shop_name' => $about?->shop_name,
+                'shop_location' => $about?->shop_location,
+                'business_type' => $about?->business_type,
+                'owner_name' => $about?->owner_name,
+                'start_date' => $startDate->setTimezone($timezone)->format('d F Y'),
+                'end_date' => $endDate->subDay()->setTimezone($timezone)->format('d F Y'),
+            ],
+            'reports' => $reports,
+            'footer' => [],
+        ];
+
+        // // Hitung saldo berjalan
+        // $balance = 0;
+        // $cashFlows = $cashFlows->map(function ($row) use (&$balance) {
+        //     $balance += ($row->type === 'debit' ? $row->amount : -$row->amount);
+        //     return (object)[
+        //         'date' => $row->date,
+        //         'source' => $row->source,
+        //         'type' => $row->type,
+        //         'debit' => $row->type === 'debit' ? $row->amount : 0,
+        //         'credit' => $row->type === 'credit' ? $row->amount : 0,
+        //         'saldo' => $balance,
+        //     ];
+        // });
+    }
+
+    private function formatCurrency($value)
+    {
+        return Number::format($value);
+    }
+}
