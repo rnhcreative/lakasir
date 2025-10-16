@@ -2,6 +2,7 @@
 
 namespace App\Filament\Tenant\Pages\Traits;
 
+use App\Models\Tenants\Category;
 use App\Models\Tenants\Product;
 use App\Models\Tenants\Setting;
 use Closure;
@@ -12,6 +13,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 trait TableProduct
@@ -30,13 +32,10 @@ trait TableProduct
                     ->where(function ($query) {
                         $query->where('type', 'product')
                             ->where(function ($query) {
-                                $query->where('stock', '>', 0)
-                                    ->orWhere('is_non_stock', true);
-                            })
-                        ->orWhere('type', 'service');
+                                $query->where('stock', '>', 0);
+                            });
                     })
                     ->where('show', true)
-                    // ->orWhere('type', 'service')
                     ->limit(12)
             )
             ->paginated(false)
@@ -122,6 +121,17 @@ trait TableProduct
                     ->color('white')
                     ->icon('heroicon-o-shopping-bag')
                     ->hidden(fn (Product $product) => ! $product->CartItems()->exists()),
+            ])
+            ->filters([
+                // filter by category
+                SelectFilter::make('category_id')
+                    ->label(false)
+                    ->options(
+                        Category::pluck('name', 'id')->toArray()
+                    )
+                    ->multiple()
+                    ->placeholder(__('All Categories'))
+                    ->columnSpanFull(),
             ]);
     }
 }
