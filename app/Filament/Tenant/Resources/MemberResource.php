@@ -121,8 +121,8 @@ class MemberResource extends Resource
     {
         return [
             'index' => Pages\ListMembers::route('/'),
-            'view' => Pages\ViewMember::route('/{record}'),
             'create' => Pages\CreateMember::route('/create'),
+            'view' => Pages\ViewMember::route('/{record}'),
             'edit' => Pages\EditMember::route('/{record}/edit'),
         ];
     }
