@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Tenants\SellingDetail;
 use Filament\Notifications\Notification;
 
-class ReturnSellingService
+class ReturSellingService
 {
     public function processReturn(SellingDetail $sellingDetail, $returnData)
     {

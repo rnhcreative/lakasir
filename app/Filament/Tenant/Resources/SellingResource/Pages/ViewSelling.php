@@ -18,7 +18,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Contracts\Support\Htmlable;
-use App\Services\Tenants\ReturnSellingService;
+use App\Services\Tenants\ReturSellingService;
 use App\Filament\Tenant\Resources\SellingResource;
 use App\Filament\Tenant\Resources\SellingResource\RelationManagers\ReturSellingsRelationManager;
 
@@ -65,7 +65,7 @@ class ViewSelling extends ViewRecord
 
                     return $allowRetur;
                 })
-                ->action(function (array $data, ReturnSellingService $returnSellingService) {
+                ->action(function (array $data, ReturSellingService $returnSellingService) {
                     $sellingDetail = $this->record->sellingDetails()->where('id', $data['selling_detail_id'])->first();
 
                     if ($sellingDetail) {

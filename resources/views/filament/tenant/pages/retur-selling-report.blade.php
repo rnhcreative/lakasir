@@ -1,7 +1,5 @@
 <x-filament-panels::page>
-
-   <h1 class="text-lg font-bold">{{ __('Product Report') }}</h1>
-
+<h1 class="text-lg font-bold">{{ __('Retur Selling Report') }}</h1>
     <x-filament-panels::form
         id="form"
         wire:key="{{ 'forms.' . $this->getFormStatePath() }}"
@@ -13,9 +11,10 @@
             :full-width="$this->hasFullWidthFormActions()"
         />
     </x-filament-panels::form>
+
     <div id="printable-element" class="max-w-full space-y-2">
       @if($reports)
-        @include('reports.partials.product-data', [
+        @include('reports.partials.retur-selling-data', [
           'header' => $reports['header'],
           'reports' => $reports['reports'],
           'footer' => $reports['footer'],

@@ -14,6 +14,7 @@ use App\Filament\Tenant\Pages\EmployeeReport;
 use App\Filament\Tenant\Pages\PurchasingReport;
 use App\Filament\Tenant\Pages\ReceivableReport;
 use App\Features\Purchasing as PurchasingFeature;
+use App\Filament\Tenant\Pages\ReturSellingReport;
 use AymanAlhattami\FilamentPageWithSidebar\PageNavigationItem;
 use AymanAlhattami\FilamentPageWithSidebar\FilamentPageSidebar;
 use AymanAlhattami\FilamentPageWithSidebar\Traits\HasPageSidebar;
@@ -25,19 +26,20 @@ trait HasReportPageSidebar
     public static function sidebar(): FilamentPageSidebar
     {
         $items = [
-            static::generateNavigationItem(SellingReport::class),
-            static::generateNavigationItem(ProductReport::class),
-            static::generateNavigationItem(MemberReport::class),
-            static::generateNavigationItem(EmployeeReport::class),
-            static::generateNavigationItem(ReceivableReport::class),
-            static::generateNavigationItem(ExpenseReport::class),
+            static::generateNavigationItem(SellingReport::class)->group(__('Choose Report Type')),
+            static::generateNavigationItem(ProductReport::class)->group(__('Choose Report Type')),
+            static::generateNavigationItem(MemberReport::class)->group(__('Choose Report Type')),
+            static::generateNavigationItem(EmployeeReport::class)->group(__('Choose Report Type')),
+            static::generateNavigationItem(ReceivableReport::class)->group(__('Choose Report Type')),
+            static::generateNavigationItem(ExpenseReport::class)->group(__('Choose Report Type')),
+            static::generateNavigationItem(ReturSellingReport::class)->group(__('Choose Report Type')),
             // @DISABLED
             //static::generateNavigationItem(CashierReport::class),
         ];
 
-        if (feature(PurchasingFeature::class)) {
-            $items[] = static::generateNavigationItem(PurchasingReport::class);
-        }
+        // if (feature(PurchasingFeature::class)) {
+        //     $items[] = static::generateNavigationItem(PurchasingReport::class);
+        // }
 
         return FilamentPageSidebar::make()
             ->topbarNavigation()

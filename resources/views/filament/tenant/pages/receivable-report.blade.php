@@ -1,4 +1,7 @@
 <x-filament-panels::page>
+
+  <h1 class="text-lg font-bold">{{ __('Receivable Report') }}</h1>
+
     <x-filament-panels::form
         id="form"
         wire:key="{{ 'forms.' . $this->getFormStatePath() }}"
