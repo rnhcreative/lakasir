@@ -114,107 +114,222 @@
         />
     @endif
 </x-filament-panels::page>
+<script src="https://demo.qz.io/js/qz-tray.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/rsvp/3.6.2/rsvp.min.js"></script>
 @script()
 <script>
-  console.log(@js($record));
-  document.getElementById('printInvoice').addEventListener('click', () => {
-    const printContents = document.getElementById("printElement").innerHTML;
-    const originalContents = document.body.innerHTML;
 
+document.getElementById('printButton').addEventListener('click', async () => {
 
-    document.body.innerHTML = printContents;
+  let selling = @js($record);
+  let about = @js($about);
 
-    window.print();
+  console.log(selling)
+  console.log(about)
 
-    window.location.reload();
-  });
-  document.getElementById('printButton').addEventListener('click', async () => {
-    let selling = @js($record);
-    let about = @js($about);
-    const printerData = getPrinter();
+  const url = "wss://localhost:8181/"; // QZ Tray default WebSocket port
+  const isRunning = await checkWebSocketConnection(url);
 
-    try {
-      if (!printerData) {
-        new FilamentNotification()
-          .title('@lang('You should choose the printer first in printer setting')')
-          .danger()
-          .actions([
-            new FilamentNotificationAction('Setting')
-              .icon('heroicon-o-cog-6-tooth')
-              .button()
-              .url('/member/printer'),
-          ])
-          .send()
-      } else {
-        const printer = new Printer(printerData.printerId);
-        let printerAction = printer.font('a');
-        if(about != undefined || about != null) {
-          printerAction.size(1)
-            .align('center')
-            .text(about.shop_name)
-            .size(0)
-            .text(about.shop_location);
-          if(printerData.header != undefined) {
-            printerAction
-              .text(printerData.header);
-          }
-          printerAction.align('left')
-            .text('-------------------------------');
-        }
-        printerAction.table(['@lang('Cashier')', selling.user.name])
-        if(selling.table != undefined && selling.table != null) {
-          printerAction.table(['@lang('Table')', selling.table.number])
-        }
-        printerAction.table(['@lang('Payment method')', selling.payment_method.name]);
-        if(selling.member != undefined && selling.member != null) {
-          printerAction
-            .table(['Member', selling.member.name]);
-        }
-        printerAction
-          .text('-------------------------------');
-        selling.selling_details.forEach(sellingDetail => {
-          let price = sellingDetail.price;
-          let text = moneyFormat(sellingDetail.price / sellingDetail.qty) + ' x ' + sellingDetail.qty.toString();
-          printerAction.table([sellingDetail.product.name, moneyFormat(sellingDetail.price / sellingDetail.qty) + ' x ' + sellingDetail.qty.toString()])
-          if (sellingDetail.discount_price > 0) {
-            price = price - sellingDetail.discount_price;
-            printerAction
-              .align('right')
-              .text(`(${moneyFormat(sellingDetail.discount_price)})`)
-          }
-          printerAction
-            .align('right')
-            .text(moneyFormat(price))
-            .align('left')
+  if (isRunning) {
+      console.log("✅ WebSocket is running on", url);
+      // You can now safely load qz-tray.js
+       /// Authentication setup ///
+      qz.security.setCertificatePromise(function(resolve, reject) {
+          fetch("/assets/documents/digital-certificate.txt", {cache: 'no-store', headers: {'Content-Type': 'text/plain'}})
+          .then(function(data) { data.ok ? resolve(data.text()) : reject(data.text()); });
+      });
+
+      qz.security.setSignatureAlgorithm("SHA512"); // Since 2.1
+        qz.security.setSignaturePromise(function(toSign) {
+          return function(resolve, reject) {
+            fetch("/api/printer/signing?request=" + toSign, {cache: 'no-store', headers: {'Content-Type': 'text/plain'}})
+                .then(function(data) { data.ok ? resolve(data.text()) : reject(data.text()); });
+            };
         });
-        printerAction
-          .text('-------------------------------');
-        if("@js(feature(SellingTax::class))" == 'true') {
-          printerAction.table(['@lang('Tax')', `${selling.tax}%`])
-            .table(['@lang('Tax price')', moneyFormat(selling.tax_price)]);
-        }
-        printerAction
-          .table(['@lang('Subtotal')', moneyFormat(selling.total_price)])
-          .table(['@lang('Discount')', `(${moneyFormat(selling.total_discount_per_item + selling.discount_price)})`])
-          .table(['@lang('Total price')', moneyFormat(selling.grand_total_price)])
-          .text('-------------------------------')
-          .table(['@lang('Payed money')', moneyFormat(selling.payed_money)])
-          .table(['@lang('Change')', moneyFormat(selling.money_changes)])
-          .align('center');
-        if(printerData.footer != undefined) {
-          printerAction
-            .text(printerData.footer);
-        }
-        printerAction.align('left')
-          .text('copy');
 
-        await printerAction
-          .cut()
-          .print();
+        try {
+          // 1️⃣ Pastikan koneksi QZ aktif
+          if (!qz.websocket.isActive()) {
+            await qz.websocket.connect();
+          }
+
+          // 2️⃣ Temukan printer yang dipilih user
+          const printer = await qz.printers.getDefault();
+          if (!printer) {
+            alert("Printer tidak ditemukan");
+            return;
+          }
+
+          // 3️⃣ Buat konfigurasi QZ (⬅️ ini duluan)
+          const config = qz.configs.create(printer, { language: 'escpos' });
+
+          // 4️⃣ Bangun data ESC/POS
+          let esc = "\x1B"; // escape
+          let gs  = "\x1D"; // group separator
+          let data = esc + "@"; // initialize printer
+
+          // --- HEADER ---
+          data += "\x1B\x61\x01"; // align center
+          data += (about?.shop_name || "TOKO TANPA NAMA") + "\n";
+          if (about?.shop_location) data += about.shop_location + "\n";
+          data += "------------------------------\n";
+
+          // --- INFO TRANSAKSI ---
+          data += "\x1B\x61\x00"; // align left
+          data += `Kasir : ${selling.user.name}\n`;
+          if (selling.table) data += `Meja  : ${selling.table.number}\n`;
+          data += `Metode: ${selling.payment_method.name}\n`;
+          if (selling.member) data += `Member: ${selling.member.name}\n`;
+          data += "------------------------------\n";
+
+          // --- ITEM DETAIL ---
+          selling.selling_details.forEach(detail => {
+            let subtotal = detail.price * detail.qty;
+            let line = detail.product.name + "\n";
+            line += lineFormat(`${moneyFormat(detail.price)} x ${detail.qty}`, moneyFormat(subtotal));
+            if (detail.discount_price > 0) {
+              subtotal -= detail.discount_price;
+              line += `(Disc: ${moneyFormat(detail.discount_price)})\n`;
+            }
+            data += line;
+          });
+
+          data += "------------------------------\n";
+
+          // --- TAX & TOTAL ---
+          if ("@js(feature(SellingTax::class))" == 'true') {
+            data += `Pajak (${selling.tax}%): ${moneyFormat(selling.tax_price)}\n`;
+          }
+
+          data += lineFormat("Subtotal", moneyFormat(selling.total_price));
+          data += lineFormat("Diskon", (selling.discount_price > 0 ? "-" : moneyFormat(selling.discount_price)));
+          data += lineFormat("Total", moneyFormat(selling.grand_total_price));
+          data += "------------------------------\n";
+          data += lineFormat("Tunai", moneyFormat(selling.payed_money));
+          data += lineFormat("Kembali", moneyFormat(selling.money_changes));
+          data += "------------------------------\n";
+
+          // --- FOOTER ---
+          data += "\x1B\x61\x01"; // align center
+          data += "Terima kasih telah berbelanja!\n";
+          if (about?.footer) data += about.footer + "\n";
+          data += "------------------------------\n";
+
+          // pastikan kertas keluar penuh
+          data += "\x1B\x61\x00"; // reset align kiri
+          data += "\n\n"; // feed 1 baris saja
+
+          // kalau printer support auto-cutter
+          data += esc + "d" + "\x05"; // feed + cut
+
+          // 5️⃣ Kirim ke printer (⬅️ ini terakhir)
+          await qz.print(config, [{
+            type: 'raw',
+            format: 'plain',
+            data
+          }]);
+
+        } catch (err) {
+          console.error("❌ Print error:", err);
+        }
+  } else {
+      console.warn("⚠ WebSocket not available on", url);
+      
+      try {
+        const resp = await fetch(`/member/utility/print/${selling.id}`, { method: 'GET' });
+        if (!resp.ok) throw new Error('Failed to generate PDF');
+
+        const blob = await resp.blob();
+        const pdfUrl = URL.createObjectURL(blob);
+
+        // Try opening in new tab/window and trigger print
+        const win = window.open(pdfUrl, '_blank');
+        if (win) {
+          win.focus();
+          // Attempt to print immediately; some browsers may require user interaction or waiting for load
+          win.print();
+          // Revoke object URL after a delay
+          setTimeout(() => URL.revokeObjectURL(pdfUrl), 2000);
+        } else {
+          // Fallback: invisible iframe to trigger print dialog
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = pdfUrl;
+          document.body.appendChild(iframe);
+          iframe.onload = function () {
+            try {
+              iframe.contentWindow.focus();
+              iframe.contentWindow.print();
+            } catch (e) {
+              console.error('Print fallback error:', e);
+            }
+            setTimeout(() => {
+              document.body.removeChild(iframe);
+              URL.revokeObjectURL(pdfUrl);
+            }, 2000);
+          };
+        }
+      } catch (err) {
+        console.error('❌ PDF print error:', err);
+        alert('Failed to generate/print PDF. Check console for details.');
       }
-    } catch (error) {
-      console.error(error);
-    }
-  });
+  }
+
+  
+});
+
+function checkWebSocketConnection(url, timeout = 2000) {
+    return new Promise((resolve) => {
+        let connected = false;
+
+        try {
+            const ws = new WebSocket(url);
+
+            const timer = setTimeout(() => {
+                if (!connected) {
+                    ws.close();
+                    resolve(false); // Timeout, consider not running
+                }
+            }, timeout);
+
+            ws.onopen = () => {
+                connected = true;
+                clearTimeout(timer);
+                ws.close();
+                resolve(true); // Successfully connected
+            };
+
+            ws.onerror = () => {
+                clearTimeout(timer);
+                resolve(false); // Connection error
+            };
+
+            ws.onclose = () => {
+                clearTimeout(timer);
+                if (!connected) resolve(false);
+            };
+        } catch (e) {
+            resolve(false); // Failed to create WebSocket
+        }
+    });
+}
+
+// Menyusun teks kiri + kanan agar rata kiri/kanan di lebar tertentu (default 32 char)
+function lineFormat(left, right, width = 32) {
+  left = left.toString();
+  right = right.toString();
+  const spaces = width - (left.length + right.length);
+  return left + " ".repeat(spaces > 0 ? spaces : 1) + right + "\n";
+}
+
+// Helper format uang
+function moneyFormat(num) {
+  if (isNaN(num)) return "0";
+  // Format angka tanpa simbol mata uang
+  return new Intl.NumberFormat('id-ID', { 
+    minimumFractionDigits: 0 
+  }).format(num);
+}
 </script>
 @endscript
+
