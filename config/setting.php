@@ -12,5 +12,6 @@ return [
     ],
     'currency' => env('CURRENCY', 'IDR'),
     'locale' => env('APP_LOCALE', 'id'),
-    'timezone' => env('APP_TIMEZONE', 'Asia/Jakarta')
+    'timezone' => env('APP_TIMEZONE', 'Asia/Jakarta'),
+    'printer_private_key' => env('SIGNING_KEY_PATH'),
 ];
