@@ -33,15 +33,14 @@ class SellingReportExport implements
     public function headings(): array
     {
         return [
-            __('SKU'),
+            __('Date'),
+            __('Selling Code'),
             __('Product Name'),
             __('Price'),
             __('Qty'),
             __('Sub Total'),
             __('Discount'),
             __('Total'),
-            //__('Gross Profit'),
-            //__('Net Profit'),
         ];
     }
 
@@ -53,7 +52,8 @@ class SellingReportExport implements
 
         foreach ($results['reports'] as $key => $report) {
             $data[] = [
-                $report['sku'],
+                $report['date'],
+                $report['code'],
                 $report['name'],
                 (float) str_replace(',', '', $report['selling_price']),
                 $report['qty'],
@@ -123,14 +123,14 @@ class SellingReportExport implements
                 /** Footer Row */
                 $lastRow = $sheet->getHighestDataRow();
                 $sheet->setCellValue('A' . ($lastRow + 1), 'Total');
-                $sheet->setCellValue('D' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_qty']));
-                $sheet->setCellValue('E' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_gross']));
-                $sheet->setCellValue('F' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_discount_per_item']));
-                $sheet->setCellValue('G' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_net_price_after_discount_per_item']));
+                $sheet->setCellValue('E' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_qty']));
+                $sheet->setCellValue('F' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_before_discount']));
+                $sheet->setCellValue('G' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_all_discount']));
+                $sheet->setCellValue('H' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_after_discount']));
 
-                $sheet->mergeCells('A' . ($lastRow + 1) . ':C' . ($lastRow + 1));
+                $sheet->mergeCells('A' . ($lastRow + 1) . ':D' . ($lastRow + 1));
 
-                $sheet->getStyle('A' . ($lastRow + 1) . ':G' . ($lastRow + 1))->applyFromArray([
+                $sheet->getStyle('A' . ($lastRow + 1) . ':H' . ($lastRow + 1))->applyFromArray([
                     'font' => [
                         'bold' => true,
                     ],
