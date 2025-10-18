@@ -61,7 +61,10 @@ class ViewSelling extends ViewRecord
                 ->icon('heroicon-s-arrow-uturn-left')
                 ->color(Color::Red)
                 ->visible(function () {
-                    return !$this->record->paymentMethod->is_credit;
+                    $allowRetur = (!$this->record->paymentMethod->is_credit)
+                        || ($this->record->paymentMethod->is_credit && $this->record->receivables->count() > 0 && $this->record->receivables->sum('rest_receivable') == 0);
+
+                    return $allowRetur;
                 })
                 ->action(function (array $data, ReturnSellingService $returnSellingService) {
                     $sellingDetail = $this->record->sellingDetails()->where('id', $data['selling_detail_id'])->first();
