@@ -414,5 +414,13 @@
     "Cashflow": "Arus Kas",
     "Last Year": "Tahun Lalu",
     "Description": "Keterangan",
-    "Balance": "Saldo"
+    "Balance": "Saldo",
+    "Amount should be paid": "Jumlah yang harus dibayar",
+    "Retur Selling": "Retur Penjualan",
+    "New Item": "Item baru",
+    "Refund amount": "Jumlah yang dikembalikan",
+    "Additional amount": "Jumlah yang dibayar",
+    "Reason": "Alasan",
+    "Retur Items": "Item yang diretur",
+    "Create Retur": "Buat Retur"
 }

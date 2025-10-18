@@ -4,14 +4,16 @@ namespace App\Filament\Tenant\Resources;
 
 use App\Features\ProductInitialPrice;
 use App\Filament\Tenant\Resources\SellingResource\Pages;
-use App\Models\Tenants\Profile;
+use App\Filament\Tenant\Resources\SellingResource\RelationManagers\ReturSellingsRelationManager;
+use App\Models\Tenants\Employee;
+use App\Models\Tenants\Member;
+use App\Models\Tenants\PaymentMethod;
 use App\Models\Tenants\Selling;
-use App\Models\Tenants\Setting;
-use App\Models\Tenants\User;
 use App\Traits\HasTranslatableResource;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -47,16 +49,16 @@ class SellingResource extends Resource
                     ->sortable(),
                 TextColumn::make('member.name')
                     ->translateLabel()
-                    ->default('-'),
+                    ->default('-')
+                    ->searchable(),
                 TextColumn::make('employee.name')
                     ->translateLabel()
-                    ->default('-'),
-                TextColumn::make('customer_number')
-                    ->translateLabel()
-                    ->default('-'),
+                    ->default('-')
+                    ->searchable(),
                 TextColumn::make('date')
                     ->dateTime(timezone: config('setting.timezone'))
-                    ->translateLabel(),
+                    ->translateLabel()
+                    ->sortable(),
                 TextColumn::make('total_price')
                     ->label('Sub Total')
                     ->translateLabel()
@@ -84,9 +86,17 @@ class SellingResource extends Resource
                 'end_date' => request()->input('tableFilters.date.end_date'),
             ]))
             ->filters([
-                SelectFilter::make('user_id')
-                    ->label(__('Cashier'))
-                    ->options(User::all()->mapWithKeys(fn (User $user) => [$user->id => $user->cashier_name])),
+                SelectFilter::make('payment_method_id')
+                    ->label(__('Payment Method'))
+                    ->options(PaymentMethod::pluck('name', 'id')->toArray()),
+                SelectFilter::make('employee_id')
+                    ->label(__('Employee'))
+                    ->options(Employee::pluck('name', 'id')->toArray())
+                    ->searchable(),
+                SelectFilter::make('member_id')
+                    ->label(__('Member'))
+                    ->options(Member::pluck('name', 'id')->toArray())
+                    ->searchable(),
                 Filter::make('date')
                     ->form([
                         DatePicker::make('start_date')
@@ -123,8 +133,8 @@ class SellingResource extends Resource
                         return $query
                             ->when($startDate && $endDate, fn (Builder $builder) => $builder->whereBetween('date', [$startDate, $endDate]));
                     }),
-            ])
-            ->deferFilters();
+                ], layout: FiltersLayout::AboveContentCollapsible)
+            ->filtersFormColumns(3);
     }
 
     public static function getPages(): array
