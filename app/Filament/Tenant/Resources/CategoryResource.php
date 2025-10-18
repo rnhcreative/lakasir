@@ -36,9 +36,6 @@ class CategoryResource extends Resource
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
-                TextColumn::make('id')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('name')
                     ->searchable()
                     ->translateLabel()

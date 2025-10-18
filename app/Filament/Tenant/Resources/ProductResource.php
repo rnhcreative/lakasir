@@ -65,16 +65,13 @@ class ProductResource extends Resource
             ->query(fn (): Builder => Product::query()->with('stocks', 'category')->latest())
             ->defaultSort('created_at', 'desc')
             ->columns([
-                TextColumn::make('id')
-                    ->searchable()
-                    ->sortable(),
+                TextColumn::make('name')
+                    ->translateLabel()
+                    ->searchable(['sku', 'name', 'barcode']),
                 TextColumn::make('category.name')
                     ->toggleable()
                     ->translateLabel()
                     ->searchable(),
-                TextColumn::make('name')
-                    ->translateLabel()
-                    ->searchable(['sku', 'name', 'barcode']),
                 TextColumn::make('sku')
                     ->searchable()
                     ->toggleable()
@@ -103,6 +100,8 @@ class ProductResource extends Resource
                     ->translateLabel()
                     ->sortable()
                     ->money(config('setting.currency')),
+                ToggleColumn::make('show')
+                    ->label(__('Active')),
             ])
             ->searchPlaceholder(__('Search (SKU, name, barcode)'))
             ->filters([

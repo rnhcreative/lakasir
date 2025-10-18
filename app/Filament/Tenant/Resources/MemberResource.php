@@ -61,9 +61,6 @@ class MemberResource extends Resource
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
-                TextColumn::make('id')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('name')
                     ->label(__('Name'))
                     ->searchable()
