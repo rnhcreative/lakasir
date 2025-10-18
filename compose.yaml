@@ -1,5 +1,7 @@
 services:
     laravel.test:
+        env_file:
+            - './.env.production'
         build:
             context: './docker/8.3'
             dockerfile: Dockerfile
