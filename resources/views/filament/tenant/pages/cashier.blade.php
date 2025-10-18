@@ -84,7 +84,6 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
                         placeholder="{{ __('Discount') }}"
                         class="text-right w-1/2"
                         inputMode="numeric"
-                        x-mask:dynamic="$money($input)"
                         />
                       </x-filament::input.wrapper>
                   </div>
@@ -468,7 +467,7 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
       },
       append(number) {
         if(number == 'no_changes') {
-          this.$refs.payedMoney.value = moneyFormat(this.subtotal);
+          this.$refs.payedMoney.value = this.subtotal;
           this.changes();
           return;
         }
