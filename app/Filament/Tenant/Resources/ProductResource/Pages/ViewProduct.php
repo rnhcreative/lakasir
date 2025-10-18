@@ -33,10 +33,10 @@ class ViewProduct extends ViewRecord
                 ->badgeColor(Color::Red),
             ActionGroup::make([
                 Actions\EditAction::make(),
-                Action::make(__('Print label'))
-                    ->icon('heroicon-s-printer')
-                    ->visible(can('can print label') && feature(PrintProductLabel::class))
-                    ->action(fn ($data) => $this->printLabel($data)),
+                // Action::make(__('Print label'))
+                //     ->icon('heroicon-s-printer')
+                //     ->visible(can('can print label') && feature(PrintProductLabel::class))
+                //     ->action(fn ($data) => $this->printLabel($data)),
                 Action::make($this->record->show ? __('Inactivate') : __('Activate'))
                     ->icon($this->record->show ? 'heroicon-s-x-circle' : 'heroicon-s-rocket-launch')
                     ->action('toggleShow'),

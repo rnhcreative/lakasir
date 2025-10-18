@@ -124,9 +124,9 @@ class ProductResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
-                    Tables\Actions\Action::make('print-label')
-                        ->icon('heroicon-o-printer')
-                        ->url(fn (Product $record) => static::getUrl('print-label', ['record' => $record])),
+                    // Tables\Actions\Action::make('print-label')
+                    //     ->icon('heroicon-o-printer')
+                    //     ->url(fn (Product $record) => static::getUrl('print-label', ['record' => $record])),
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
