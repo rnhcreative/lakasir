@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Laravel\Pennant\Feature;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -66,8 +67,11 @@ class AppServiceProvider extends ServiceProvider
         Feature::resolveScopeUsing(fn ($driver) => null);
         Feature::discover();
 
-        if (config('app.env') === 'production') {
-            URL::forceScheme('https');
-        }
+        // if (config('app.env') === 'production') {
+        //     URL::forceScheme('https');
+        // }
+
+        $url = request()->getSchemeAndHttpHost();
+        config(['app.url' => $url]);
     }
 }
