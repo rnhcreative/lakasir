@@ -30,7 +30,7 @@ class Cashflow extends Page implements HasActions, HasForms
     public ?array $data = [
         'start_date' => null,
         'end_date' => null,
-        'period' => 'today',
+        'period' => null,
     ];
 
     public $reports = null;
@@ -61,42 +61,41 @@ class Cashflow extends Page implements HasActions, HasForms
                     'last_year' => __('Last Year'),
                     'custom' => __('Custom'),
                 ])
-                ->default('today')
                 ->required()
                 ->live()
                 ->afterStateUpdated( function (Get $get, ?string $state) {
                     switch ($state) {
                         case 'today':
-                            $this->data['start_date'] = now()->format('Y-m-d');
-                            $this->data['end_date'] = now()->format('Y-m-d');
+                            $this->data['start_date'] = now(config('setting.timezone'))->format('Y-m-d');
+                            $this->data['end_date'] = now(config('setting.timezone'))->format('Y-m-d');
                             break;
                         case 'yesterday':
-                            $this->data['start_date'] = now()->subDay()->format('Y-m-d');
-                            $this->data['end_date'] = now()->subDay()->format('Y-m-d');
+                            $this->data['start_date'] = now(config('setting.timezone'))->subDay()->format('Y-m-d');
+                            $this->data['end_date'] = now(config('setting.timezone'))->subDay()->format('Y-m-d');
                             break;
                         case 'this_week':
-                            $this->data['start_date'] = now()->startOfWeek()->format('Y-m-d');
-                            $this->data['end_date'] = now()->endOfWeek()->format('Y-m-d');
+                            $this->data['start_date'] = now(config('setting.timezone'))->startOfWeek()->format('Y-m-d');
+                            $this->data['end_date'] = now(config('setting.timezone'))->endOfWeek()->format('Y-m-d');
                             break;
                         case 'last_week':
-                            $this->data['start_date'] = now()->subWeek()->startOfWeek()->format('Y-m-d');
-                            $this->data['end_date'] = now()->subWeek()->endOfWeek()->format('Y-m-d');
+                            $this->data['start_date'] = now(config('setting.timezone'))->subWeek()->startOfWeek()->format('Y-m-d');
+                            $this->data['end_date'] = now(config('setting.timezone'))->subWeek()->endOfWeek()->format('Y-m-d');
                             break;
                         case 'this_month':
-                            $this->data['start_date'] = now()->startOfMonth()->format('Y-m-d');
-                            $this->data['end_date'] = now()->endOfMonth()->format('Y-m-d');
+                            $this->data['start_date'] = now(config('setting.timezone'))->startOfMonth()->format('Y-m-d');
+                            $this->data['end_date'] = now(config('setting.timezone'))->endOfMonth()->format('Y-m-d');
                             break;
                         case 'last_month':
-                            $this->data['start_date'] = now()->subMonth()->startOfMonth()->format('Y-m-d');
-                            $this->data['end_date'] = now()->subMonth()->endOfMonth()->format('Y-m-d');
+                            $this->data['start_date'] = now(config('setting.timezone'))->subMonth()->startOfMonth()->format('Y-m-d');
+                            $this->data['end_date'] = now(config('setting.timezone'))->subMonth()->endOfMonth()->format('Y-m-d');
                             break;
                         case 'this_year':
-                            $this->data['start_date'] = now()->startOfYear()->format('Y-m-d');
-                            $this->data['end_date'] = now()->endOfYear()->format('Y-m-d');
+                            $this->data['start_date'] = now(config('setting.timezone'))->startOfYear()->format('Y-m-d');
+                            $this->data['end_date'] = now(config('setting.timezone'))->endOfYear()->format('Y-m-d');
                             break;
                         case 'last_year':
-                            $this->data['start_date'] = now()->subYear()->startOfYear()->format('Y-m-d');
-                            $this->data['end_date'] = now()->subYear()->endOfYear()->format('Y-m-d');
+                            $this->data['start_date'] = now(config('setting.timezone'))->subYear()->startOfYear()->format('Y-m-d');
+                            $this->data['end_date'] = now(config('setting.timezone'))->subYear()->endOfYear()->format('Y-m-d');
                             break;
                         case 'custom':
                             $this->data['start_date'] = null;
