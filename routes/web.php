@@ -16,6 +16,8 @@ Route::get('/serviceworker.js', function () {
 Route::get('/auth/register', RegisterTenantForm::class)
     ->name('auth.register');
 
+Route::get('/test/print/{sellingId}', [\App\Http\Controllers\UtilityController::class, 'print']);
+
 Route::middleware([
     'web',
 ])

@@ -72,6 +72,8 @@ Route::middleware([
         Route::get('/reset-password/{token}', ResetPassword::class)
             ->middleware('guest')
             ->name('reset-password.index');
+
+        Route::get('/member/utility/print/{sellingId}', [\App\Http\Controllers\UtilityController::class, 'print']);
     });
 
 Route::middleware([
