@@ -6,12 +6,12 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use App\Services\Tenants\SellingReportService;
+use App\Services\Tenants\ReturSellingReportService;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 
-class SellingReportExport implements
+class ReturSellingReportExport implements
     FromArray,
     WithHeadings,
     ShouldAutoSize,
@@ -23,25 +23,23 @@ class SellingReportExport implements
     protected array $results;
 
     public function __construct(
-        public SellingReportService $sellingReportService,
+        public ReturSellingReportService $returSellingReportService,
         public array $data
     )
     {
-        $this->results = $this->sellingReportService->generate($this->data);
+        $this->results = $this->returSellingReportService->generate($this->data);
     }
 
     public function headings(): array
     {
         return [
-            __('SKU'),
-            __('Product Name'),
-            __('Price'),
+            __('Date'),
+            __('Selling Code'),
+            __('Item'),
+            __('Item yang ditukar'),
             __('Qty'),
-            __('Sub Total'),
-            __('Discount'),
-            __('Total'),
-            //__('Gross Profit'),
-            //__('Net Profit'),
+            __('Refund amount'),
+            __('Additional amount'),
         ];
     }
 
@@ -53,13 +51,13 @@ class SellingReportExport implements
 
         foreach ($results['reports'] as $key => $report) {
             $data[] = [
-                $report['sku'],
-                $report['name'],
-                (float) str_replace(',', '', $report['selling_price']),
+                $report['date'],
+                $report['code'],
+                $report['retur_item_name'],
+                $report['new_item_name'],
                 $report['qty'],
-                (float) str_replace(',', '', $report['selling']),
-                (float) str_replace(',', '', $report['discount_price']),
-                (float) str_replace(',', '', $report['total_after_discount']),
+                (float) str_replace(',', '', $report['refund_amount']),
+                (float) str_replace(',', '', $report['additional_amount']),
             ];
         }
 
@@ -81,7 +79,7 @@ class SellingReportExport implements
                 $sheet = $event->sheet->getDelegate();
 
                 /** Header Row */
-                $sheet->setCellValue('A1', 'Laporan Penjualan');
+                $sheet->setCellValue('A1', 'Laporan Retur Penjualan');
                 $sheet->mergeCells('A1:G1');
 
                 $sheet->setCellValue('A2', $header['shop_name']);
@@ -123,12 +121,10 @@ class SellingReportExport implements
                 /** Footer Row */
                 $lastRow = $sheet->getHighestDataRow();
                 $sheet->setCellValue('A' . ($lastRow + 1), 'Total');
-                $sheet->setCellValue('D' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_qty']));
-                $sheet->setCellValue('E' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_gross']));
-                $sheet->setCellValue('F' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_discount_per_item']));
-                $sheet->setCellValue('G' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_net_price_after_discount_per_item']));
+                $sheet->setCellValue('F' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_refund_amount']));
+                $sheet->setCellValue('G' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_additional_amount']));
 
-                $sheet->mergeCells('A' . ($lastRow + 1) . ':C' . ($lastRow + 1));
+                $sheet->mergeCells('A' . ($lastRow + 1) . ':E' . ($lastRow + 1));
 
                 $sheet->getStyle('A' . ($lastRow + 1) . ':G' . ($lastRow + 1))->applyFromArray([
                     'font' => [

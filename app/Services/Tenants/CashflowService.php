@@ -64,6 +64,24 @@ class CashflowService
                         DB::raw('payment_methods.name as payment_method_name'),
                     )
                     ->get()
+            )
+            ->merge(
+                DB::table('retur_sellings')
+                    ->join('payment_methods', 'retur_sellings.payment_method_id', '=', 'payment_methods.id')
+                    ->join('selling_details', 'retur_sellings.selling_detail_id', '=', 'selling_details.id')
+                    ->join('sellings', 'selling_details.selling_id', '=', 'sellings.id')
+                    ->select(
+                        DB::raw('retur_sellings.created_at as date'),
+                        DB::raw('(retur_sellings.additional_amount) as amount'),
+                        DB::raw("'Retur Penjualan' as source"),
+                        DB::raw("'debit' as type"),
+                        DB::raw("CONCAT('Retur Penjualan #', sellings.code) as note"),
+                        DB::raw('payment_methods.id as payment_method_id'),
+                        DB::raw('payment_methods.name as payment_method_name')
+                    )
+                    ->whereBetween('retur_sellings.created_at', [$startDate, $endDate])
+                    ->where('retur_sellings.additional_amount', '>', 0)
+                    ->get()
             );
 
         $outCashflow = collect();
@@ -82,6 +100,24 @@ class CashflowService
                         DB::raw('payment_methods.name as payment_method_name')
                     )
                     ->whereBetween('expenses.expense_date', [$startDate, $endDate])
+                    ->get()
+            )
+            ->merge(
+                DB::table('retur_sellings')
+                    ->join('payment_methods', 'retur_sellings.payment_method_id', '=', 'payment_methods.id')
+                    ->join('selling_details', 'retur_sellings.selling_detail_id', '=', 'selling_details.id')
+                    ->join('sellings', 'selling_details.selling_id', '=', 'sellings.id')
+                    ->select(
+                        DB::raw('retur_sellings.created_at as date'),
+                        DB::raw('(retur_sellings.refund_amount) as amount'),
+                        DB::raw("'Retur Penjualan' as source"),
+                        DB::raw("'credit' as type"),
+                        DB::raw("CONCAT('Retur Penjualan #', sellings.code) as note"),
+                        DB::raw('payment_methods.id as payment_method_id'),
+                        DB::raw('payment_methods.name as payment_method_name')
+                    )
+                    ->whereBetween('retur_sellings.created_at', [$startDate, $endDate])
+                    ->where('retur_sellings.refund_amount', '>', 0)
                     ->get()
             );
 

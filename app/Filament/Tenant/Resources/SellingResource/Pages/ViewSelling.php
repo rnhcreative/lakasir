@@ -10,18 +10,17 @@ use App\Models\Tenants\Product;
 use App\Models\Tenants\Selling;
 use App\Features\PrintSellingA5;
 use Filament\Support\Colors\Color;
+use Filament\Forms\Components\Grid;
+use App\Models\Tenants\PaymentMethod;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Contracts\Support\Htmlable;
+use App\Services\Tenants\ReturSellingService;
 use App\Filament\Tenant\Resources\SellingResource;
-use App\Filament\Tenant\Resources\SellingDetailResource\RelationManagers\SellingDetailsRelationManager;
 use App\Filament\Tenant\Resources\SellingResource\RelationManagers\ReturSellingsRelationManager;
-use App\Services\Tenants\ReturnSellingService;
-use Filament\Forms\Components\Grid;
-use Filament\Notifications\Notification;
-use Illuminate\Support\Number;
 
 class ViewSelling extends ViewRecord
 {
@@ -61,9 +60,12 @@ class ViewSelling extends ViewRecord
                 ->icon('heroicon-s-arrow-uturn-left')
                 ->color(Color::Red)
                 ->visible(function () {
-                    return !$this->record->paymentMethod->is_credit;
+                    $allowRetur = (!$this->record->paymentMethod->is_credit)
+                        || ($this->record->paymentMethod->is_credit && $this->record->receivables->count() > 0 && $this->record->receivables->sum('rest_receivable') == 0);
+
+                    return $allowRetur;
                 })
-                ->action(function (array $data, ReturnSellingService $returnSellingService) {
+                ->action(function (array $data, ReturSellingService $returnSellingService) {
                     $sellingDetail = $this->record->sellingDetails()->where('id', $data['selling_detail_id'])->first();
 
                     if ($sellingDetail) {
@@ -185,8 +187,12 @@ class ViewSelling extends ViewRecord
                                 ->readOnly()
                                 ->mask(RawJs::make('$money($input)'))
                                 ->live(),
+                            Select::make('payment_method_id')
+                                ->label(__('Payment Method'))
+                                ->options(PaymentMethod::where('is_credit', false)->pluck('name', 'id'))
+                                ->required(),
                         ])
-                        ->columns(2),
+                        ->columns(3),
                 ])
                 ->modalHeading(__('Retur Selling')),
         ];

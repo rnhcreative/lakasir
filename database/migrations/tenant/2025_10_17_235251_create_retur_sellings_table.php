@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('selling_detail_id')->constrained('selling_details');
             $table->foreignId('new_product_id')->nullable()->constrained('products');
+            $table->foreignId('payment_method_id')->constrained('payment_methods');
             $table->integer('qty');
             $table->double('refund_amount')->default(0);
             $table->double('additional_amount')->default(0);

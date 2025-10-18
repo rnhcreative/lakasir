@@ -1,4 +1,5 @@
 <x-filament-panels::page>
+<h1 class="text-lg font-bold">{{ __('Expense Report') }}</h1>
     <x-filament-panels::form
         id="form"
         wire:key="{{ 'forms.' . $this->getFormStatePath() }}"
