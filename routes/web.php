@@ -1,8 +1,9 @@
 <?php
 
-use App\Livewire\Forms\Auth\RegisterTenantForm;
-use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PrinterController;
+use App\Livewire\Forms\Auth\RegisterTenantForm;
 
 Volt::route('/', 'pages/welcome');
 
@@ -17,6 +18,10 @@ Route::get('/auth/register', RegisterTenantForm::class)
     ->name('auth.register');
 
 Route::get('/test/print/{sellingId}', [\App\Http\Controllers\UtilityController::class, 'print']);
+
+Route::get('/signing', [PrinterController::class, 'signing'])
+            ->can('read printer')
+            ->name('api.printer.signing');
 
 Route::middleware([
     'web',

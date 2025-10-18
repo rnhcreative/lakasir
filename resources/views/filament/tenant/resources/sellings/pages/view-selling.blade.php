@@ -142,7 +142,7 @@ document.getElementById('printButton').addEventListener('click', async () => {
       qz.security.setSignatureAlgorithm("SHA512"); // Since 2.1
         qz.security.setSignaturePromise(function(toSign) {
           return function(resolve, reject) {
-            fetch("/api/printer/signing?request=" + toSign, {cache: 'no-store', headers: {'Content-Type': 'text/plain'}})
+            fetch("/signing?request=" + toSign, {cache: 'no-store', headers: {'Content-Type': 'text/plain'}})
                 .then(function(data) { data.ok ? resolve(data.text()) : reject(data.text()); });
             };
         });
@@ -234,7 +234,7 @@ document.getElementById('printButton').addEventListener('click', async () => {
         }
   } else {
       console.warn("⚠ WebSocket not available on", url);
-      
+
       try {
         const resp = await fetch(`/member/utility/print/${selling.id}`, { method: 'GET' });
         if (!resp.ok) throw new Error('Failed to generate PDF');
@@ -275,7 +275,7 @@ document.getElementById('printButton').addEventListener('click', async () => {
       }
   }
 
-  
+
 });
 
 function checkWebSocketConnection(url, timeout = 2000) {
@@ -326,8 +326,8 @@ function lineFormat(left, right, width = 32) {
 function moneyFormat(num) {
   if (isNaN(num)) return "0";
   // Format angka tanpa simbol mata uang
-  return new Intl.NumberFormat('id-ID', { 
-    minimumFractionDigits: 0 
+  return new Intl.NumberFormat('id-ID', {
+    minimumFractionDigits: 0
   }).format(num);
 }
 </script>

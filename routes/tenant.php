@@ -212,9 +212,6 @@ Route::middleware([
                     ->can('update printer');
                 Route::delete('/{printer}', [PrinterController::class, 'destroy'])
                     ->can('delete printer');
-                Route::get('/signing', [PrinterController::class, 'signing'])
-                    ->can('read printer')
-                    ->name('api.printer.signing');
             });
 
             Route::group(['prefix' => 'notification'], function () {
