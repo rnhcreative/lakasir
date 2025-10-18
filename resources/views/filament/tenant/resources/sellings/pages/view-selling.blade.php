@@ -124,14 +124,10 @@ document.getElementById('printButton').addEventListener('click', async () => {
   let selling = @js($record);
   let about = @js($about);
 
-  console.log(selling)
-  console.log(about)
-
   const url = "wss://localhost:8181/"; // QZ Tray default WebSocket port
   const isRunning = await checkWebSocketConnection(url);
 
   if (isRunning) {
-      console.log("✅ WebSocket is running on", url);
       // You can now safely load qz-tray.js
        /// Authentication setup ///
       qz.security.setCertificatePromise(function(resolve, reject) {
@@ -142,7 +138,7 @@ document.getElementById('printButton').addEventListener('click', async () => {
       qz.security.setSignatureAlgorithm("SHA512"); // Since 2.1
         qz.security.setSignaturePromise(function(toSign) {
           return function(resolve, reject) {
-            fetch("/signing?request=" + toSign, {cache: 'no-store', headers: {'Content-Type': 'text/plain'}})
+            fetch("/api/signing?request=" + toSign, {cache: 'no-store', headers: {'Content-Type': 'text/plain'}})
                 .then(function(data) { data.ok ? resolve(data.text()) : reject(data.text()); });
             };
         });
@@ -178,7 +174,7 @@ document.getElementById('printButton').addEventListener('click', async () => {
           data += "\x1B\x61\x00"; // align left
           data += `Kasir : ${selling.user.name}\n`;
           if (selling.table) data += `Meja  : ${selling.table.number}\n`;
-          data += `Metode: ${selling.payment_method.name}\n`;
+          data += `Nomor: ${selling.code}\n`;
           if (selling.member) data += `Member: ${selling.member.name}\n`;
           data += "------------------------------\n";
 
@@ -233,49 +229,8 @@ document.getElementById('printButton').addEventListener('click', async () => {
           console.error("❌ Print error:", err);
         }
   } else {
-      console.warn("⚠ WebSocket not available on", url);
-
-      try {
-        const resp = await fetch(`/member/utility/print/${selling.id}`, { method: 'GET' });
-        if (!resp.ok) throw new Error('Failed to generate PDF');
-
-        const blob = await resp.blob();
-        const pdfUrl = URL.createObjectURL(blob);
-
-        // Try opening in new tab/window and trigger print
-        const win = window.open(pdfUrl, '_blank');
-        if (win) {
-          win.focus();
-          // Attempt to print immediately; some browsers may require user interaction or waiting for load
-          win.print();
-          // Revoke object URL after a delay
-          setTimeout(() => URL.revokeObjectURL(pdfUrl), 2000);
-        } else {
-          // Fallback: invisible iframe to trigger print dialog
-          const iframe = document.createElement('iframe');
-          iframe.style.display = 'none';
-          iframe.src = pdfUrl;
-          document.body.appendChild(iframe);
-          iframe.onload = function () {
-            try {
-              iframe.contentWindow.focus();
-              iframe.contentWindow.print();
-            } catch (e) {
-              console.error('Print fallback error:', e);
-            }
-            setTimeout(() => {
-              document.body.removeChild(iframe);
-              URL.revokeObjectURL(pdfUrl);
-            }, 2000);
-          };
-        }
-      } catch (err) {
-        console.error('❌ PDF print error:', err);
-        alert('Failed to generate/print PDF. Check console for details.');
-      }
+      alert("⚠️ QZ Tray tidak terdeteksi. Silakan jalankan aplikasi QZ Tray terlebih dahulu.");
   }
-
-
 });
 
 function checkWebSocketConnection(url, timeout = 2000) {

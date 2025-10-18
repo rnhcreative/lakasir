@@ -89,6 +89,9 @@ Route::middleware([
                 'tenant_email' => tenant()->tenancy_db_profile_email,
             ]);
         });
+
+        Route::get('/signing', [PrinterController::class, 'signing'])
+            ->name('api.printer.signing');
         Route::group(['prefix' => 'auth'], function () {
             Route::post('/login', [AuthenticatedSessionController::class, 'store'])
                 ->name('login');

@@ -17,12 +17,6 @@ Route::get('/serviceworker.js', function () {
 Route::get('/auth/register', RegisterTenantForm::class)
     ->name('auth.register');
 
-Route::get('/test/print/{sellingId}', [\App\Http\Controllers\UtilityController::class, 'print']);
-
-Route::get('/signing', [PrinterController::class, 'signing'])
-            ->can('read printer')
-            ->name('api.printer.signing');
-
 Route::middleware([
     'web',
 ])
