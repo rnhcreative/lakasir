@@ -1,3 +1,4 @@
+
 @php
 use Filament\Facades\Filament;
 use App\Features\{PaymentShortcutButton, SellingTax, Discount};
@@ -309,6 +310,8 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
   </x-filament::modal>
 </div>
 
+<script src="https://demo.qz.io/js/qz-tray.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/rsvp/3.6.2/rsvp.min.js"></script>
 @script()
 <script>
   let selling = null;
@@ -323,92 +326,113 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
   });
   document.getElementById("printReceiptButton").addEventListener('click', async (event) => {
     let about = @js($about);
-    const printerData = getPrinter();
 
-    try {
-      if (!printerData) {
-        new FilamentNotification()
-          .title('@lang('You should choose the printer first in printer setting')')
-          .danger()
-          .actions([
-            new FilamentNotificationAction('Setting')
-            .icon('heroicon-o-cog-6-tooth')
-            .button()
-            .url('/member/printer'),
-          ])
-          .send()
-      } else {
-        const printer = new Printer(printerData.printerId);
-        let printerAction = printer.font('a');
-        if(about != undefined || about != null) {
-          printerAction.size(1)
-            .align('center')
-            .text(about.shop_name)
-            .size(0)
-            .text(about.shop_location);
-          if(printerData.header != undefined) {
-            printerAction
-              .text(printerData.header);
-          }
-          printerAction.align('left')
-            .text('-------------------------------');
-        }
-        printerAction.table(['@lang('Cashier')', selling.user.name])
-        if(selling.table != undefined && selling.table != null) {
-          printerAction.table(['@lang('Table')', selling.table.number])
-        }
-        printerAction.table(['@lang('Payment method')', selling.payment_method.name]);
-        if(selling.member != undefined && selling.member != null) {
-          printerAction
-            .table(['Member', selling.member.name]);
-        }
-        printerAction
-          .text('-------------------------------');
-        selling.selling_details.forEach(sellingDetail => {
-          let price = sellingDetail.price;
-          let text = moneyFormat(sellingDetail.price / sellingDetail.qty) + ' x ' + sellingDetail.qty.toString();
-          printerAction.table([sellingDetail.product.name, moneyFormat(sellingDetail.price / sellingDetail.qty) + ' x ' + sellingDetail.qty.toString()])
-          if (sellingDetail.discount_price > 0) {
-            price = price - sellingDetail.discount_price;
-            printerAction
-              .align('right')
-              .text(`(${moneyFormat(sellingDetail.discount_price)})`)
-          }
-          printerAction
-            .align('right')
-            .text(moneyFormat(price))
-            .align('left')
+    const url = "wss://localhost:8181/"; // QZ Tray default WebSocket port
+    const isRunning = await checkWebSocketConnection(url);
+
+    if (isRunning) {
+        // You can now safely load qz-tray.js
+        /// Authentication setup ///
+        qz.security.setCertificatePromise(function(resolve, reject) {
+            fetch("/assets/documents/digital-certificate.txt", {cache: 'no-store', headers: {'Content-Type': 'text/plain'}})
+            .then(function(data) { data.ok ? resolve(data.text()) : reject(data.text()); });
         });
-        printerAction
-          .text('-------------------------------');
-        if("@js(feature(SellingTax::class))" == 'true') {
-          printerAction.table(['@lang('Tax')', `${selling.tax}%`])
-            .table(['@lang('Tax price')', moneyFormat(selling.tax_price)]);
-        }
-        printerAction
-          .table(['@lang('Subtotal')', moneyFormat(selling.total_price)])
-        if("@js(feature(Discount::class))" == 'true') {
-          printerAction
-            .table(['@lang('Discount')', `(${moneyFormat(selling.total_discount_per_item + selling.discount_price)})`])
-        }
-        printerAction
-          .table(['@lang('Total price')', moneyFormat(selling.grand_total_price)])
-          .text('-------------------------------')
-          .table(['@lang('Payed money')', moneyFormat(selling.payed_money)])
-          .table(['@lang('Change')', moneyFormat(selling.money_changes)])
-          .align('center');
 
-        if(printerData.footer != undefined) {
-          printerAction
-            .text(printerData.footer);
-        }
+        qz.security.setSignatureAlgorithm("SHA512"); // Since 2.1
+          qz.security.setSignaturePromise(function(toSign) {
+            return function(resolve, reject) {
+              fetch("/api/signing?request=" + toSign, {cache: 'no-store', headers: {'Content-Type': 'text/plain'}})
+                  .then(function(data) { data.ok ? resolve(data.text()) : reject(data.text()); });
+              };
+          });
 
-        await printerAction
-          .cut()
-          .print();
-      }
-    } catch (error) {
-      console.error(error);
+          try {
+            // 1️⃣ Pastikan koneksi QZ aktif
+            if (!qz.websocket.isActive()) {
+              await qz.websocket.connect();
+            }
+
+            // 2️⃣ Temukan printer yang dipilih user
+            const printer = await qz.printers.getDefault();
+            if (!printer) {
+              alert("Printer tidak ditemukan");
+              return;
+            }
+
+            // 3️⃣ Buat konfigurasi QZ (⬅️ ini duluan)
+            const config = qz.configs.create(printer, { language: 'escpos' });
+
+            // 4️⃣ Bangun data ESC/POS
+            let esc = "\x1B"; // escape
+            let gs  = "\x1D"; // group separator
+            let data = esc + "@"; // initialize printer
+
+            // --- HEADER ---
+            data += "\x1B\x61\x01"; // align center
+            data += (about?.shop_name || "TOKO TANPA NAMA") + "\n";
+            if (about?.shop_location) data += about.shop_location + "\n";
+            data += "------------------------------\n";
+
+            // --- INFO TRANSAKSI ---
+            data += "\x1B\x61\x00"; // align left
+            data += `Kasir : ${selling.user.name}\n`;
+            if (selling.table) data += `Meja  : ${selling.table.number}\n`;
+            data += `Nomor: ${selling.code}\n`;
+            if (selling.member) data += `Member: ${selling.member.name}\n`;
+            data += "------------------------------\n";
+
+            // --- ITEM DETAIL ---
+            selling.selling_details.forEach(detail => {
+              let subtotal = detail.price * detail.qty;
+              let line = detail.product.name + "\n";
+              line += lineFormat(`${moneyFormat(detail.price)} x ${detail.qty}`, moneyFormat(subtotal));
+              if (detail.discount_price > 0) {
+                subtotal -= detail.discount_price;
+                line += `(Disc: ${moneyFormat(detail.discount_price)})\n`;
+              }
+              data += line;
+            });
+
+            data += "------------------------------\n";
+
+            // --- TAX & TOTAL ---
+            if ("@js(feature(SellingTax::class))" == 'true') {
+              data += `Pajak (${selling.tax}%): ${moneyFormat(selling.tax_price)}\n`;
+            }
+
+            data += lineFormat("Subtotal", moneyFormat(selling.total_price));
+            data += lineFormat("Diskon", (selling.discount_price > 0 ? "-" : moneyFormat(selling.discount_price)));
+            data += lineFormat("Total", moneyFormat(selling.grand_total_price));
+            data += "------------------------------\n";
+            data += lineFormat("Tunai", moneyFormat(selling.payed_money));
+            data += lineFormat("Kembali", moneyFormat(selling.money_changes));
+            data += "------------------------------\n";
+
+            // --- FOOTER ---
+            data += "\x1B\x61\x01"; // align center
+            data += "Terima kasih telah berbelanja!\n";
+            if (about?.footer) data += about.footer + "\n";
+            data += "------------------------------\n";
+
+            // pastikan kertas keluar penuh
+            data += "\x1B\x61\x00"; // reset align kiri
+            data += "\n\n"; // feed 1 baris saja
+
+            // kalau printer support auto-cutter
+            data += esc + "d" + "\x05"; // feed + cut
+
+            // 5️⃣ Kirim ke printer (⬅️ ini terakhir)
+            await qz.print(config, [{
+              type: 'raw',
+              format: 'plain',
+              data
+            }]);
+
+          } catch (err) {
+            console.error("❌ Print error:", err);
+          }
+    } else {
+        alert("⚠️ QZ Tray tidak terdeteksi. Silakan jalankan aplikasi QZ Tray terlebih dahulu.");
     }
   });
 
@@ -513,6 +537,59 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
       button.className = 'bg-gray-300 hover:bg-gray-400 p-2 rounded-md text-lg';
       calculatorBtn.appendChild(button);
     }
+  }
+
+  function checkWebSocketConnection(url, timeout = 2000) {
+    return new Promise((resolve) => {
+        let connected = false;
+
+        try {
+            const ws = new WebSocket(url);
+
+            const timer = setTimeout(() => {
+                if (!connected) {
+                    ws.close();
+                    resolve(false); // Timeout, consider not running
+                }
+            }, timeout);
+
+            ws.onopen = () => {
+                connected = true;
+                clearTimeout(timer);
+                ws.close();
+                resolve(true); // Successfully connected
+            };
+
+            ws.onerror = () => {
+                clearTimeout(timer);
+                resolve(false); // Connection error
+            };
+
+            ws.onclose = () => {
+                clearTimeout(timer);
+                if (!connected) resolve(false);
+            };
+        } catch (e) {
+            resolve(false); // Failed to create WebSocket
+        }
+    });
+  }
+
+  // Menyusun teks kiri + kanan agar rata kiri/kanan di lebar tertentu (default 32 char)
+  function lineFormat(left, right, width = 32) {
+    left = left.toString();
+    right = right.toString();
+    const spaces = width - (left.length + right.length);
+    return left + " ".repeat(spaces > 0 ? spaces : 1) + right + "\n";
+  }
+
+  // Helper format uang
+  function moneyFormat(num) {
+    if (isNaN(num)) return "0";
+    // Format angka tanpa simbol mata uang
+    return new Intl.NumberFormat('id-ID', {
+      minimumFractionDigits: 0
+    }).format(num);
   }
 
   $wire.on('open-modal', (event) => {
