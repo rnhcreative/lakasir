@@ -53,7 +53,7 @@ trait CartInteraction
                 ],
                 [
                     'qty' => $qty,
-                    'price' => $product->selling_price,
+                    // 'price' => $product->selling_price,
                     'user_id' => $auth,
                     'product_id' => $product->getKey(),
                 ]
@@ -74,7 +74,7 @@ trait CartInteraction
 
             return;
         }
-        $price = $product->selling_price;
+        $price = $cartItem->price;
         $cartItem->fill([
             'qty' => $qty,
             'price' => $price,
