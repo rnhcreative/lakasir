@@ -45,19 +45,36 @@ trait CartInteraction
         if (! $this->validateStock($product, $qty)) {
             return;
         }
-        CartItem::query()
-            ->updateOrCreate(
-                [
-                    'product_id' => $product->getKey(),
-                    'user_id' => $auth,
-                ],
-                [
-                    'qty' => $qty,
-                    // 'price' => $product->selling_price,
-                    'user_id' => $auth,
-                    'product_id' => $product->getKey(),
-                ]
-            );
+
+        $cartItem = $cartItem = CartItem::whereProductId($product->getKey())
+                ->cashier()
+                ->first();
+
+        if ($cartItem) {
+            $cartItem->qty = $qty;
+            $cartItem->save();
+        } else {
+            CartItem::create([
+                'product_id' => $product->getKey(),
+                'qty' => $qty,
+                'price' => $product->selling_price,
+                'user_id' => $auth,
+            ]);
+        }
+
+        // CartItem::query()
+        //     ->updateOrCreate(
+        //         [
+        //             'product_id' => $product->getKey(),
+        //             'user_id' => $auth,
+        //         ],
+        //         [
+        //             'qty' => $qty,
+        //             'price' => $product->selling_price,
+        //             'user_id' => $auth,
+        //             'product_id' => $product->getKey(),
+        //         ]
+        //     );
         $this->mount();
     }
 

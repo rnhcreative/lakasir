@@ -28,7 +28,7 @@ class AssignProduct
         foreach ($data['products'] as $productRequest) {
             /** @var ?PriceUnit $priceUnit */
             $priceUnit = null;
-            if (isset($productRequest['price_unit_id']) && $productRequest['price_unit_id'] != null) {
+            if (isset($productRequest['price_unit_id']) && $productRequest['price_unit_id'] != null && $productRequest['price_unit_id'] != 0) {
                 $priceUnit = PriceUnit::find($productRequest['price_unit_id']);
             }
 
@@ -36,17 +36,16 @@ class AssignProduct
             $product = Product::find($productRequest['product_id']);
             if (! $product->is_non_stock) {
                 if ($priceUnit) {
-                    $this->reduceStock($product, $priceUnit->stock * $productRequest['qty']);
+                    $this->reduceStock($product, $productRequest['qty']);
                 } else {
                     $this->reduceStock($product, $productRequest['qty']);
                 }
             }
 
             if ($priceUnit) {
-                $productRequest['price'] = $priceUnit->selling_price * $productRequest['qty'];
-                $productRequest['qty'] = $priceUnit->stock * $productRequest['qty'];
+                $productRequest['price'] = $priceUnit->selling_price;
             } else {
-                $productRequest['price'] = ($productRequest['price'] ?? $product->selling_price * $productRequest['qty']);
+                $productRequest['price'] = ($productRequest['price'] ?? $product->selling_price);
             }
             $productRequest['cost'] = $product->initial_price * $productRequest['qty'];
 
