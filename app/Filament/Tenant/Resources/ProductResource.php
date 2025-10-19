@@ -181,7 +181,8 @@ class ProductResource extends Resource
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist->schema([
-            Infolists\Components\ImageEntry::make('hero_images'),
+            Infolists\Components\ImageEntry::make('hero_images')
+                ->label(__('Image')),
             Infolists\Components\TextEntry::make('name')
                 ->translateLabel(),
             Infolists\Components\TextEntry::make('category.name')
