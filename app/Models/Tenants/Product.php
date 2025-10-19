@@ -132,7 +132,17 @@ class Product extends Model
     public function heroImages(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ? Str::of($value)->explode(',') : [],
+            get: function ($value) {
+                $images = $value ? Str::of($value)->explode(',') : [];
+
+                $url = request()->getSchemeAndHttpHost();
+
+                $formatedImages = $images->map(function ($image) use ($url) {
+                    return Str::replace('http://localhost', $url, $image);
+                });
+
+                return $formatedImages;
+            },
             set: fn ($value) => $value ? Arr::join(is_array($value) ? $value : $value->toArray(), ',') : null
         );
     }

@@ -272,8 +272,15 @@ class TenantPanelProvider extends PanelProvider
     private function initializeDefaultPanel(Panel $panel): void
     {
         if (Schema::hasTable('abouts') && $about = About::first()) {
+            $brandPhoto = $about->photo ?? null;
+
+            if ($brandPhoto) {
+                $url = request()->getSchemeAndHttpHost();
+                $brandPhoto = Str::replace('http://localhost', $url, $brandPhoto);
+            }
+
             $panel->brandName($about->shop_name ?? 'Your Brand')
-                ->brandLogo($about->photo ?? null);
+                ->brandLogo($brandPhoto);
         }
     }
 
