@@ -34,7 +34,7 @@ class ProductService
         foreach ($heroImages as $heroImage => $originalName) {
             $name = $heroImage;
             $url = optional(Storage::disk('public'))->url($name);
-            $urls[] = $url;
+            $urls[] = $name;
             if (! UploadedFile::where('url', $url)->exists()) {
                 UploadedFile::create([
                     'name' => Str::of($heroImage)->replace('product/', ''),

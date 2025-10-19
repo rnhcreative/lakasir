@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 
@@ -132,7 +133,19 @@ class Product extends Model
     public function heroImages(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ? Str::of($value)->explode(',') : [],
+            get: function ($value) {
+                $images = $value ? Str::of($value)->explode(',') : [];
+
+                if (count($images) == 0) {
+                    return [];
+                }
+
+                $url = request()->getSchemeAndHttpHost();
+
+                return \collect($images)->map(function ($item) use ($url) {
+                    return $url .'/'. $item;
+                })->toArray();
+            },
             set: fn ($value) => $value ? Arr::join(is_array($value) ? $value : $value->toArray(), ',') : null
         );
     }
