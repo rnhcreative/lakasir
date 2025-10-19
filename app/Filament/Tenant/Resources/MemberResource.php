@@ -29,28 +29,19 @@ class MemberResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('identity_type')
-                    ->translateLabel()
-                    ->options([
-                        'sim' => 'Sim',
-                        'ktp' => 'Ktp',
-                        'other' => __('Other'),
-                    ]),
-                TextInput::make('identity_number')
-                    ->label(__('Identity number'))
-                    ->required(),
                 TextInput::make('name')
                     ->label(__('Name'))
                     ->required(),
+                TextInput::make('email')
+                    ->label(__('Contact'))
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->placeholder(__('Please provide a valid email address or whatsapp/phone number.')),
                 TextInput::make('code')
                     ->label(__('Code'))
                     ->unique(ignoreRecord: true),
                 TextInput::make('address')
                     ->label(__('Address')),
-                TextInput::make('email')
-                    ->label(__('Contact'))
-                    ->unique(ignoreRecord: true)
-                    ->placeholder(__('Please provide a valid email address or whatsapp/phone number.')),
                 DatePicker::make('joined_date')
                     ->translateLabel(),
             ]);
@@ -75,11 +66,6 @@ class MemberResource extends Resource
                 TextColumn::make('email')
                     ->label(__('Contact'))
                     ->searchable(),
-
-                TextColumn::make('identity_number')
-                    ->label(__('Identity number'))
-                    ->searchable()
-                    ->sortable(),
             ])
             ->filters([
                 //
@@ -101,7 +87,6 @@ class MemberResource extends Resource
             ->schema([
                 TextEntry::make('name')->translateLabel(),
                 TextEntry::make('code')->translateLabel(),
-                TextEntry::make('identity_number')->translateLabel(),
                 TextEntry::make('email')->label(__('Contact')),
                 TextEntry::make('address')->translateLabel(),
             ]);

@@ -30,7 +30,6 @@ class MemberReportService
         $results = DB::select("
             SELECT
                 members.name,
-                members.identity_number,
                 members.email,
                 SUM(sellings.total_price) AS total_selling,
                 COUNT(sellings.id) AS total_transaction
@@ -51,7 +50,6 @@ class MemberReportService
         foreach ($results as $result) {
             $reports[] = [
                 'name' => $result->name,
-                'identity_number' => $result->identity_number,
                 'email' => $result->email,
                 'total_transaction' => $result->total_transaction,
                 'total_selling' => $this->formatCurrency($result->total_selling),
