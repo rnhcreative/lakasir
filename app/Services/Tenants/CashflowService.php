@@ -95,7 +95,7 @@ class CashflowService
                         'expenses.amount',
                         DB::raw("'Pengeluaran' as source"),
                         DB::raw("'credit' as type"),
-                        DB::raw("note"),
+                        DB::raw("CONCAT('Pengeluaran: ', note) as note"),
                         DB::raw('payment_methods.id as payment_method_id'),
                         DB::raw('payment_methods.name as payment_method_name')
                     )
