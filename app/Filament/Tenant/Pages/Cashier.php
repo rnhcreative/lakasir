@@ -310,7 +310,7 @@ class Cashier extends Page implements HasForms, HasTable
 
         $this->mount();
 
-        $this->dispatch('selling-created', selling: $selling->load('sellingDetails.product', 'table'));
+        $this->dispatch('selling-created', selling: $selling->load('sellingDetails.product', 'table', 'member', 'user'));
     }
 
     public function assignVoucher(string $code)

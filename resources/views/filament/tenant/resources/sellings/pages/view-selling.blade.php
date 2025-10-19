@@ -148,7 +148,8 @@ document.getElementById('printButton').addEventListener('click', async () => {
           }
 
           // 2️⃣ Temukan printer yang dipilih user
-          const printer = await qz.printers.getDefault();
+          const thermalPrinterName = about?.printer_thermal_name || "";
+          const printer = await qz.printers.find(thermalPrinterName);
           if (!printer) {
             alert("Printer tidak ditemukan");
             return;
@@ -173,7 +174,7 @@ document.getElementById('printButton').addEventListener('click', async () => {
           data += `Kasir : ${selling.user.name}\n`;
           if (selling.table) data += `Meja  : ${selling.table.number}\n`;
           data += `Nomor: ${selling.code}\n`;
-          if (selling.member) data += `Member: ${selling.member.name}\n`;
+          if (selling.member) data += `Pelanggan: ${selling.member.name}\n`;
           data += "------------------------------\n";
 
           // --- ITEM DETAIL ---

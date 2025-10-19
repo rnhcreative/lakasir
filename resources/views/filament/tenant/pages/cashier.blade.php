@@ -352,7 +352,8 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
             }
 
             // 2️⃣ Temukan printer yang dipilih user
-            const printer = await qz.printers.getDefault();
+            const printerName = about?.printer_thermal_name || "";
+            const printer = await qz.printers.find(printerName);
             if (!printer) {
               alert("Printer tidak ditemukan");
               return;
@@ -377,7 +378,7 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
             data += `Kasir : ${selling.user.name}\n`;
             if (selling.table) data += `Meja  : ${selling.table.number}\n`;
             data += `Nomor: ${selling.code}\n`;
-            if (selling.member) data += `Member: ${selling.member.name}\n`;
+            if (selling.member) data += `Pelanggan: ${selling.member.name}\n`;
             data += "------------------------------\n";
 
             // --- ITEM DETAIL ---
