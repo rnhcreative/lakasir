@@ -132,18 +132,25 @@ class Product extends Model
     public function heroImages(): Attribute
     {
         return Attribute::make(
-            get: function ($value) {
-                $images = $value ? Str::of($value)->explode(',') : [];
+            get: fn ($value) => $value ? Str::of($value)->explode(',') : [],
+            set: fn ($value) => $value ? Arr::join(is_array($value) ? $value : $value->toArray(), ',') : null
+        );
+    }
+
+    public function heroImageUrls(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value, $attributes) {
+                $images = $attributes['hero_images'] ? Str::of($attributes['hero_images'])->explode(',') : [];
 
                 $url = request()->getSchemeAndHttpHost();
 
-                $formatedImages = $images->map(function ($image) use ($url) {
+                $formatedImages = \collect($images)->map(function ($image) use ($url) {
                     return Str::replace('http://localhost', $url, $image);
                 });
 
                 return $formatedImages;
-            },
-            set: fn ($value) => $value ? Arr::join(is_array($value) ? $value : $value->toArray(), ',') : null
+            }
         );
     }
 
@@ -203,6 +210,23 @@ class Product extends Model
         return Attribute::make(
             get: function () {
                 return $this->hero_images ? $this->hero_images[0] : 'https://cdn4.iconfinder.com/data/icons/picture-sharing-sites/32/No_Image-1024.png';
+            }
+        );
+    }
+
+    public function heroImageUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value, $attributes) {
+                $image = $this->hero_images ? $this->hero_images[0] : null;
+                if (! $image) {
+                    return 'https://cdn4.iconfinder.com/data/icons/picture-sharing-sites/32/No_Image-1024.png';
+                }
+
+                $url = request()->getSchemeAndHttpHost();
+                $image = Str::replace('http://localhost', $url, $image);
+
+                return $image;
             }
         );
     }

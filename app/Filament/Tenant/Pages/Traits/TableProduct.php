@@ -41,7 +41,7 @@ trait TableProduct
             ->paginated(false)
             ->columns([
                 Stack::make([
-                    ImageColumn::make('hero_image')
+                    ImageColumn::make('hero_image_url')
                         ->translateLabel()
                         ->alignCenter()
                         ->extraAttributes([
