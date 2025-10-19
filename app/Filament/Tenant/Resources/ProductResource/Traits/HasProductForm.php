@@ -7,16 +7,13 @@ use App\Features\ProductExpired;
 use App\Features\ProductInitialPrice;
 use App\Features\ProductSku;
 use App\Features\ProductStock;
-use App\Features\ProductType;
 use App\Models\Tenants\Category;
-use App\Models\Tenants\Setting;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Set;
 use Filament\Support\RawJs;
 use Laravel\Pennant\Feature;
 
@@ -25,6 +22,7 @@ trait HasProductForm
     public function generateFileUploadFormComponent(): FileUpload
     {
         return FileUpload::make('hero_images')
+            ->label(__('Image'))
             ->image()
             ->translateLabel()
             ->imageResizeMode('cover')
@@ -121,9 +119,6 @@ trait HasProductForm
             ->visible(function ($operation) {
                 return Feature::active(ProductStock::class) && $operation == 'create';
             })
-            // ->disabled(function ($get) {
-            //     return $get('is_non_stock') || $get('type') == 'service';
-            // })
             ->required();
     }
 
@@ -131,21 +126,6 @@ trait HasProductForm
     {
         return Hidden::make('type')
             ->default('product');
-            // ->translateLabel()
-            // ->options([
-            //     'product' => 'Product',
-            //     'service' => 'Service',
-            // ])
-            // ->visible(Feature::active(ProductType::class))
-            // ->afterStateUpdated(function (mixed $state, Set $set) {
-            //     if ($state == 'service') {
-            //         $set('stock', 0);
-            //     }
-            // })
-            // ->live()
-            // ->default('product')
-            // ->columnSpan(2)
-            // ->required();
     }
 
     public function generateBarcodeFormComponent(): TextInput
