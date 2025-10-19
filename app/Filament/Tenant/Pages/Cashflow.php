@@ -2,20 +2,22 @@
 
 namespace App\Filament\Tenant\Pages;
 
-use App\Services\Tenants\CashflowService;
+use App\Exports\CashflowExport;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Actions\Action;
 use Livewire\Attributes\Url;
+use Illuminate\Support\Carbon;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Contracts\HasForms;
 use App\Traits\HasTranslatableResource;
+use App\Services\Tenants\CashflowService;
 use Filament\Forms\Components\DatePicker;
 use Filament\Actions\Contracts\HasActions;
-use Filament\Forms\Components\Group;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Get;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 
 class Cashflow extends Page implements HasActions, HasForms
@@ -141,6 +143,11 @@ class Cashflow extends Page implements HasActions, HasForms
                 ->action('downloadPdf')
                 ->color('warning')
                 ->icon('heroicon-o-arrow-down-on-square'),
+            Action::make('download-xls')
+                ->label(__('Download as XLS'))
+                ->action('downloadSheet')
+                ->color('warning')
+                ->icon('heroicon-o-arrow-down-on-square'),
         ];
     }
 
@@ -164,5 +171,20 @@ class Cashflow extends Page implements HasActions, HasForms
         ]);
 
         return $this->redirectRoute('cashflow.generate', $this->data);
+    }
+
+    public function downloadSheet(CashflowService $cashflowService)
+    {
+        $this->validate([
+            'data.start_date' => 'required',
+            'data.end_date' => 'required',
+        ]);
+
+        $filename = 'cashflow-'. Carbon::parse($this->data['start_date'])->format('d-m-Y') . '_' . Carbon::parse($this->data['end_date'])->format('d-m-Y')  .'.xlsx';
+
+        return (new CashflowExport(
+            cashflowService: $cashflowService,
+            data: $this->data
+        ))->download($filename);
     }
 }
