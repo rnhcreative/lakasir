@@ -9,6 +9,7 @@ use App\Features\ProductType;
 use App\Filament\Tenant\Resources\ProductResource\Pages;
 use App\Filament\Tenant\Resources\ProductResource\Traits\HasProductForm;
 use App\Filament\Tenant\Resources\Traits\HasUploadFileField;
+use App\Models\Tenants\CartItem;
 use App\Models\Tenants\Product;
 use App\Models\Tenants\Setting;
 use App\Traits\HasTranslatableResource;
@@ -126,7 +127,12 @@ class ProductResource extends Resource
                     // Tables\Actions\Action::make('print-label')
                     //     ->icon('heroicon-o-printer')
                     //     ->url(fn (Product $record) => static::getUrl('print-label', ['record' => $record])),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                        ->using(function (Product $record) {
+                            // Delete related cart items
+                            CartItem::where('product_id', $record->id)->delete();
+                            $record->delete();
+                        }),
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
                 ])
