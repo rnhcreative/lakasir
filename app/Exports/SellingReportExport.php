@@ -51,11 +51,11 @@ class SellingReportExport implements
         foreach ($results['reports'] as $key => $report) {
             $data[] = [
                 $report['date'],
-                (float) str_replace(',', '', $report['total_selling']),
+                (float) str_replace('.', '', $report['total_selling']),
                 $report['total_transaction'],
                 $report['total_item'],
-                (float) str_replace(',', '', $report['total_discount']),
-                (float) str_replace(',', '', $report['total_profit']),
+                (float) str_replace('.', '', $report['total_discount']),
+                (float) str_replace('.', '', $report['total_profit']),
             ];
         }
 
@@ -119,11 +119,11 @@ class SellingReportExport implements
                 /** Footer Row */
                 $lastRow = $sheet->getHighestDataRow();
                 $sheet->setCellValue('A' . ($lastRow + 1), 'Total');
-                $sheet->setCellValue('B' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_selling']));
-                $sheet->setCellValue('C' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_transaction']));
-                $sheet->setCellValue('D' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_item']));
-                $sheet->setCellValue('E' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_discount']));
-                $sheet->setCellValue('F' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_profit']));
+                $sheet->setCellValue('B' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_selling']));
+                $sheet->setCellValue('C' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_transaction']));
+                $sheet->setCellValue('D' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_item']));
+                $sheet->setCellValue('E' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_discount']));
+                $sheet->setCellValue('F' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_profit']));
 
                 $sheet->getStyle('A6:F6')->applyFromArray([
                     'font' => [
