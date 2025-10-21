@@ -3,12 +3,12 @@
 namespace App\Services\Tenants;
 
 use App\Models\Tenants\About;
-use App\Models\Tenants\Profile;
-use App\Models\Tenants\Selling;
-use App\Models\Tenants\SellingDetail;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Number;
+use App\Models\Tenants\Selling;
+use Illuminate\Support\Facades\DB;
+use App\Models\Tenants\SellingDetail;
+use Illuminate\Database\Eloquent\Builder;
 
 class SellingReportService
 {
@@ -20,16 +20,21 @@ class SellingReportService
         $endDate = Carbon::parse($data['end_date'], $timezone)->addDay()->setTimezone('UTC');
 
         $sellings = Selling::query()
-            ->select()
-            ->with(
-                'sellingDetails:id,selling_id,product_id,qty,price,cost,discount_price',
-                'sellingDetails.product:id,name,initial_price,selling_price,sku',
-                'user:id,name,email'
+            ->select(
+                'id',
+                'date',
+                DB::raw("SUM(total_price) as total_selling"),
+                DB::raw("COUNT(id) as total_transaction"),
+                DB::raw("SUM(total_qty) as total_item"),
+                DB::raw("SUM(discount_price) as total_discount"),
+                DB::raw("SUM(total_price - total_cost) as total_profit"),
             )
             ->when($data['start_date'] && $data['end_date'], function (Builder $query) use ($startDate, $endDate) {
                 $query->whereBetween('date', [$startDate, $endDate]);
             })
-            ->orderBy('created_at', 'desc')
+            ->with('sellingDetails')
+            ->orderBy('created_at', 'asc')
+            ->groupBy(DB::raw('DATE(date)'))
             ->get();
 
         $header = [
@@ -41,45 +46,40 @@ class SellingReportService
             'end_date' => $endDate->subDay()->setTimezone($timezone)->format('d F Y'),
         ];
         $reports = [];
-        $totalQty = 0;
-        $totalBeforeDiscount = 0;
-        $totalAllDiscount = 0;
-        $totalAfterDiscount = 0;
+        $totalSelling = 0;
+        $totalTransaction = 0;
+        $totalItem = 0;
+        $totalDiscount = 0;
+        $totalProfit = 0;
 
         /** @var Selling $selling */
         foreach ($sellings as $selling) {
             /** @var SellingDetail $detail */
             foreach ($selling->sellingDetails as $detail) {
-                $subTotal = ($detail->price - ($detail->discount_price ?? 0)) * $detail->qty;
-                $subTotalAfterDiscount = ($detail->price - ($detail->discount_price ?? 0)) * $detail->qty;
 
                 $reports[] = [
                     'date' => Carbon::parse($selling->date, 'UTC')->setTimezone($timezone)->format('d/m/Y'),
-                    'code' => $selling->code,
-                    'name' => $detail->product->name,
-                    'selling_price' => $this->formatCurrency($detail->price),
-                    'selling' => $this->formatCurrency($subTotal),
-                    'discount_price' => $this->formatCurrency($detail->discount_price ?? 0),
-                    'initial_price' => $this->formatCurrency($detail->cost / $detail->qty),
-                    'qty' => $detail->qty,
-                    'cost' => $detail->cost,
-                    'total_after_discount' => $this->formatCurrency($subTotalAfterDiscount),
-                    'net_profit' => $this->formatCurrency(($detail->price - ($detail->discount_price ?? 0)) - $detail->cost),
-                    'gross_profit' => $this->formatCurrency($detail->price - $detail->cost),
+                    'total_selling' => $this->formatCurrency($selling->total_selling),
+                    'total_transaction' => $this->formatCurrency($selling->total_transaction),
+                    'total_item' => $this->formatCurrency($selling->total_item),
+                    'total_discount' => $this->formatCurrency($selling->total_discount),
+                    'total_profit' => $this->formatCurrency($selling->total_profit),
                 ];
 
-                $totalQty += $detail->qty;
-                $totalBeforeDiscount += $subTotal;
-                $totalAllDiscount += $detail->discount_price ?? 0;
-                $totalAfterDiscount += $subTotalAfterDiscount;
+                $totalSelling += $selling->total_selling;
+                $totalTransaction += $selling->total_transaction;
+                $totalItem += $selling->total_item;
+                $totalDiscount += $selling->total_discount;
+                $totalProfit += $selling->total_profit;
             }
         }
 
         $footer = [
-            'total_qty' => $totalQty,
-            'total_before_discount' => $this->formatCurrency($totalBeforeDiscount),
-            'total_all_discount' => $this->formatCurrency($totalAllDiscount),
-            'total_after_discount' => $this->formatCurrency($totalAfterDiscount),
+            'total_selling' => $this->formatCurrency($totalSelling),
+            'total_transaction' => $totalTransaction,
+            'total_item' => $totalItem,
+            'total_discount' => $this->formatCurrency($totalDiscount),
+            'total_profit' => $this->formatCurrency($totalProfit),
         ];
 
         return [
@@ -91,6 +91,6 @@ class SellingReportService
 
     private function formatCurrency($value)
     {
-        return Number::format($value);
+        return Number::format($value, locale: config('app.locale'));
     }
 }

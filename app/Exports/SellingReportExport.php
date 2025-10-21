@@ -34,13 +34,11 @@ class SellingReportExport implements
     {
         return [
             __('Date'),
-            __('Selling Code'),
-            __('Product Name'),
-            __('Price'),
-            __('Qty'),
-            __('Sub Total'),
+            __('Selling'),
+            __('Transaction'),
+            __('Item'),
             __('Discount'),
-            __('Total'),
+            __('Profit'),
         ];
     }
 
@@ -53,13 +51,11 @@ class SellingReportExport implements
         foreach ($results['reports'] as $key => $report) {
             $data[] = [
                 $report['date'],
-                $report['code'],
-                $report['name'],
-                (float) str_replace(',', '', $report['selling_price']),
-                $report['qty'],
-                (float) str_replace(',', '', $report['selling']),
-                (float) str_replace(',', '', $report['discount_price']),
-                (float) str_replace(',', '', $report['total_after_discount']),
+                (float) str_replace(',', '', $report['total_selling']),
+                $report['total_transaction'],
+                $report['total_item'],
+                (float) str_replace(',', '', $report['total_discount']),
+                (float) str_replace(',', '', $report['total_profit']),
             ];
         }
 
@@ -82,13 +78,13 @@ class SellingReportExport implements
 
                 /** Header Row */
                 $sheet->setCellValue('A1', 'Laporan Penjualan');
-                $sheet->mergeCells('A1:G1');
+                $sheet->mergeCells('A1:F1');
 
                 $sheet->setCellValue('A2', $header['shop_name']);
-                $sheet->mergeCells('A2:G2');
+                $sheet->mergeCells('A2:F2');
 
                 $sheet->setCellValue('A4', __('Period') . ': ' . $header['start_date'] . ' - ' . $header['end_date']);
-                $sheet->mergeCells('A4:G4');
+                $sheet->mergeCells('A4:F4');
 
                 $sheet->getStyle('A1')->applyFromArray([
                     'font' => [
@@ -123,16 +119,25 @@ class SellingReportExport implements
                 /** Footer Row */
                 $lastRow = $sheet->getHighestDataRow();
                 $sheet->setCellValue('A' . ($lastRow + 1), 'Total');
-                $sheet->setCellValue('E' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_qty']));
-                $sheet->setCellValue('F' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_before_discount']));
-                $sheet->setCellValue('G' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_all_discount']));
-                $sheet->setCellValue('H' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_after_discount']));
+                $sheet->setCellValue('B' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_selling']));
+                $sheet->setCellValue('C' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_transaction']));
+                $sheet->setCellValue('D' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_item']));
+                $sheet->setCellValue('E' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_discount']));
+                $sheet->setCellValue('F' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_profit']));
 
-                $sheet->mergeCells('A' . ($lastRow + 1) . ':D' . ($lastRow + 1));
-
-                $sheet->getStyle('A' . ($lastRow + 1) . ':H' . ($lastRow + 1))->applyFromArray([
+                $sheet->getStyle('A6:F6')->applyFromArray([
                     'font' => [
                         'bold' => true,
+                    ],
+                ]);
+
+                $sheet->getStyle('A' . ($lastRow + 1) . ':F' . ($lastRow + 1))->applyFromArray([
+                    // add background color
+                    'fill' => [
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                        'startColor' => [
+                            'argb' => 'FFEEEEEE', // soft gray
+                        ],
                     ],
                 ]);
                 /** EOF Footer Row */
