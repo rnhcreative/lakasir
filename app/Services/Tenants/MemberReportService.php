@@ -13,18 +13,8 @@ class MemberReportService
     {
         $timezone = config('setting.timezone');
         $about = About::first();
-        $tzName = Carbon::parse($data['start_date'])->getTimezone()->getName();
-        $startDate = Carbon::parse($data['start_date'], $timezone)->setTimezone('UTC');
-        $endDate = Carbon::parse($data['end_date'], $timezone)->addDay()->setTimezone('UTC');
-
-        $header = [
-            'shop_name' => $about?->shop_name,
-            'shop_location' => $about?->shop_location,
-            'business_type' => $about?->business_type,
-            'owner_name' => $about?->owner_name,
-            'start_date' => $startDate->setTimezone($timezone)->format('d F Y'),
-            'end_date' => $endDate->subDay()->setTimezone($timezone)->format('d F Y'),
-        ];
+        $startDate = Carbon::parse($data['start_date'], $timezone);
+        $endDate = Carbon::parse($data['end_date'], $timezone);
 
         $results = DB::select("
             SELECT
@@ -38,13 +28,23 @@ class MemberReportService
             FROM sellings
             JOIN members ON sellings.member_id = members.id
             WHERE sellings.member_id IS NOT NULL
-            AND sellings.date BETWEEN ? AND ?
+            AND DATE(CONVERT_TZ(sellings.date, 'UTC', ?)) BETWEEN ? AND ?
             GROUP BY members.id
             ORDER BY SUM(sellings.total_price) DESC
         ", [
-            $startDate->toDateTimeString(),
-            $endDate->toDateTimeString(),
+            config('setting.timezone'),
+            $startDate->format('Y-m-d'),
+            $endDate->format('Y-m-d'),
         ]);
+
+        $header = [
+            'shop_name' => $about?->shop_name,
+            'shop_location' => $about?->shop_location,
+            'business_type' => $about?->business_type,
+            'owner_name' => $about?->owner_name,
+            'start_date' => $startDate->format('d F Y'),
+            'end_date' => $endDate->format('d F Y'),
+        ];
 
         $totalSelling = 0;
         $totalTransaction = 0;
