@@ -14,6 +14,7 @@ use App\Models\Tenants\Product;
 use App\Models\Tenants\Setting;
 use App\Traits\HasTranslatableResource;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Components\TextEntry;
@@ -93,11 +94,18 @@ class ProductResource extends Resource
                     ->toggleable()
                     ->translateLabel(),
                 TextColumn::make('initial_price')
+                    ->label(__('HPP'))
                     ->visible(Feature::active(ProductInitialPrice::class))
                     ->translateLabel()
                     ->sortable()
                     ->money(config('setting.currency')),
                 TextColumn::make('selling_price')
+                    ->translateLabel()
+                    ->sortable()
+                    ->money(config('setting.currency')),
+                TextColumn::make('profit_margin')
+                    ->label(__('Laba'))
+                    ->visible(Feature::active(ProductInitialPrice::class))
                     ->translateLabel()
                     ->sortable()
                     ->money(config('setting.currency')),
@@ -173,6 +181,9 @@ class ProductResource extends Resource
             $this->generateExpiredFormComponent(),
             $this->generateInitialPriceFormComponent(),
             $this->generateSellingPriceFormComponent(),
+
+            $this->generateProfitMarginFormComponent(),
+
             $this->generateTypeFormComponent()
                 ->columnSpan(1),
             //$this->generateNonStockFormComponent(),
@@ -204,6 +215,11 @@ class ProductResource extends Resource
                 ->size(TextEntry\TextEntrySize::Large)
                 ->translateLabel(),
             Infolists\Components\TextEntry::make('selling_price')
+                ->money(config('setting.currency'))
+                ->size(TextEntry\TextEntrySize::Large)
+                ->translateLabel(),
+            Infolists\Components\TextEntry::make('profit_margin')
+                ->label(__('Laba'))
                 ->money(config('setting.currency'))
                 ->size(TextEntry\TextEntrySize::Large)
                 ->translateLabel(),

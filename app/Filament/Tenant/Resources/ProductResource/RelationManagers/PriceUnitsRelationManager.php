@@ -9,13 +9,14 @@ use Filament\Tables\Table;
 use Filament\Support\RawJs;
 use Laravel\Pennant\Feature;
 use App\Features\ProductStock;
+use Illuminate\Support\Number;
 use App\Models\Tenants\Profile;
 use App\Models\Tenants\Setting;
 use App\Models\Tenants\PriceUnit;
-use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;
 
 class PriceUnitsRelationManager extends RelationManager
@@ -96,6 +97,17 @@ class PriceUnitsRelationManager extends RelationManager
                         currency: config('setting.currency'),
                         locale: config('setting.locale')
                     ),
+                Tables\Columns\TextColumn::make('profit_margin_unit')
+                    ->label(__('Laba'))
+                    ->translateLabel()
+                    ->getStateUsing(fn (PriceUnit $record) => Number::currency(
+                        $record->selling_price - $record->product->initial_price,
+                        config('setting.currency')
+                    ))
+                    ->money(
+                        currency: config('setting.currency'),
+                        locale: config('setting.locale')
+                    ),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
@@ -108,7 +120,8 @@ class PriceUnitsRelationManager extends RelationManager
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->modifyQueryUsing(fn ($query) => $query->with('product'));
     }
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string

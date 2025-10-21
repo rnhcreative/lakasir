@@ -231,6 +231,19 @@ class Product extends Model
         );
     }
 
+    public function profitMargin(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if ($this->initial_price <= 0 || $this->initial_price <= 0) {
+                    return 0;
+                }
+
+                return $this->selling_price - $this->initial_price;
+            }
+        );
+    }
+
     public function sellingDetails(): HasMany
     {
         return $this->hasMany(SellingDetail::class);

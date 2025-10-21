@@ -76,13 +76,28 @@ trait HasProductForm
             ->gte('initial_price')
             ->stripCharacters(',')
             ->numeric()
-            ->prefix(config('setting.currency'))
-            ->required();
+            ->prefix(config('setting.currency_symbol'))
+            ->required()
+            ->live(debounce: 500)
+            ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                $initialPrice = $get('initial_price') ? (float) str_replace(',', '', $get('initial_price')) : 0;
+                $sellingPrice = $state ?  (float) str_replace(',', '', $state) : 0;
+
+                if ($initialPrice == 0 || $sellingPrice == 0) {
+                    $set('profit_margin', 0);
+                    return;
+                }
+
+                $profitMargin = $sellingPrice - $initialPrice;
+
+                $set('profit_margin', number_format($profitMargin, 0, '.', ','));
+            });
     }
 
     public function generateInitialPriceFormComponent(): TextInput
     {
         return TextInput::make('initial_price')
+            ->label(__('HPP'))
             ->visible(Feature::active(ProductInitialPrice::class))
             ->translateLabel()
             ->mask(RawJs::make('$money($input)'))
@@ -91,8 +106,45 @@ trait HasProductForm
             // ->visible(Feature::active(Product))
             ->stripCharacters(',')
             ->numeric()
-            ->prefix(config('setting.currency'))
-            ->required();
+            ->prefix(config('setting.currency_symbol'))
+            ->required()
+            ->live(debounce: 500)
+            ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                $initialPrice = $state ?  (float) str_replace(',', '', $state) : 0;
+                $sellingPrice = $get('selling_price') ? (float) str_replace(',', '', $get('selling_price')) : 0;
+
+                if ($initialPrice == 0 || $sellingPrice == 0) {
+                    $set('profit_margin', 0);
+                    return;
+                }
+
+                $profitMargin = round((($sellingPrice - $initialPrice) / $initialPrice) * 100, 2);
+                $set('profit_margin', number_format($profitMargin, 0, '.', ','));
+            });
+    }
+
+    public function generateProfitMarginFormComponent(): TextInput
+    {
+        // show profit margin if feature product initial price is active
+        return TextInput::make('profit_margin')
+            ->label(__('Laba'))
+            ->translateLabel()
+            ->readOnly()
+            ->prefix(config('setting.currency_symbol'))
+            ->visible(Feature::active(ProductInitialPrice::class))
+            ->default(function (callable $get, callable $set) {
+                $initialPrice = $get('initial_price') ?? 0;
+                $sellingPrice = $get('selling_price') ?? 0;
+
+                if ($initialPrice == 0) {
+                    return 0;
+                }
+
+                $profitMargin = $sellingPrice - $initialPrice;
+                $set('profit_margin', number_format($profitMargin, 0, '.', ','));
+            })
+            ->live(debounce: 500)
+            ->columnSpan(1);
     }
 
     public function generateNameFormComponent(): TextInput
