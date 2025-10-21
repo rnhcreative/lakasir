@@ -1,3 +1,3 @@
-<tr {{ $attributes->merge(['class' =>  isset($loop) ? $loop->odd ? 'bg-gray-50 dark:bg-gray-700' : '' : '' ]) }}>
+<tr {{ $attributes->merge(['class' => 'border-b border-gray-200' ]) }}>
   {{ $slot }}
 </tr>
