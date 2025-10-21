@@ -16,34 +16,38 @@ class SellingReportService
     {
         $timezone = config('setting.timezone');
         $about = About::first();
-        $startDate = Carbon::parse($data['start_date'], $timezone)->setTimezone('UTC');
-        $endDate = Carbon::parse($data['end_date'], $timezone)->addDay()->setTimezone('UTC');
+        $startDate = Carbon::parse($data['start_date'], $timezone);
+        $endDate = Carbon::parse($data['end_date'], $timezone);
 
-        $sellings = Selling::query()
-            ->select(
-                'id',
-                'date',
-                DB::raw("SUM(total_price) as total_selling"),
-                DB::raw("COUNT(id) as total_transaction"),
-                DB::raw("SUM(total_qty) as total_item"),
-                DB::raw("SUM(discount_price) as total_discount"),
-                DB::raw("SUM(total_price - total_cost) as total_profit"),
-            )
-            ->when($data['start_date'] && $data['end_date'], function (Builder $query) use ($startDate, $endDate) {
-                $query->whereBetween('date', [$startDate, $endDate]);
-            })
-            ->with('sellingDetails')
-            ->orderBy('created_at', 'asc')
-            ->groupBy(DB::raw('DATE(date)'))
-            ->get();
+        $sellings = DB::select("
+                SELECT
+                    sellings.date,
+                    SUM(sellings.total_price) AS total_selling,
+                    COUNT(sellings.id) AS total_transaction,
+                    SUM(total_qty) AS total_item,
+                    SUM(discount_price) AS total_discount,
+                    SUM(total_price - total_cost) AS total_profit
+                FROM sellings
+                JOIN employees ON sellings.employee_id = employees.id
+                WHERE sellings.employee_id IS NOT NULL
+                AND DATE(CONVERT_TZ(sellings.date, 'UTC', ?)) BETWEEN ? AND ?
+                GROUP BY DATE(CONVERT_TZ(sellings.date, 'UTC', ?))
+                ORDER BY DATE(CONVERT_TZ(sellings.date, 'UTC', ?)) ASC
+            ", [
+                config('setting.timezone'),
+                $startDate->format('Y-m-d'),
+                $endDate->format('Y-m-d'),
+                config('setting.timezone'),
+                config('setting.timezone'),
+            ]);
 
         $header = [
             'shop_name' => $about?->shop_name,
             'shop_location' => $about?->shop_location,
             'business_type' => $about?->business_type,
             'owner_name' => $about?->owner_name,
-            'start_date' => $startDate->setTimezone($timezone)->format('d F Y'),
-            'end_date' => $endDate->subDay()->setTimezone($timezone)->format('d F Y'),
+            'start_date' => $startDate->format('d F Y'),
+            'end_date' => $endDate->format('d F Y'),
         ];
         $reports = [];
         $totalSelling = 0;
@@ -54,24 +58,20 @@ class SellingReportService
 
         /** @var Selling $selling */
         foreach ($sellings as $selling) {
-            /** @var SellingDetail $detail */
-            foreach ($selling->sellingDetails as $detail) {
+            $reports[] = [
+                'date' => Carbon::parse($selling->date, 'UTC')->setTimezone($timezone)->format('d/m/Y'),
+                'total_selling' => $this->formatCurrency($selling->total_selling),
+                'total_transaction' => $this->formatCurrency($selling->total_transaction),
+                'total_item' => $this->formatCurrency($selling->total_item),
+                'total_discount' => $this->formatCurrency($selling->total_discount),
+                'total_profit' => $this->formatCurrency($selling->total_profit),
+            ];
 
-                $reports[] = [
-                    'date' => Carbon::parse($selling->date, 'UTC')->setTimezone($timezone)->format('d/m/Y'),
-                    'total_selling' => $this->formatCurrency($selling->total_selling),
-                    'total_transaction' => $this->formatCurrency($selling->total_transaction),
-                    'total_item' => $this->formatCurrency($selling->total_item),
-                    'total_discount' => $this->formatCurrency($selling->total_discount),
-                    'total_profit' => $this->formatCurrency($selling->total_profit),
-                ];
-
-                $totalSelling += $selling->total_selling;
-                $totalTransaction += $selling->total_transaction;
-                $totalItem += $selling->total_item;
-                $totalDiscount += $selling->total_discount;
-                $totalProfit += $selling->total_profit;
-            }
+            $totalSelling += $selling->total_selling;
+            $totalTransaction += $selling->total_transaction;
+            $totalItem += $selling->total_item;
+            $totalDiscount += $selling->total_discount;
+            $totalProfit += $selling->total_profit;
         }
 
         $footer = [
