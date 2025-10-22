@@ -6,24 +6,33 @@
   <p class="mb-4">{{ __('Period') }}: <b>{{ $header['start_date'] }} - {{ $header['end_date'] }}</b></p>
   <x-table class="w-full table-fixed">
     <x-table-header>
-      <x-table-header-cell>SKU</x-table-header-cell>
-      <x-table-header-cell>{{ __('Product Name') }}</x-table-header-cell>
-      <x-table-header-cell>{{ __('Qty') }}</x-table-header-cell>
-      <x-table-header-cell class="number">{{ __('Selling') }}</x-table-header-cell>
+      <x-table-header-cell>@lang('Name')</x-table-header-cell>
+      <x-table-header-cell>@lang('SKU')</x-table-header-cell>
+      <x-table-header-cell>@lang('Selling')</x-table-header-cell>
+      <x-table-header-cell>@lang('Transaction')</x-table-header-cell>
+      <x-table-header-cell>@lang('Item')</x-table-header-cell>
+      <x-table-header-cell>@lang('Discount')</x-table-header-cell>
+      <x-table-header-cell>@lang('Profit')</x-table-header-cell>
     </x-table-header>
     <tbody>
       @foreach($reports as $key => $report)
         <x-table-row>
-          <x-table-cell>{{ $report['sku'] }}</x-table-cell>
-          <x-table-cell>{{ $report['name'] }}</x-table-cell>
-          <x-table-cell>{{ $report['qty'] }}</x-table-cell>
-          <x-table-cell class="number">{{ $report['total_after_discount'] }}</x-table-cell>
+          <x-table-cell>{{ $report['product_name'] }}</x-table-cell>
+          <x-table-cell>{{ $report['product_sku'] }}</x-table-cell>
+          <x-table-cell class="number">{{ $report['total_selling'] }}</x-table-cell>
+          <x-table-cell class="number">{{ $report['total_transaction'] }}</x-table-cell>
+          <x-table-cell class="number">{{ $report['total_item'] }}</x-table-cell>
+          <x-table-cell class="number">{{ $report['total_discount'] }}</x-table-cell>
+          <x-table-cell class="number">{{ $report['total_profit'] }}</x-table-cell>
         </x-table-row>
       @endforeach
-      <x-table-row>
+      <x-table-row class="bg-gray-200 dark:bg-gray-700 font-semibold">
         <x-table-cell colspan="2">{{ __('Total') }}</x-table-cell>
-        <x-table-cell class="number">{{ $footer['total_qty'] }}</x-table-cell>
-        <x-table-cell class="number">{{ $footer['total_net'] }}</x-table-cell>
+        <x-table-cell class="number">{{ $footer['total_selling'] }}</x-table-cell>
+        <x-table-cell class="number">{{ $footer['total_transaction'] }}</x-table-cell>
+        <x-table-cell class="number">{{ $footer['total_item'] }}</x-table-cell>
+        <x-table-cell class="number">{{ $footer['total_discount'] }}</x-table-cell>
+        <x-table-cell class="number">{{ $footer['total_profit'] }}</x-table-cell>
       </x-table-row>
     </tbody>
   </x-table>

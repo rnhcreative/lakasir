@@ -27,10 +27,13 @@ class ProductReportExport implements
     public function headings(): array
     {
         return [
-            'SKU',
             __('Product Name'),
-            __('Qty'),
+            __('SKU'),
             __('Selling'),
+            __('Transaction'),
+            __('Item'),
+            __('Discount'),
+            __('Profit'),
         ];
     }
 
@@ -45,10 +48,13 @@ class ProductReportExport implements
         $data = [];
         foreach ($reports as $report) {
             $data[] = [
-                $report['sku'],
-                $report['name'],
-                $report['qty'],
-                (float) str_replace(',', '', $report['total_after_discount']),
+                $report['product_name'],
+                $report['product_sku'],
+                (float) str_replace('.', '', $report['total_selling']),
+                $report['total_transaction'],
+                $report['total_item'],
+                (int) str_replace('.', '', $report['total_discount']),
+                (float) str_replace('.', '', $report['total_profit']),
             ];
         }
 
@@ -71,13 +77,13 @@ class ProductReportExport implements
 
                 /** Header Row */
                 $sheet->setCellValue('A1', 'Laporan Produk');
-                $sheet->mergeCells('A1:D1');
+                $sheet->mergeCells('A1:G1');
 
                 $sheet->setCellValue('A2', $header['shop_name']);
-                $sheet->mergeCells('A2:D2');
+                $sheet->mergeCells('A2:G2');
 
                 $sheet->setCellValue('A4', __('Period') . ': ' . $header['start_date'] . ' - ' . $header['end_date']);
-                $sheet->mergeCells('A4:D4');
+                $sheet->mergeCells('A4:G4');
 
                 $sheet->getStyle('A1')->applyFromArray([
                     'font' => [
@@ -112,12 +118,15 @@ class ProductReportExport implements
                 /** Footer Row */
                 $lastRow = $sheet->getHighestDataRow();
                 $sheet->setCellValue('A' . ($lastRow + 1), 'Total');
-                $sheet->setCellValue('C' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_qty']));
-                $sheet->setCellValue('D' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_net']));
+                $sheet->setCellValue('C' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_selling']));
+                $sheet->setCellValue('D' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_transaction']));
+                $sheet->setCellValue('E' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_item']));
+                $sheet->setCellValue('F' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_discount']));
+                $sheet->setCellValue('G' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_profit']));
 
                 $sheet->mergeCells('A' . ($lastRow + 1) . ':B' . ($lastRow + 1));
 
-                $sheet->getStyle('A' . ($lastRow + 1) . ':F' . ($lastRow + 1))->applyFromArray([
+                $sheet->getStyle('A' . ($lastRow + 1) . ':G' . ($lastRow + 1))->applyFromArray([
                     'font' => [
                         'bold' => true,
                     ],
