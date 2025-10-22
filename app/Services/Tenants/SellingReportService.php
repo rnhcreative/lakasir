@@ -28,9 +28,7 @@ class SellingReportService
                     SUM(discount_price) AS total_discount,
                     SUM(total_price - total_cost) AS total_profit
                 FROM sellings
-                JOIN employees ON sellings.employee_id = employees.id
-                WHERE sellings.employee_id IS NOT NULL
-                AND DATE(CONVERT_TZ(sellings.date, 'UTC', ?)) BETWEEN ? AND ?
+                WHERE DATE(CONVERT_TZ(sellings.date, 'UTC', ?)) BETWEEN ? AND ?
                 GROUP BY DATE(CONVERT_TZ(sellings.date, 'UTC', ?))
                 ORDER BY DATE(CONVERT_TZ(sellings.date, 'UTC', ?)) ASC
             ", [
