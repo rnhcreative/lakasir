@@ -303,10 +303,11 @@ class Cashier extends Page implements HasForms, HasTable
             ->cashier()
             ->delete();
 
-        Notification::make()
-            ->title(__('Transaction created'))
-            ->success()
-            ->send();
+        // @DISABLED
+        // Notification::make()
+        //     ->title(__('Transaction created'))
+        //     ->success()
+        //     ->send();
 
         $this->mount();
 
