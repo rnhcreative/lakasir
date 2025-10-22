@@ -68,17 +68,24 @@ class SellingResource extends Resource
                     ->label('Discount')
                     ->translateLabel()
                     ->money(config('setting.currency')),
-                TextColumn::make('tax_price')
-                    ->label('Tax')
-                    ->translateLabel()
-                    ->sortable()
-                    ->visible(feature(ProductInitialPrice::class))
-                    ->money(config('setting.currency')),
+                // TextColumn::make('tax_price')
+                //     ->label('Tax')
+                //     ->translateLabel()
+                //     ->sortable()
+                //     ->visible(feature(ProductInitialPrice::class))
+                //     ->money(config('setting.currency')),
                 TextColumn::make('grand_total_price')
                     ->label('Total')
                     ->translateLabel()
                     ->sortable()
                     ->money(config('setting.currency')),
+                TextColumn::make('profit')
+                    ->label(__('Profit'))
+                    ->translateLabel()
+                    ->money(config('setting.currency'))
+                    ->getStateUsing(function (Selling $record) {
+                        return $record->total_price - $record->total_cost;
+                    }),
             ])
             ->searchPlaceholder('Search (Code, User, Customer Number')
             ->header(view('filament.tenant.resources.sellings.headers.overview', [

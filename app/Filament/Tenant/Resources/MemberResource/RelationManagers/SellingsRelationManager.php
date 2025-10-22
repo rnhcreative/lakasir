@@ -9,6 +9,7 @@ use Filament\Tables\Table;
 use App\Models\Tenants\Profile;
 use App\Models\Tenants\Setting;
 use App\Features\ProductInitialPrice;
+use App\Models\Tenants\Selling;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -61,6 +62,14 @@ class SellingsRelationManager extends RelationManager
                     ->translateLabel()
                     ->sortable()
                     ->money(config('setting.currency')),
+                TextColumn::make('total_profit')
+                    ->label(__('Profit'))
+                    ->translateLabel()
+                    ->sortable()
+                    ->money(config('setting.currency'))
+                    ->getStateUsing(function (Selling $record) {
+                        return $record->total_price - $record->total_cost;
+                    }),
             ])
             ->filters([
                 //

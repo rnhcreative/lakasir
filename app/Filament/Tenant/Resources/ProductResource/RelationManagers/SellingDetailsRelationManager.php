@@ -60,11 +60,22 @@ class SellingDetailsRelationManager extends RelationManager
                     ->translateLabel()
                     ->sortable()
                     ->money(config('setting.currency')),
-                Tables\Columns\TextColumn::make('cost')
+                Tables\Columns\TextColumn::make('sub_total')
+                    ->label(__('Sub Total'))
+                    ->getStateUsing(function (SellingDetail $sellingDetail) {
+                        return (($sellingDetail->price - $sellingDetail->discount_price) * $sellingDetail->qty);
+                    })
+                    ->translateLabel()
+                    ->sortable()
+                    ->money(config('setting.currency')),
+                Tables\Columns\TextColumn::make('profit')
                     ->translateLabel()
                     ->visible(feature(ProductInitialPrice::class))
                     ->sortable()
-                    ->money(config('setting.currency')),
+                    ->money(config('setting.currency'))
+                    ->getStateUsing(function (SellingDetail $sellingDetail) {
+                        return (($sellingDetail->price - $sellingDetail->discount_price) * $sellingDetail->qty) - $sellingDetail->cost;
+                    }),
             ])
             ->filters([
                 //
