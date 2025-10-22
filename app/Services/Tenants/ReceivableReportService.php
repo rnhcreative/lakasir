@@ -14,18 +14,10 @@ class ReceivableReportService
     {
         $timezone = config('setting.timezone');
         $about = About::first();
-        $startDate = Carbon::parse($data['start_date'], $timezone)->setTimezone('UTC');
-        $endDate = Carbon::parse($data['end_date'], $timezone)->addDay()->setTimezone('UTC');
+        $startDate = Carbon::parse($data['start_date'], $timezone);
+        $endDate = Carbon::parse($data['end_date'], $timezone);
         $type = $data['type'] ?? 'all';
 
-        $header = [
-            'shop_name' => $about?->shop_name,
-            'shop_location' => $about?->shop_location,
-            'business_type' => $about?->business_type,
-            'owner_name' => $about?->owner_name,
-            'start_date' => $startDate->setTimezone($timezone)->format('d F Y'),
-            'end_date' => $endDate->subDay()->setTimezone($timezone)->format('d F Y'),
-        ];
         $reports = [];
 
         $types = $type === 'all'
@@ -49,7 +41,7 @@ class ReceivableReportService
                 JOIN sellings ON receivables.selling_id = sellings.id
                 JOIN members ON sellings.member_id = members.id
                 JOIN payment_methods ON sellings.payment_method_id = payment_methods.id
-                WHERE receivables.created_at BETWEEN ? AND ?
+                WHERE DATE(CONVERT_TZ(receivables.created_at, 'UTC', ?)) BETWEEN ? AND ?
 
                 UNION ALL
 
@@ -66,15 +58,15 @@ class ReceivableReportService
                 JOIN sellings ON receivables.selling_id = sellings.id
                 JOIN members ON sellings.member_id = members.id
                 JOIN payment_methods ON receivable_payments.payment_method_id = payment_methods.id
-                WHERE receivable_payments.created_at BETWEEN ? AND ?
+                WHERE DATE(CONVERT_TZ(receivable_payments.created_at, 'UTC', ?)) BETWEEN ? AND ?
             ) AS combined
             WHERE combined.type IN ($placeholders)
             ORDER BY combined.date ASC
         ";
 
         $records = DB::select($sql, [
-            $startDate, $endDate, // for first BETWEEN
-            $startDate, $endDate, // for second BETWEEN
+            config('setting.timezone'), $startDate->format('Y-m-d'), $endDate->format('Y-m-d'), // for first BETWEEN
+            config('setting.timezone'), $startDate->format('Y-m-d'), $endDate->format('Y-m-d'), // for second BETWEEN
             ...$types,            // for IN clause
         ]);
 
@@ -98,6 +90,16 @@ class ReceivableReportService
                 $totalPayment += $record->amount;
             }
         }
+
+
+        $header = [
+            'shop_name' => $about?->shop_name,
+            'shop_location' => $about?->shop_location,
+            'business_type' => $about?->business_type,
+            'owner_name' => $about?->owner_name,
+            'start_date' => $startDate->format('d F Y'),
+            'end_date' => $endDate->format('d F Y'),
+        ];
 
         $footer = [
             'total_debt' => $this->formatCurrency($totalDebt),

@@ -14,8 +14,8 @@ class ReturSellingReportService
     {
         $timezone = config('setting.timezone');
         $about = About::first();
-        $startDate = Carbon::parse($data['start_date'], $timezone)->setTimezone('UTC');
-        $endDate = Carbon::parse($data['end_date'], $timezone)->addDay()->setTimezone('UTC');
+        $startDate = Carbon::parse($data['start_date'], $timezone);
+        $endDate = Carbon::parse($data['end_date'], $timezone);
 
         $records = ReturSelling::query()
             ->select()
@@ -24,9 +24,11 @@ class ReturSellingReportService
                 'sellingDetail.selling',
                 'newProduct',
             )
-            ->when($data['start_date'] && $data['end_date'], function (Builder $query) use ($startDate, $endDate) {
-                $query->whereBetween('created_at', [$startDate, $endDate]);
-            })
+            ->whereRaw("DATE(CONVERT_TZ(created_at, 'UTC', ?)) BETWEEN ? AND ?", [
+                config('setting.timezone'),
+                $startDate->format('Y-m-d'),
+                $endDate->format('Y-m-d'),
+            ])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -35,8 +37,8 @@ class ReturSellingReportService
             'shop_location' => $about?->shop_location,
             'business_type' => $about?->business_type,
             'owner_name' => $about?->owner_name,
-            'start_date' => $startDate->setTimezone($timezone)->format('d F Y'),
-            'end_date' => $endDate->subDay()->setTimezone($timezone)->format('d F Y'),
+            'start_date' => $startDate->format('d F Y'),
+            'end_date' => $endDate->format('d F Y'),
         ];
         $reports = [];
 
