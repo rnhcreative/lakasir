@@ -36,6 +36,7 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Api\Tenants\Reports\PurchasingReportController;
 use App\Http\Controllers\Api\Tenants\Settings\SecureInitialPriceController;
 use App\Http\Controllers\CashflowController;
+use App\Http\Controllers\CategoryProductReportController;
 use App\Http\Controllers\ReturSellingReportController;
 
 Route::middleware([
@@ -53,6 +54,8 @@ Route::middleware([
             ->name('selling-report.generate');
         Route::get('/member/product-report/generate', ProductReportController::class)
             ->name('product-report.generate');
+        Route::get('/member/category-product-report/generate', CategoryProductReportController::class)
+            ->name('category-product-report.generate');
         Route::get('/member/member-report/generate', MemberReportController::class)
             ->name('member-report.generate');
         Route::get('/member/cashier-report/generate', CashierReportController::class)

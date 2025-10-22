@@ -14,6 +14,7 @@ use App\Filament\Tenant\Pages\EmployeeReport;
 use App\Filament\Tenant\Pages\PurchasingReport;
 use App\Filament\Tenant\Pages\ReceivableReport;
 use App\Features\Purchasing as PurchasingFeature;
+use App\Filament\Tenant\Pages\CategoryProductReport;
 use App\Filament\Tenant\Pages\ReturSellingReport;
 use AymanAlhattami\FilamentPageWithSidebar\PageNavigationItem;
 use AymanAlhattami\FilamentPageWithSidebar\FilamentPageSidebar;
@@ -28,6 +29,7 @@ trait HasReportPageSidebar
         $items = [
             static::generateNavigationItem(SellingReport::class)->group(__('Choose Report Type')),
             static::generateNavigationItem(ProductReport::class)->group(__('Choose Report Type')),
+            static::generateNavigationItem(CategoryProductReport::class)->group(__('Choose Report Type')),
             static::generateNavigationItem(MemberReport::class)->group(__('Choose Report Type')),
             static::generateNavigationItem(EmployeeReport::class)->group(__('Choose Report Type')),
             static::generateNavigationItem(ReceivableReport::class)->group(__('Choose Report Type')),
