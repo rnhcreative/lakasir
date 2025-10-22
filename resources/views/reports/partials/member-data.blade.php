@@ -21,8 +21,8 @@
           <x-table-cell>{{ $report['name'] }}</x-table-cell>
           <x-table-cell>{{ $report['email'] }}</x-table-cell>
           <x-table-cell class="number">{{ $report['total_selling'] }}</x-table-cell>
-          <x-table-cell>{{ $report['total_transaction'] }}</x-table-cell>
-          <x-table-cell>{{ $report['total_item'] }}</x-table-cell>
+          <x-table-cell class="number">{{ $report['total_transaction'] }}</x-table-cell>
+          <x-table-cell class="number">{{ $report['total_item'] }}</x-table-cell>
           <x-table-cell class="number">{{ $report['total_discount'] }}</x-table-cell>
           <x-table-cell class="number">{{ $report['total_profit'] }}</x-table-cell>
         </x-table-row>
