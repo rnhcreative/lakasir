@@ -4,6 +4,7 @@ namespace App\Filament\Tenant\Pages;
 
 use App\Exports\ProductReportExport;
 use App\Filament\Tenant\Pages\Traits\HasReportPageSidebar;
+use App\Filament\Tenant\Pages\Traits\UseDateFilterForm;
 use App\Services\Tenants\ProductReportService;
 use App\Traits\HasTranslatableResource;
 use Carbon\Carbon;
@@ -19,7 +20,7 @@ use Livewire\Attributes\Url;
 
 class ProductReport extends Page implements HasActions, HasForms
 {
-    use HasReportPageSidebar, HasTranslatableResource, InteractsWithFormActions, InteractsWithForms;
+    use HasReportPageSidebar, HasTranslatableResource, InteractsWithFormActions, InteractsWithForms, UseDateFilterForm;
 
     protected static ?string $title = '';
 
@@ -33,6 +34,7 @@ class ProductReport extends Page implements HasActions, HasForms
     public ?array $data = [
         'start_date' => null,
         'end_date' => null,
+        'period' => null,
     ];
 
     public $reports = null;
@@ -44,24 +46,7 @@ class ProductReport extends Page implements HasActions, HasForms
 
     public function form(Form $form): Form
     {
-        return $form->schema([
-            DatePicker::make('start_date')
-                ->translateLabel()
-                ->date()
-                ->closeOnDateSelection()
-                ->required()
-                ->default(now())
-                ->native(false),
-            DatePicker::make('end_date')
-                ->translateLabel()
-                ->date()
-                ->required()
-                ->closeOnDateSelection()
-                ->default(now())
-                ->native(false),
-        ])
-            ->columns(2)
-            ->statePath('data');
+        return $this->generateDateFilterForm($form);
     }
 
     public function getFormActions(): array
@@ -69,12 +54,6 @@ class ProductReport extends Page implements HasActions, HasForms
         return [
             Action::make(__('Generate'))
                 ->action('generate'),
-            // Action::make(__('Print'))
-            //     ->color('warning')
-            //     ->extraAttributes([
-            //         'id' => 'print-btn',
-            //     ])
-            //     ->icon('heroicon-o-printer'),
             Action::make('download-pdf')
                 ->label(__('Download as PDF'))
                 ->action('downloadPdf')
@@ -93,6 +72,7 @@ class ProductReport extends Page implements HasActions, HasForms
         $this->validate([
             'data.start_date' => 'required',
             'data.end_date' => 'required',
+            'data.period' => 'required',
         ]);
 
         $this->reports = $productReportService->generate($this->data);
@@ -103,6 +83,7 @@ class ProductReport extends Page implements HasActions, HasForms
         $this->validate([
             'data.start_date' => 'required',
             'data.end_date' => 'required',
+            'data.period' => 'required',
         ]);
 
         return $this->redirectRoute('product-report.generate', $this->data);
@@ -113,6 +94,7 @@ class ProductReport extends Page implements HasActions, HasForms
         $this->validate([
             'data.start_date' => 'required',
             'data.end_date' => 'required',
+            'data.period' => 'required',
         ]);
 
         $filename = 'product-report-'. Carbon::parse($this->data['start_date'])->format('d-m-Y') . '_' . Carbon::parse($this->data['end_date'])->format('d-m-Y')  .'.xlsx';

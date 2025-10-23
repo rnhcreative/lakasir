@@ -13,14 +13,14 @@ use App\Traits\HasTranslatableResource;
 use Filament\Forms\Components\DatePicker;
 use Filament\Actions\Contracts\HasActions;
 use App\Services\Tenants\MemberReportService;
-use App\Services\Tenants\SellingReportService;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use App\Filament\Tenant\Pages\Traits\HasReportPageSidebar;
+use App\Filament\Tenant\Pages\Traits\UseDateFilterForm;
 
 class MemberReport extends Page implements HasActions, HasForms
 {
-    use HasReportPageSidebar, HasTranslatableResource, InteractsWithFormActions, InteractsWithForms;
+    use HasReportPageSidebar, HasTranslatableResource, InteractsWithFormActions, InteractsWithForms, UseDateFilterForm;
 
     protected static ?string $title = '';
 
@@ -34,6 +34,7 @@ class MemberReport extends Page implements HasActions, HasForms
     public ?array $data = [
         'start_date' => null,
         'end_date' => null,
+        'period' => null,
     ];
 
     public $reports = null;
@@ -45,26 +46,7 @@ class MemberReport extends Page implements HasActions, HasForms
 
     public function form(Form $form): Form
     {
-        return $form->schema([
-            DatePicker::make('start_date')
-                ->translateLabel()
-                ->date()
-                ->translateLabel()
-                ->required()
-                ->closeOnDateSelection()
-                ->default(now())
-                ->native(false),
-            DatePicker::make('end_date')
-                ->translateLabel()
-                ->date()
-                ->translateLabel()
-                ->closeOnDateSelection()
-                ->required()
-                ->default(now())
-                ->native(false),
-        ])
-            ->columns(2)
-            ->statePath('data');
+        return $this->generateDateFilterForm($form);
     }
 
     public function getFormActions(): array
@@ -90,6 +72,7 @@ class MemberReport extends Page implements HasActions, HasForms
         $this->validate([
             'data.start_date' => 'required',
             'data.end_date' => 'required',
+            'data.period' => 'required',
         ]);
 
         $this->reports = $memberReportService->generate($this->data);
@@ -100,6 +83,7 @@ class MemberReport extends Page implements HasActions, HasForms
         $this->validate([
             'data.start_date' => 'required',
             'data.end_date' => 'required',
+            'data.period' => 'required',
         ]);
 
         return $this->redirectRoute('member-report.generate', $this->data);
@@ -110,6 +94,7 @@ class MemberReport extends Page implements HasActions, HasForms
         $this->validate([
             'data.start_date' => 'required',
             'data.end_date' => 'required',
+            'data.period' => 'required',
         ]);
 
         $filename = 'member-report-'. Carbon::parse($this->data['start_date'])->format('d-m-Y') . '_' . Carbon::parse($this->data['end_date'])->format('d-m-Y')  .'.xlsx';
