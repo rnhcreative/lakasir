@@ -28,11 +28,11 @@ class SellingResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
-    protected static ?string $navigationLabel = 'Selling History';
+    protected static ?string $navigationLabel = 'Transactions';
 
     public static function getBreadcrumb(): string
     {
-        return __('Selling History');
+        return __('Transactions');
     }
 
     public static function table(Table $table): Table
