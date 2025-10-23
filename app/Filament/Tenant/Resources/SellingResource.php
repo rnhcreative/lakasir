@@ -2,9 +2,7 @@
 
 namespace App\Filament\Tenant\Resources;
 
-use App\Features\ProductInitialPrice;
 use App\Filament\Tenant\Resources\SellingResource\Pages;
-use App\Filament\Tenant\Resources\SellingResource\RelationManagers\ReturSellingsRelationManager;
 use App\Models\Tenants\Employee;
 use App\Models\Tenants\Member;
 use App\Models\Tenants\PaymentMethod;
@@ -68,12 +66,6 @@ class SellingResource extends Resource
                     ->label('Discount')
                     ->translateLabel()
                     ->money(config('setting.currency')),
-                // TextColumn::make('tax_price')
-                //     ->label('Tax')
-                //     ->translateLabel()
-                //     ->sortable()
-                //     ->visible(feature(ProductInitialPrice::class))
-                //     ->money(config('setting.currency')),
                 TextColumn::make('grand_total_price')
                     ->label('Total')
                     ->translateLabel()
