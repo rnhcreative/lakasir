@@ -25,12 +25,12 @@ class SellingOverview extends BaseWidget
         $discountToday = $this->getDiscountToday();
 
         return [
-            can('read revenue overview') ? Stat::make(__('Today total revenue'), $totalRevenue['total_revenue'])
+            can('read revenue overview') ? Stat::make(__('Today profit'), $totalRevenue['total_revenue'])
                 ->descriptionIcon($totalRevenue['icon'])
                 ->description($totalRevenue['description'])
                 ->chart([$totalRevenue['yesterdayRevenue'], $totalRevenue['todayRevenue']])
                 ->color($totalRevenue['color']) : null,
-            can('read sales overview') ? Stat::make(__('Sales today'), $todaySales) : null,
+            can('read sales overview') ? Stat::make(__('Today transactions'), $todaySales) : null,
             can('read sales overview') ? Stat::make(__('Discount today'), $discountToday) : null,
         ];
     }
@@ -70,8 +70,8 @@ class SellingOverview extends BaseWidget
         $startOfDay = $carbon->startOfDay();
         $startOfYesterday = $startOfDay->copy()->subDay();
 
+        $todayRevenue = $this->calculateRevenue($startOfDay, $startOfDay);
         $yesterdayRevenue = $this->calculateRevenue($startOfYesterday, $startOfDay);
-        $todayRevenue = $this->calculateRevenue($startOfDay, $startOfDay->copy()->addDay());
 
         $totalYesterdayRevenue = $this->calculateTotalRevenue($yesterdayRevenue);
         $totalTodayRevenue = $this->calculateTotalRevenue($todayRevenue);
@@ -103,9 +103,10 @@ class SellingOverview extends BaseWidget
                 DB::raw('SUM(sellings.total_cost) as total_cost'),
             )
             ->isPaid()
-            ->whereBetween('sellings.created_at', [
-                $start->setTimezone('UTC'),
-                $end->setTimezone('UTC'),
+            ->whereRaw("DATE(CONVERT_TZ(sellings.date, 'UTC', ?)) BETWEEN ? AND ?", [
+                config('setting.timezone'),
+                $start->format('Y-m-d'),
+                $end->format('Y-m-d'),
             ])
             ->first();
     }
