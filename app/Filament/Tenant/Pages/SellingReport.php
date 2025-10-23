@@ -47,26 +47,6 @@ class SellingReport extends Page implements HasActions, HasForms
     public function form(Form $form): Form
     {
         return $this->generateDateFilterForm($form);
-        // return $form->schema([
-        //     DatePicker::make('start_date')
-        //         ->translateLabel()
-        //         ->date()
-        //         ->translateLabel()
-        //         ->required()
-        //         ->closeOnDateSelection()
-        //         ->default(now())
-        //         ->native(false),
-        //     DatePicker::make('end_date')
-        //         ->translateLabel()
-        //         ->date()
-        //         ->translateLabel()
-        //         ->closeOnDateSelection()
-        //         ->required()
-        //         ->default(now())
-        //         ->native(false),
-        // ])
-        //     ->columns(2)
-        //     ->statePath('data');
     }
 
     public function getFormActions(): array
