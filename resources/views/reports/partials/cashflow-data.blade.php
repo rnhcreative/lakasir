@@ -13,8 +13,8 @@
             <x-table-row class="bg-gray-200">
               <x-table-header-cell>{{ __('Date') }}</x-table-header-cell>
               <x-table-header-cell>{{ __('Description') }}</x-table-header-cell>
-              <x-table-header-cell>{{ __('Debit') }}</x-table-header-cell>
-              <x-table-header-cell>{{ __('Kredit') }}</x-table-header-cell>
+              <x-table-header-cell>{{ __('Kas Masuk') }}</x-table-header-cell>
+              <x-table-header-cell>{{ __('Kas Keluar') }}</x-table-header-cell>
               <x-table-header-cell>{{ __('Balance') }}</x-table-header-cell>
             </x-table-row>
             @foreach($cashflows['rows'] as $cashflow)
