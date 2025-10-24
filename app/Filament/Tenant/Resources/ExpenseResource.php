@@ -65,7 +65,8 @@ class ExpenseResource extends Resource
                     ->required(),
                 Forms\Components\DatePicker::make('expense_date')
                     ->required()
-                    ->label(__('Date')),
+                    ->label(__('Date'))
+                    ->default(now()),
 
                 Forms\Components\Textarea::make('note')
                     ->label(__('Note'))
