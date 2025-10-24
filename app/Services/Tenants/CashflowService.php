@@ -122,12 +122,12 @@ class CashflowService
             );
 
         // Gabungkan semua jadi satu daftar arus kas
-        $cashFlows = $inCashflow->merge($outCashflow)
-            ->sortBy('date');
+        // dan urutkan berdasarkan tanggal tetapi pemasukan sebelum pengeluaran pada tanggal yang sama
+        $cashFlows = $inCashflow->merge($outCashflow)->sortBy(function ($item) {
+            return Carbon::parse($item->date)->format('YmdHis') . ($item->type === 'debit' ? '0' : '1');
+        });
 
         $groupedCashFlows = $cashFlows->groupBy('payment_method_name');
-
-        Log::info('CashFlows data', compact('cashFlows'));
 
         $reports = $groupedCashFlows->map(function ($items, $paymentMethodName) {
             $saldo = 0;
