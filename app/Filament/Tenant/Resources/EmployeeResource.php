@@ -41,7 +41,8 @@ class EmployeeResource extends Resource
                     ->unique(ignoreRecord: true)
                     ->placeholder(__('Please provide a valid email address or whatsapp/phone number.')),
                 DatePicker::make('joined_date')
-                    ->translateLabel(),
+                    ->translateLabel()
+                    ->default(now()),
             ]);
     }
 

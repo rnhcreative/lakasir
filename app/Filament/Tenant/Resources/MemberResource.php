@@ -43,7 +43,8 @@ class MemberResource extends Resource
                 TextInput::make('address')
                     ->label(__('Address')),
                 DatePicker::make('joined_date')
-                    ->translateLabel(),
+                    ->translateLabel()
+                    ->default(now()),
             ]);
     }
 
