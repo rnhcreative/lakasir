@@ -27,6 +27,13 @@ class Cashflow extends Page implements HasActions, HasForms
 
     protected static string $view = 'filament.tenant.pages.cashflow';
 
+    protected static ?string $navigationLabel = 'Cashflow Book';
+
+    public static function getBreadcrumb(): string
+    {
+        return __('Cashflow Book');
+    }
+
     #[Url]
     public ?array $data = [
         'start_date' => null,

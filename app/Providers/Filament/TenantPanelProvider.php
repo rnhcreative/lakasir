@@ -221,7 +221,7 @@ class TenantPanelProvider extends PanelProvider
             ]),
             NavigationGroup::make(__('Setting'))->collapsible(false)->items([
                 $this->generateNavigationItem(GeneralSetting::class),
-                $this->generateNavigationItem(Printer::class),
+                //$this->generateNavigationItem(Printer::class),
             ]),
         ];
     }
