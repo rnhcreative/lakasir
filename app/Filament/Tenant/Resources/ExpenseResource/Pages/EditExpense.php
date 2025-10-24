@@ -21,4 +21,12 @@ class EditExpense extends EditRecord
     {
         return '/member/expenses';
     }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['expense_date'] = \Carbon\Carbon::parse($data['expense_date'])
+            ->setTimeFrom(\Carbon\Carbon::now());
+
+        return $data;
+    }
 }

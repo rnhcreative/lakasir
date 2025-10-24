@@ -14,4 +14,12 @@ class CreateExpense extends CreateRecord
     {
         return '/member/expenses';
     }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['expense_date'] = \Carbon\Carbon::parse($data['expense_date'])
+            ->setTimeFrom(\Carbon\Carbon::now());
+
+        return $data;
+    }
 }
