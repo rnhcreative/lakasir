@@ -7,12 +7,15 @@ use App\Models\Tenants\Receivable;
 use App\Models\Tenants\ReceivablePayment;
 use Exception;
 use Filament\Facades\Filament;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class ReceivablePaymentService
 {
     public function create(Receivable $receivable, array $data): ?Receivable
     {
+        $data['date'] = Carbon::parse($data['date'])->setTimeFrom(Carbon::now());
+
         try {
             DB::beginTransaction();
             $data = array_merge($data, [
@@ -41,6 +44,7 @@ class ReceivablePaymentService
     public function createByMember(Member $member, array $data)
     {
         $receivables = $member->receivables()->where('rest_receivable', '>', 0)->orderBy('created_at', 'asc')->get();
+        $data['date'] = Carbon::parse($data['date'])->setTimeFrom(Carbon::now());
 
         try {
             DB::beginTransaction();
