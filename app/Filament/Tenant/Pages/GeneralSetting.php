@@ -186,6 +186,9 @@ class GeneralSetting extends Page implements HasActions, HasForms
             'about.shop_location' => 'required',
             // 'about.currency' => 'required',
             // 'data.photo' => 'required',
+            'about.receipt_header' => 'nullable',
+            'about.receipt_footer' => 'nullable',
+            'about.receipt_logo_path' => 'nullable',
         ]);
 
         if (isset($this->about['photo']) && $this->about['photo'] != null && array_values($this->about['photo'])[0] instanceof TemporaryUploadedFile) {

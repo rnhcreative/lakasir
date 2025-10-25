@@ -164,23 +164,23 @@ document.getElementById('printButton').addEventListener('click', async () => {
           let data = esc + "@"; // initialize printer
 
           // --- HEADER ---
+          data += "\n";
           data += "\x1B\x61\x01"; // align center
-          data += (about?.shop_name || "TOKO TANPA NAMA") + "\n";
-          if (about?.shop_location) data += about.shop_location + "\n";
-          data += "------------------------------\n";
+          data += "\x1D\x21\x10"; // GS ! n → double width + height
+          data += (about?.shop_name).toUpperCase() + "\n\n";
 
-          // --- INFO TRANSAKSI ---
-          data += "\x1B\x61\x00"; // align left
-          data += `Kasir : ${selling.user.name}\n`;
-          if (selling.table) data += `Meja  : ${selling.table.number}\n`;
-          data += `Nomor: ${selling.code}\n`;
-          if (selling.member) data += `Pelanggan: ${selling.member.name}\n`;
+          // Kembalikan ukuran ke normal
+          data += "\x1D\x21\x00"; // normal size
+
+          if (about?.receipt_header) data += about.receipt_header + "\n\n";
+
+          data += lineFormat(selling.date, "#" + selling.code);
           data += "------------------------------\n";
 
           // --- ITEM DETAIL ---
           selling.selling_details.forEach(detail => {
             let subtotal = detail.price * detail.qty;
-            let line = detail.product.name + "\n";
+            let line = lineFormat(detail.product.name, "");
             line += lineFormat(`${moneyFormat(detail.price)} x ${detail.qty}`, moneyFormat(subtotal));
             if (detail.discount_price > 0) {
               subtotal -= detail.discount_price;
@@ -190,25 +190,15 @@ document.getElementById('printButton').addEventListener('click', async () => {
           });
 
           data += "------------------------------\n";
-
-          // --- TAX & TOTAL ---
-          if ("@js(feature(SellingTax::class))" == 'true') {
-            data += `Pajak (${selling.tax}%): ${moneyFormat(selling.tax_price)}\n`;
-          }
-
-          data += lineFormat("Subtotal", moneyFormat(selling.total_price));
-          data += lineFormat("Diskon", (selling.discount_price > 0 ? "-" : moneyFormat(selling.discount_price)));
           data += lineFormat("Total", moneyFormat(selling.grand_total_price));
-          data += "------------------------------\n";
           data += lineFormat("Tunai", moneyFormat(selling.payed_money));
           data += lineFormat("Kembali", moneyFormat(selling.money_changes));
           data += "------------------------------\n";
 
           // --- FOOTER ---
           data += "\x1B\x61\x01"; // align center
-          data += "Terima kasih telah berbelanja!\n";
-          if (about?.footer) data += about.footer + "\n";
-          data += "------------------------------\n";
+
+          data += about.receipt_footer + "\n";
 
           // pastikan kertas keluar penuh
           data += "\x1B\x61\x00"; // reset align kiri
@@ -217,13 +207,13 @@ document.getElementById('printButton').addEventListener('click', async () => {
           // kalau printer support auto-cutter
           data += esc + "d" + "\x05"; // feed + cut
 
-          // 5️⃣ Kirim ke printer (⬅️ ini terakhir)
-          await qz.print(config, [{
-            type: 'raw',
-            format: 'plain',
+          // kirim perintah print ke QZ Tray
+          const printData = [
+            { type: 'raw', format: 'image', flavor: 'file', data: window.location.origin + '/assets/logo/receipt-logo-centered.png', options: { language: "ESCPOS", dotDensity: 'double' } },
             data
-          }]);
+          ];
 
+          await qz.print(config, printData);
         } catch (err) {
           console.error("❌ Print error:", err);
         }

@@ -21,6 +21,8 @@ class AboutService
                 'shop_location',
                 'business_type',
                 'other_business_type',
+                'receipt_header',
+                'receipt_footer',
             ]));
 
         $owner = User::owner()->first();

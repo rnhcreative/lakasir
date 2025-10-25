@@ -63,6 +63,22 @@ class About extends Model
                 })
                 ->imageEditorMode(2)
                 ->translateLabel(),
+            Textarea::make('receipt_header')
+                ->rows(5)
+                ->translateLabel(),
+            Textarea::make('receipt_footer')
+                ->rows(5)
+                ->translateLabel(),
+            // FileUpload::make('receipt_logo_path')
+            //     ->getUploadedFileUsing(function ($file, string|array|null $storedFileNames, $component) {
+            //         $static = new static;
+
+            //         $file = str($file)->remove(config('app.url'));
+
+            //         return $static->getUploadedFileUsing($component, $file, $storedFileNames);
+            //     })
+            //     ->imageEditorMode(2)
+            //     ->translateLabel(),
             Actions::make([
                 Action::make('Save')
                     ->translateLabel()
