@@ -32,6 +32,7 @@ use Filament\Support\RawJs;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as CollectionSupport;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -140,6 +141,10 @@ class Cashier extends Page implements HasForms, HasTable
                     ->label('Member')
                     ->getSearchResultsUsing(function (string $search): array {
                         return Member::query()
+                            ->select(
+                                'id',
+                                DB::raw("CONCAT(name, ' - ', email) AS name")
+                            )
                             ->where('name', 'like', "%{$search}%")
                             ->orWhere('email', 'like', "%{$search}%")
                             ->orWhere('code', 'like', "%{$search}%")
