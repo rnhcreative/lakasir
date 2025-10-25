@@ -47,6 +47,7 @@ use App\Filament\Tenant\Pages\CashierReport;
 use App\Filament\Tenant\Pages\ProductReport;
 use App\Filament\Tenant\Pages\SellingReport;
 use App\Filament\Tenant\Pages\GeneralSetting;
+use App\Filament\Tenant\Pages\ProfitLoss;
 use App\Filament\Tenant\Pages\PurchasingReport;
 use App\Filament\Tenant\Resources\RoleResource;
 use App\Filament\Tenant\Resources\UserResource;
@@ -184,6 +185,7 @@ class TenantPanelProvider extends PanelProvider
             $this->generateNavigationItem(ReceivableResource::class, Receivable::class),
             $this->generateNavigationItem(ExpenseResource::class, Expense::class),
             $this->generateNavigationItem(Cashflow::class),
+            $this->generateNavigationItem(ProfitLoss::class),
         ];
     }
 

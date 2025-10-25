@@ -37,6 +37,7 @@ use App\Http\Controllers\Api\Tenants\Reports\PurchasingReportController;
 use App\Http\Controllers\Api\Tenants\Settings\SecureInitialPriceController;
 use App\Http\Controllers\CashflowController;
 use App\Http\Controllers\CategoryProductReportController;
+use App\Http\Controllers\ProfitLossController;
 use App\Http\Controllers\ReturSellingReportController;
 
 Route::middleware([
@@ -68,6 +69,8 @@ Route::middleware([
             ->name('expense-report.generate');
         Route::get('/member/cashflow/generate', CashflowController::class)
             ->name('cashflow.generate');
+        Route::get('/member/profit-loss/generate', ProfitLossController::class)
+            ->name('profit-loss.generate');
         Route::get('/member/retur-selling-report/generate', ReturSellingReportController::class)
             ->name('retur-selling-report.generate');
         Route::view('/member/sellings/{selling}/print', 'filament.tenant.pages.selling.print-receipt')

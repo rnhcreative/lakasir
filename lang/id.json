@@ -411,7 +411,7 @@
     "Expense": "Pengeluaran",
     "Expense Type": "Tipe Pengeluaran",
     "Expense Report": "Laporan Pengeluaran",
-    "Cashflow": "Arus Kas",
+    "Cashflow": "Buku Kas",
     "Last Year": "Tahun Lalu",
     "Description": "Keterangan",
     "Balance": "Saldo",
@@ -428,5 +428,12 @@
     "Profit": "Laba",
     "Category Product Report": "Laporan Kategori Produk",
     "Transactions": "Transaksi",
-    "Period": "Periode"
+    "Period": "Periode",
+    "Today profit": "Laba hari ini",
+    "Today transactions": "Transaksi hari ini",
+    "Cashflow Book": "Buku Kas",
+    "Receipt Header": "Header Nota",
+    "Receipt Footer": "Footer Nota",
+    "Receipt Logo": "Logo Nota",
+    "ProfitLoss Report": "Laporan Laba Rugi"
 }

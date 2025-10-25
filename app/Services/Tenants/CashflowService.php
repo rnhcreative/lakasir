@@ -2,6 +2,7 @@
 
 namespace App\Services\Tenants;
 use App\Models\Tenants\About;
+use FontLib\Table\Type\loca;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Number;
 use Illuminate\Support\Collection;
@@ -184,6 +185,6 @@ class CashflowService
 
     private function formatCurrency($value)
     {
-        return Number::format($value);
+        return Number::format($value, locale: config('setting.locale'));
     }
 }
