@@ -66,12 +66,5 @@ class AppServiceProvider extends ServiceProvider
 
         Feature::resolveScopeUsing(fn ($driver) => null);
         Feature::discover();
-
-        if (config('app.env') === 'production') {
-            URL::forceScheme('https');
-        }
-
-        $url = request()->getSchemeAndHttpHost();
-        config(['app.url' => $url]);
     }
 }
