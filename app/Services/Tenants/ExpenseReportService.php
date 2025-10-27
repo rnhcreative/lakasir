@@ -20,9 +20,6 @@ class ExpenseReportService
 
         $records = Expense::query()
             ->with(['expenseType', 'paymentMethod'])
-            ->when($data['start_date'] && $data['end_date'], function (Builder $query) use ($startDate, $endDate) {
-                $query->whereBetween('expense_date', [$startDate, $endDate]);
-            })
             ->whereRaw("DATE(CONVERT_TZ(expense_date, 'UTC', ?)) BETWEEN ? AND ?", [
                 config('setting.timezone'),
                 $startDate->format('Y-m-d'),
