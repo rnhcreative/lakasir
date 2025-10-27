@@ -2,6 +2,7 @@
 
 namespace App\Filament\Tenant\Pages;
 
+use App\Exports\ProfitLossExport;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
@@ -191,11 +192,11 @@ class ProfitLoss extends Page implements HasActions, HasForms
             'data.end_date' => 'required',
         ]);
 
-        // $filename = 'profit-loss-'. Carbon::parse($this->data['start_date'])->format('d-m-Y') . '_' . Carbon::parse($this->data['end_date'])->format('d-m-Y')  .'.xlsx';
+        $filename = 'profit-loss-'. Carbon::parse($this->data['start_date'])->format('d-m-Y') . '_' . Carbon::parse($this->data['end_date'])->format('d-m-Y')  .'.xlsx';
 
-        // return (new CashflowExport(
-        //     cashflowService: $profitLossService,
-        //     data: $this->data
-        // ))->download($filename);
+        return (new ProfitLossExport(
+            profitLossService: $profitLossService,
+            data: $this->data
+        ))->download($filename);
     }
 }
