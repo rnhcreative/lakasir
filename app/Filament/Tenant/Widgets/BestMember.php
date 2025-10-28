@@ -56,17 +56,55 @@ class BestMember extends BaseWidget
                     ->query(function ($query, array $data) {
                         $value = $data['value'] ?? 'today';
                         if ($value === 'today') {
-                            $query->whereDate('date', today()->toDateString());
+                            $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?) = ?)", [
+                                config('app.timezone'),
+                                today(config('app.timezone'))->format('Y-m-d'),
+                            ]);
                         } elseif ($value === 'this_week') {
-                            $query->whereBetween('date', [today()->startOfWeek()->toDateString(), today()->endOfWeek()->toDateString()]);
+                            $startDate = today(config('app.timezone'))->startOfWeek();
+                            $endDate = today(config('app.timezone'))->endOfWeek();
+
+                            $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?)) BETWEEN ? AND ?", [
+                                config('app.timezone'),
+                                $startDate->format('Y-m-d'),
+                                $endDate->format('Y-m-d'),
+                            ]);
                         } elseif ($value === 'last_week') {
-                            $query->whereBetween('date', [today()->subWeek()->startOfWeek()->toDateString(), today()->subWeek()->endOfWeek()->toDateString()]);
+                            $startDate = today(config('app.timezone'))->subWeek()->startOfWeek();
+                            $endDate = today(config('app.timezone'))->subWeek()->endOfWeek();
+
+                            $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?)) BETWEEN ? AND ?", [
+                                config('app.timezone'),
+                                $startDate->format('Y-m-d'),
+                                $endDate->format('Y-m-d'),
+                            ]);
                         } elseif ($value === 'this_month') {
-                            $query->whereBetween('date', [today()->startOfMonth()->toDateString(), today()->endOfMonth()->toDateString()]);
+                            $startDate = today(config('app.timezone'))->startOfMonth();
+                            $endDate = today(config('app.timezone'))->endOfMonth();
+
+                            $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?)) BETWEEN ? AND ?", [
+                                config('app.timezone'),
+                                $startDate->format('Y-m-d'),
+                                $endDate->format('Y-m-d'),
+                            ]);
                         } elseif ($value === 'last_month') {
-                            $query->whereBetween('date', [today()->subMonth()->startOfMonth()->toDateString(), today()->subMonth()->endOfMonth()->toDateString()]);
+                            $startDate = today(config('app.timezone'))->subMonth()->startOfMonth();
+                            $endDate = today(config('app.timezone'))->subMonth()->endOfMonth();
+
+                            $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?)) BETWEEN ? AND ?", [
+                                config('app.timezone'),
+                                $startDate->format('Y-m-d'),
+                                $endDate->format('Y-m-d'),
+                            ]);
                         } elseif ($value === 'this_year') {
-                            $query->whereBetween('date', [today()->startOfYear()->toDateString(), today()->endOfYear()->toDateString()]);
+                            $startDate = today(config('app.timezone'))->startOfYear();
+                            $endDate = today(config('app.timezone'))->endOfYear();
+
+                            $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?)) BETWEEN ? AND ?", [
+                                config('app.timezone'),
+                                $startDate->format('Y-m-d'),
+                                $endDate->format('Y-m-d'),
+                            ]);
                         }
                     })
                     ->selectablePlaceholder(false),

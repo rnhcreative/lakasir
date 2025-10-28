@@ -53,7 +53,6 @@ class BestSellingProduct extends BaseWidget
                     ->default('today')
                     ->query(function ($query, array $data) {
                         $value = $data['value'] ?? 'today';
-                        $now = now();
                         if ($value === 'today') {
                             $query->whereHas('selling', function ($query) {
                                 $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?) = ?)", [
