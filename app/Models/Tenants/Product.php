@@ -146,7 +146,9 @@ class Product extends Model
                 $url = request()->getSchemeAndHttpHost();
 
                 $formatedImages = \collect($images)->map(function ($image) use ($url) {
-                    return Str::replace('http://localhost', $url, $image);
+                    $image = preg_replace('/^.*(?=\/storage)/', '', $image);
+
+                    return $url . '/' . ltrim($image, '/');
                 });
 
                 return $formatedImages;
@@ -224,7 +226,9 @@ class Product extends Model
                 }
 
                 $url = request()->getSchemeAndHttpHost();
-                $image = Str::replace('http://localhost', $url, $image);
+
+                $image = preg_replace('/^.*(?=\/storage)/', '', $image);
+                $image = $url . '/' . ltrim($image, '/');
 
                 return $image;
             }
