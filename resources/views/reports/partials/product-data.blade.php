@@ -6,8 +6,7 @@
   <p class="mb-4">{{ __('Period') }}: <b>{{ $header['start_date'] }} - {{ $header['end_date'] }}</b></p>
   <x-table class="w-full table-fixed">
     <x-table-header>
-      <x-table-header-cell>@lang('Name')</x-table-header-cell>
-      <x-table-header-cell>@lang('SKU')</x-table-header-cell>
+      <th width="30%">@lang('Name')</th>
       <x-table-header-cell>@lang('Selling')</x-table-header-cell>
       <x-table-header-cell>@lang('Transaction')</x-table-header-cell>
       <x-table-header-cell>@lang('Item')</x-table-header-cell>
@@ -18,7 +17,6 @@
       @foreach($reports as $key => $report)
         <x-table-row>
           <x-table-cell>{{ $report['product_name'] }}</x-table-cell>
-          <x-table-cell>{{ $report['product_sku'] }}</x-table-cell>
           <x-table-cell class="number">{{ $report['total_selling'] }}</x-table-cell>
           <x-table-cell class="number">{{ $report['total_transaction'] }}</x-table-cell>
           <x-table-cell class="number">{{ $report['total_item'] }}</x-table-cell>
@@ -27,7 +25,7 @@
         </x-table-row>
       @endforeach
       <x-table-row class="bg-gray-200 dark:bg-gray-700 font-semibold">
-        <x-table-cell colspan="2">{{ __('Total') }}</x-table-cell>
+        <x-table-cell>{{ __('Total') }}</x-table-cell>
         <x-table-cell class="number">{{ $footer['total_selling'] }}</x-table-cell>
         <x-table-cell class="number">{{ $footer['total_transaction'] }}</x-table-cell>
         <x-table-cell class="number">{{ $footer['total_item'] }}</x-table-cell>
