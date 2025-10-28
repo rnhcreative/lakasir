@@ -13,22 +13,17 @@ use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Contracts\Support\Htmlable;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Support\Carbon;
 
 class BestSellingProduct extends BaseWidget
 {
     public function table(Table $table): Table
     {
-        $startDate = today()->startOfDay();
-        $endDate = today()->endOfDay();
-
         $bestSellingProduct = SellingDetail::query()
             ->select(
                 '*',
                 DB::raw('SUM(qty) as total_qty')
             )
-            ->whereHas('selling', function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('date', [$startDate, $endDate]);
-            })
             ->limit(5)
             ->groupBy('product_id')
             ->orderBy('total_qty', 'desc')
@@ -61,27 +56,65 @@ class BestSellingProduct extends BaseWidget
                         $now = now();
                         if ($value === 'today') {
                             $query->whereHas('selling', function ($query) {
-                                $query->whereDate('date', today()->toDateString());
+                                $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?) = ?)", [
+                                    config('app.timezone'),
+                                    today(config('app.timezone'))->format('Y-m-d'),
+                                ]);
                             });
                         } elseif ($value === 'this_week') {
                             $query->whereHas('selling', function ($query) {
-                                $query->whereBetween('date', [today()->startOfWeek()->toDateString(), today()->endOfWeek()->toDateString()]);
+                                $startDate = today(config('app.timezone'))->startOfWeek();
+                                $endDate = today(config('app.timezone'))->endOfWeek();
+
+                                $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?)) BETWEEN ? AND ?", [
+                                    config('app.timezone'),
+                                    $startDate->format('Y-m-d'),
+                                    $endDate->format('Y-m-d'),
+                                ]);
                             });
                         } elseif ($value === 'last_week') {
                             $query->whereHas('selling', function ($query) {
-                                $query->whereBetween('date', [today()->subWeek()->startOfWeek()->toDateString(), today()->subWeek()->endOfWeek()->toDateString()]);
+                                $startDate = today(config('app.timezone'))->subWeek()->startOfWeek();
+                                $endDate = today(config('app.timezone'))->subWeek()->endOfWeek();
+
+                                $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?)) BETWEEN ? AND ?", [
+                                    config('app.timezone'),
+                                    $startDate->format('Y-m-d'),
+                                    $endDate->format('Y-m-d'),
+                                ]);
                             });
                         } elseif ($value === 'this_month') {
                             $query->whereHas('selling', function ($query) {
-                                $query->whereBetween('date', [today()->startOfMonth()->toDateString(), today()->endOfMonth()->toDateString()]);
+                                $startDate = today(config('app.timezone'))->startOfMonth();
+                                $endDate = today(config('app.timezone'))->endOfMonth();
+
+                                $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?)) BETWEEN ? AND ?", [
+                                    config('app.timezone'),
+                                    $startDate->format('Y-m-d'),
+                                    $endDate->format('Y-m-d'),
+                                ]);
                             });
                         } elseif ($value === 'last_month') {
                             $query->whereHas('selling', function ($query) {
-                                $query->whereBetween('date', [today()->subMonth()->startOfMonth()->toDateString(), today()->subMonth()->endOfMonth()->toDateString()]);
+                                $startDate = today(config('app.timezone'))->subMonth()->startOfMonth();
+                                $endDate = today(config('app.timezone'))->subMonth()->endOfMonth();
+
+                                $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?)) BETWEEN ? AND ?", [
+                                    config('app.timezone'),
+                                    $startDate->format('Y-m-d'),
+                                    $endDate->format('Y-m-d'),
+                                ]);
                             });
                         } elseif ($value === 'this_year') {
                             $query->whereHas('selling', function ($query) {
-                                $query->whereBetween('date', [today()->startOfYear()->toDateString(), today()->endOfYear()->toDateString()]);
+                                $startDate = today(config('app.timezone'))->startOfYear();
+                                $endDate = today(config('app.timezone'))->endOfYear();
+
+                                $query->whereRaw("DATE(CONVERT_TZ(date, 'UTC', ?)) BETWEEN ? AND ?", [
+                                    config('app.timezone'),
+                                    $startDate->format('Y-m-d'),
+                                    $endDate->format('Y-m-d'),
+                                ]);
                             });
                         }
                     })
