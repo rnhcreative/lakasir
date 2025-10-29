@@ -28,11 +28,11 @@ class ProfitLoss extends Page implements HasActions, HasForms
 
     protected static string $view = 'filament.tenant.pages.profit-loss';
 
-    protected static ?string $navigationLabel = 'ProfitLoss Report';
+    protected static ?string $navigationLabel = 'ProfitLoss';
 
     public static function getBreadcrumb(): string
     {
-        return __('ProfitLoss Report');
+        return __('ProfitLoss');
     }
 
     #[Url]
@@ -46,12 +46,12 @@ class ProfitLoss extends Page implements HasActions, HasForms
 
     public static function getPageNavigationLabel(): string
     {
-        return __('ProfitLoss Report');
+        return __('ProfitLoss');
     }
 
     public function getTitle(): string | Htmlable
     {
-        return __('ProfitLoss Report');
+        return __('ProfitLoss');
     }
 
     public function mount()
