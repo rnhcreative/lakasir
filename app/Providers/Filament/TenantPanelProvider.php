@@ -186,6 +186,18 @@ class TenantPanelProvider extends PanelProvider
             $this->generateNavigationItem(ExpenseResource::class, Expense::class),
             $this->generateNavigationItem(Cashflow::class),
             $this->generateNavigationItem(ProfitLoss::class),
+
+            //NavigationGroup::make(__('Report'))->label('')->collapsible(false)->items([
+                $this->generateNavigationItem(
+                    resource: Report::class,
+                    activeWhen: [
+                        SellingReport::class,
+                        ProductReport::class,
+                        CashierReport::class,
+                        PurchasingReport::class,
+                    ]
+                ),
+            //]),
         ];
     }
 
@@ -206,17 +218,6 @@ class TenantPanelProvider extends PanelProvider
                 $this->generateNavigationItem(RoleResource::class, Role::class),
                 // @DISABLE
                 //$this->generateNavigationItem(PermissionResource::class, Permission::class),
-            ]),
-            NavigationGroup::make(__('Report'))->label('')->collapsible(false)->items([
-                $this->generateNavigationItem(
-                    resource: Report::class,
-                    activeWhen: [
-                        SellingReport::class,
-                        ProductReport::class,
-                        CashierReport::class,
-                        PurchasingReport::class,
-                    ]
-                ),
             ]),
             NavigationGroup::make(__('General'))->label('')->collapsible(false)->items([
                 $this->generateNavigationItem(VoucherResource::class, Voucher::class),
