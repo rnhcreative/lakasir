@@ -2,13 +2,14 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Filesystem\FilesystemAdapter;
 use League\Flysystem\Filesystem;
-use Masbug\Flysystem\GoogleDriveAdapter;
 use Google\Client as GoogleClient;
-use Google\Service\Drive as GoogleDrive;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\ServiceProvider;
+use Google\Service\Drive as GoogleDrive;
+use Masbug\Flysystem\GoogleDriveAdapter;
+use Illuminate\Filesystem\FilesystemAdapter;
 
 class GoogleOAuthServiceProvider extends ServiceProvider
 {
@@ -28,7 +29,9 @@ class GoogleOAuthServiceProvider extends ServiceProvider
         Storage::extend('google', function ($app, $config) {
             $client = new GoogleClient();
             $client->setAuthConfig(storage_path('app/google/credentials.json'));
-            $client->addScope(GoogleDrive::DRIVE);
+            $client->setAccessType('offline'); // penting!
+            $client->setApprovalPrompt('force'); // penting!
+            $client->addScope(GoogleDrive::DRIVE_FILE);
 
             // Load the stored token (with refresh_token)
             $accessToken = json_decode(file_get_contents(storage_path('app/google/token.json')), true);
@@ -44,11 +47,19 @@ class GoogleOAuthServiceProvider extends ServiceProvider
                 );
             }
 
-            $service = new GoogleDrive($client);
-            $adapter = new GoogleDriveAdapter($service, $config['folder_id'] ?? null);
-            $driver = new Filesystem($adapter);
+            try {
+                $service = new GoogleDrive($client);
+                $adapter = new GoogleDriveAdapter($service, $config['folder_id'] ?? null);
+                $driver = new Filesystem($adapter);
 
-            return new FilesystemAdapter($driver, $adapter, $config);
+                Log::info('Google Drive Adapter initialized successfully.');
+
+                return new FilesystemAdapter($driver, $adapter, $config);
+            } catch (\Throwable $e) {
+                Log::error('Google Drive Adapter Error: ' . $e->getMessage());
+
+                throw $e;
+            }
         });
     }
 }

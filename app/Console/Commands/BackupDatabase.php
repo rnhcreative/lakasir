@@ -102,7 +102,12 @@ class BackupDatabase extends Command
 
         // --- 6. Upload ke Google Drive ---
         try {
-            Storage::disk('google')->put($zipFilename, file_get_contents($zipFile));
+            $result = Storage::disk('google')->put($zipFilename, file_get_contents($zipFile));
+
+            if (!$result) {
+                throw new \Exception('Upload ke Google Drive gagal tanpa alasan jelas. Cek kembali token dan koneksi.');
+            }
+
             $this->info('Upload ke Google Drive berhasil!');
 
             $backupDatabase->update([
