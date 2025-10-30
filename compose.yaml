@@ -50,6 +50,42 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
+    # Redis untuk queue/cache/session
+    redis:
+        image: 'redis:alpine'
+        ports:
+            - '6379:6379'
+        networks:
+            - sail
+        restart: always
+
+    # Scheduler (jalan tiap 1 jam)
+    scheduler:
+      build:
+        context: './docker/8.3'
+        dockerfile: Dockerfile
+        args:
+          WWWGROUP: '${WWWGROUP}'
+      env_file:
+        - './.env.production'
+      image: 'sail-8.3/app'
+      user: "0:0"
+      entrypoint: ["php"]
+      command:
+        - -r
+        - |
+          while (true) {
+            system('php artisan schedule:run >> /var/www/html/storage/logs/scheduler.log 2>&1');
+            sleep(60);
+          }
+      volumes:
+        - .:/var/www/html
+      depends_on:
+        - laravel.test
+      networks:
+        - sail
+      restart: always
+
 networks:
     sail:
         driver: bridge

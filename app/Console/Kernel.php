@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command(DeleteTempFile::class)->daily();
-        $schedule->command(FCM::class)->daily();
+        //$schedule->command(FCM::class)->daily();
     }
 
     protected function commands()
