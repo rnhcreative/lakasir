@@ -345,7 +345,7 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
               };
           });
 
-          try {
+        try {
           // 1️⃣ Pastikan koneksi QZ aktif
           if (!qz.websocket.isActive()) {
             await qz.websocket.connect();
@@ -379,6 +379,10 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
           if (about?.receipt_header) data += about.receipt_header + "\n\n";
 
           data += lineFormat(selling.date, "#" + selling.code);
+          if (selling.member) {
+            data += lineFormat(selling.member.name, '');
+          }
+
           data += "------------------------------\n";
 
           // --- ITEM DETAIL ---
@@ -395,8 +399,16 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
 
           data += "------------------------------\n";
           data += lineFormat("Total", moneyFormat(selling.grand_total_price));
-          data += lineFormat("Tunai", moneyFormat(selling.payed_money));
-          data += lineFormat("Kembali", moneyFormat(selling.money_changes));
+          data += lineFormat(selling.payment_method.name, moneyFormat(selling.payed_money));
+
+          if (selling.money_changes > 0) {
+            data += lineFormat("Kembalian", moneyFormat(selling.money_changes));
+          }
+
+          if (selling.is_paid) {
+            data += lineFormat("", "Lunas");
+          }
+
           data += "------------------------------\n";
 
           // --- FOOTER ---
