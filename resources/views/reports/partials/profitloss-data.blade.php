@@ -4,7 +4,7 @@
     <h3 class="text-xl">{{ $header['shop_name'] }}</h3>
   </div>
   <p class="mb-4">{{ __('Period') }}: <b>{{ $header['start_date'] }} - {{ $header['end_date'] }}</b></p>
-  <x-table class="w-full table-fixed">
+  <x-table class="w-full table-auto">
 
       <x-table-header>
         <x-table-header-cell>@lang('Description')</x-table-header-cell>
