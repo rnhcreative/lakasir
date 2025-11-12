@@ -75,6 +75,10 @@ class Cashier extends Page implements HasForms, HasTable
 
     private float $discount_price = 0;
 
+    public ?int $activeCategory = null; // null = All
+
+    protected $queryString = ['activeCategory' => ['except' => null]];
+
     public function mount()
     {
         $this->about = About::first() ?? null;
@@ -123,6 +127,17 @@ class Cashier extends Page implements HasForms, HasTable
         ]);
 
         $this->fillPayemntMethod();
+
+        $this->initializeTableProduct();
+    }
+
+    // method untuk meng-set category dan refresh table
+    public function setActiveCategory(?int $categoryId): void
+    {
+        $this->activeCategory = $categoryId;
+
+        // pastikan Filament memuat ulang tabel dengan query yang baru
+        $this->resetTable();
     }
 
     protected function getForms(): array

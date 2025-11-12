@@ -2,23 +2,44 @@
 
 namespace App\Filament\Tenant\Pages\Traits;
 
-use App\Models\Tenants\Category;
+use Closure;
+use Filament\Tables\Table;
 use App\Models\Tenants\Product;
 use App\Models\Tenants\Setting;
-use Closure;
-use Filament\Forms\Components\TextInput;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\HeaderActionsPosition;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Support\Facades\FilamentView;
+use Filament\Tables\View\TablesRenderHook;
 use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
+use Filament\Tables\Actions\HeaderActionsPosition;
 
 trait TableProduct
 {
     use InteractsWithTable;
+
+    protected bool $tableProductHookRegistered = false;
+
+    public function initializeTableProduct(): void
+    {
+        if ($this->tableProductHookRegistered) {
+            return;
+        }
+
+        FilamentView::registerRenderHook(
+            TablesRenderHook::TOOLBAR_START,
+            function () {
+                return view('filament.hooks.product-category-filters', [
+                    'resource' => $this,
+                    'activeCategory' => $this->activeCategory,
+                ]);
+            }
+        );
+
+        $this->tableProductHookRegistered = true;
+    }
 
     public function table(Table $table): Table
     {
@@ -36,6 +57,10 @@ trait TableProduct
                             });
                     })
                     ->where('show', true)
+                    ->when(
+                        $this->activeCategory,
+                        fn ($q, $categoryId) => $q->where('category_id', $categoryId)
+                    )
                     ->limit(12)
             )
             ->paginated(false)
@@ -121,17 +146,16 @@ trait TableProduct
                     ->color('white')
                     ->icon('heroicon-o-shopping-bag')
                     ->hidden(fn (Product $product) => ! $product->CartItems()->exists()),
-            ])
-            ->filters([
-                // filter by category
-                SelectFilter::make('category_id')
-                    ->label(false)
-                    ->options(
-                        Category::pluck('name', 'id')->toArray()
-                    )
-                    ->multiple()
-                    ->placeholder(__('All Categories'))
-                    ->columnSpanFull(),
-            ]);
+                ]);
+            // ->filters([
+            //     // filter by category
+            //     SelectFilter::make('category_id')
+            //         ->label(false)
+            //         ->options(
+            //             Category::pluck('name', 'id')->toArray()
+            //         )
+            //         ->placeholder(__('All Categories'))
+            //         ->columnSpanFull(),
+            // ]);
     }
 }
