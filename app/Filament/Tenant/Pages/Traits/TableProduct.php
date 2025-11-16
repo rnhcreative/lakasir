@@ -61,7 +61,6 @@ trait TableProduct
                         $this->activeCategory,
                         fn ($q, $categoryId) => $q->where('category_id', $categoryId)
                     )
-                    ->limit(12)
             )
             ->paginated(false)
             ->columns([
