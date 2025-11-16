@@ -18,18 +18,18 @@ class MemberReportService
 
         $results = DB::select("
             SELECT
-                members.name,
-                members.email,
+                COALESCE(members.name, 'Toko') AS name,
+                COALESCE(members.email, '') AS email,
                 SUM(sellings.total_price) AS total_selling,
                 COUNT(sellings.id) AS total_transaction,
                 SUM(total_qty) AS total_item,
                 SUM(discount_price) AS total_discount,
                 SUM(total_price - total_cost) AS total_profit
             FROM sellings
-            JOIN members ON sellings.member_id = members.id
-            WHERE sellings.member_id IS NOT NULL
-            AND DATE(CONVERT_TZ(sellings.date, 'UTC', ?)) BETWEEN ? AND ?
-            GROUP BY members.id
+            LEFT JOIN members ON sellings.member_id = members.id
+            WHERE
+                DATE(CONVERT_TZ(sellings.date, 'UTC', ?)) BETWEEN ? AND ?
+            GROUP BY COALESCE(members.id, 'no_member')
             ORDER BY SUM(sellings.total_price) DESC
         ", [
             config('setting.timezone'),
