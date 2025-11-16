@@ -62,6 +62,7 @@ trait TableProduct
                         fn ($q, $categoryId) => $q->where('category_id', $categoryId)
                     )
                     ->orderBy('name')
+                    ->limit(50)
             )
             ->paginated(false)
             ->columns([
