@@ -61,6 +61,7 @@ trait TableProduct
                         $this->activeCategory,
                         fn ($q, $categoryId) => $q->where('category_id', $categoryId)
                     )
+                    ->orderBy('name')
             )
             ->paginated(false)
             ->columns([
