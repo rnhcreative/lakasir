@@ -5,7 +5,6 @@ namespace App\Services\Tenants;
 use App\Models\Tenants\About;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Number;
-use App\Models\Tenants\Profile;
 use Illuminate\Support\Facades\DB;
 
 class EmployeeReportService
@@ -19,18 +18,18 @@ class EmployeeReportService
 
         $results = DB::select("
             SELECT
-                employees.name,
-                employees.email,
+                COALESCE(employees.name, 'Toko') AS name,
+                COALESCE(employees.email, '') AS email,
                 SUM(sellings.total_price) AS total_selling,
                 COUNT(sellings.id) AS total_transaction,
                 SUM(total_qty) AS total_item,
                 SUM(discount_price) AS total_discount,
                 SUM(total_price - total_cost) AS total_profit
             FROM sellings
-            JOIN employees ON sellings.employee_id = employees.id
-            WHERE sellings.employee_id IS NOT NULL
-            AND DATE(CONVERT_TZ(sellings.date, 'UTC', ?)) BETWEEN ? AND ?
-            GROUP BY employees.id
+            LEFT JOIN employees ON sellings.employee_id = employees.id
+            WHERE
+                DATE(CONVERT_TZ(sellings.date, 'UTC', ?)) BETWEEN ? AND ?
+            GROUP BY COALESCE(employees.id, 'no_employee')
             ORDER BY SUM(sellings.total_price) DESC
         ", [
             config('setting.timezone'),
