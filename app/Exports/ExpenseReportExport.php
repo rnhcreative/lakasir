@@ -51,7 +51,7 @@ class ExpenseReportExport implements
             $data[] = [
                 $report['date'],
                 $report['type'],
-                (float) str_replace(',', '', $report['amount']),
+                (float) str_replace('.', '', $report['amount']),
                 $report['note'],
                 $report['payment_method'],
             ];
@@ -117,7 +117,7 @@ class ExpenseReportExport implements
                 /** Footer Row */
                 $lastRow = $sheet->getHighestDataRow();
                 $sheet->setCellValue('A' . ($lastRow + 1), 'Total');
-                $sheet->setCellValue('C' . ($lastRow + 1), (float) str_replace(',', '', $footer['total']));
+                $sheet->setCellValue('C' . ($lastRow + 1), (float) str_replace('.', '', $footer['total']));
                 $sheet->setCellValue('D' . ($lastRow + 1), '');
                 $sheet->setCellValue('E' . ($lastRow + 1), '');
 

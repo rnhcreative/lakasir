@@ -55,7 +55,7 @@ class ReceivableReportExport implements
                 $row['member_name'],
                 $row['member_email'],
                 $row['type'] == 'debt' ? 'Utang' : 'Pembayaran',
-                (float) str_replace(',', '', $row['amount']),
+                (float) str_replace('.', '', $row['amount']),
                 $row['selling_code'],
                 $row['payment_method'],
             ];
@@ -121,7 +121,7 @@ class ReceivableReportExport implements
                 /** Footer Row */
                 $lastRow = $sheet->getHighestDataRow();
                 $sheet->setCellValue('A' . ($lastRow + 1), 'Total Piutang');
-                $sheet->setCellValue('G' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_debt']));
+                $sheet->setCellValue('G' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_debt']));
                 $sheet->mergeCells('A' . ($lastRow + 1) . ':F' . ($lastRow + 1));
                 $sheet->getStyle('A' . ($lastRow + 1) . ':G' . ($lastRow + 1))->applyFromArray([
                     'font' => [
@@ -130,7 +130,7 @@ class ReceivableReportExport implements
                 ]);
 
                 $sheet->setCellValue('A' . ($lastRow + 2), 'Total Pembayaran');
-                $sheet->setCellValue('G' . ($lastRow + 2), (float) str_replace(',', '', $footer['total_payment']));
+                $sheet->setCellValue('G' . ($lastRow + 2), (float) str_replace('.', '', $footer['total_payment']));
                 $sheet->mergeCells('A' . ($lastRow + 2) . ':F' . ($lastRow + 2));
                 $sheet->getStyle('A' . ($lastRow + 2) . ':G' . ($lastRow + 2))->applyFromArray([
                     'font' => [
@@ -139,7 +139,7 @@ class ReceivableReportExport implements
                 ]);
 
                 $sheet->setCellValue('A' . ($lastRow + 3), 'Total Sisa Utang');
-                $sheet->setCellValue('G' . ($lastRow + 3), (float) str_replace(',', '', $footer['total_rest_debt']));
+                $sheet->setCellValue('G' . ($lastRow + 3), (float) str_replace('.', '', $footer['total_rest_debt']));
                 $sheet->mergeCells('A' . ($lastRow + 3) . ':F' . ($lastRow + 3));
                 $sheet->getStyle('A' . ($lastRow + 3) . ':G' . ($lastRow + 3))->applyFromArray([
                     'font' => [

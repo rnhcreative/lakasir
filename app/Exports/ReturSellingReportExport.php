@@ -56,8 +56,8 @@ class ReturSellingReportExport implements
                 $report['retur_item_name'],
                 $report['new_item_name'],
                 $report['qty'],
-                (float) str_replace(',', '', $report['refund_amount']),
-                (float) str_replace(',', '', $report['additional_amount']),
+                (float) str_replace('.', '', $report['refund_amount']),
+                (float) str_replace('.', '', $report['additional_amount']),
             ];
         }
 
@@ -121,8 +121,8 @@ class ReturSellingReportExport implements
                 /** Footer Row */
                 $lastRow = $sheet->getHighestDataRow();
                 $sheet->setCellValue('A' . ($lastRow + 1), 'Total');
-                $sheet->setCellValue('F' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_refund_amount']));
-                $sheet->setCellValue('G' . ($lastRow + 1), (float) str_replace(',', '', $footer['total_additional_amount']));
+                $sheet->setCellValue('F' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_refund_amount']));
+                $sheet->setCellValue('G' . ($lastRow + 1), (float) str_replace('.', '', $footer['total_additional_amount']));
 
                 $sheet->mergeCells('A' . ($lastRow + 1) . ':E' . ($lastRow + 1));
 

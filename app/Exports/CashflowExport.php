@@ -65,18 +65,18 @@ class CashflowExport
                 $data[] = [
                     $cashflow->date,
                     $cashflow->note,
-                    (float) str_replace(',', '', $cashflow->debit),
-                    (float) str_replace(',', '', $cashflow->credit),
-                    (float) str_replace(',', '', $cashflow->saldo),
+                    (float) str_replace('.', '', $cashflow->debit),
+                    (float) str_replace('.', '', $cashflow->credit),
+                    (float) str_replace('.', '', $cashflow->saldo),
                 ];
             }
 
             $data[] = [
                 __('Total'),
                 '',
-                (float) str_replace(',', '', $cashflows['total_debit']),
-                (float) str_replace(',', '', $cashflows['total_credit']),
-                (float) str_replace(',', '', $cashflows['ending_balance']),
+                (float) str_replace('.', '', $cashflows['total_debit']),
+                (float) str_replace('.', '', $cashflows['total_credit']),
+                (float) str_replace('.', '', $cashflows['ending_balance']),
             ];
         }
 
