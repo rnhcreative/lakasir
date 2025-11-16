@@ -25,7 +25,7 @@ class CashflowService
             ->merge(
                 DB::table('sellings')
                     ->join('payment_methods', 'sellings.payment_method_id', '=', 'payment_methods.id')
-                    ->join('members', 'sellings.member_id', '=', 'members.id')
+                    ->leftJoin('members', 'sellings.member_id', '=', 'members.id')
                     ->where(function ($q) {
                         $q->where('payment_methods.is_cash', true)
                             ->orWhere('payment_methods.is_debit', true)
@@ -36,7 +36,7 @@ class CashflowService
                         DB::raw('(sellings.total_price - sellings.discount_price - sellings.tax_price) as amount'),
                         DB::raw("'Penjualan' as source"),
                         DB::raw("'debit' as type"),
-                        DB::raw("CONCAT('Penjualan #', sellings.code, ' a/n ', members.name) as note"),
+                        DB::raw("CONCAT('Penjualan #', sellings.code, ' a/n ', COALESCE(members.name, 'Toko')) as note"),
                         DB::raw('payment_methods.id as payment_method_id'),
                         DB::raw('payment_methods.name as payment_method_name')
                     )
