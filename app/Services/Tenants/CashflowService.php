@@ -15,9 +15,8 @@ class CashflowService
     {
         $timezone = config('setting.timezone');
         $about = About::first();
-        $tzName = Carbon::parse($data['start_date'])->getTimezone()->getName();
-        $startDate = Carbon::parse($data['start_date'], $timezone)->setTimezone('UTC');
-        $endDate = Carbon::parse($data['end_date'], $timezone)->addDay()->setTimezone('UTC');
+        $startDate = Carbon::parse($data['start_date'], config('setting.timezone'));
+        $endDate = Carbon::parse($data['end_date'], config('setting.timezone'));
 
         // Implementation for generating cashflow report
         $inCashflow = collect();
@@ -41,7 +40,7 @@ class CashflowService
                         DB::raw('payment_methods.id as payment_method_id'),
                         DB::raw('payment_methods.name as payment_method_name')
                     )
-                    ->whereBetween('sellings.date', [$startDate, $endDate])
+                    ->whereRaw("DATE(CONVERT_TZ(sellings.date, 'UTC', ?)) BETWEEN ? AND ?", [config('setting.timezone'), $startDate, $endDate])
                     ->get()
             )
             ->merge(
@@ -54,7 +53,7 @@ class CashflowService
                             ->orWhere('payment_methods.is_debit', true)
                             ->orWhere('payment_methods.is_wallet', true);
                     })
-                    ->whereBetween('receivable_payments.date', [$startDate, $endDate])
+                    ->whereRaw("DATE(CONVERT_TZ(receivable_payments.date, 'UTC', ?)) BETWEEN ? AND ?", [config('setting.timezone'), $startDate, $endDate])
                     ->select(
                         'receivable_payments.date',
                         'receivable_payments.amount',
@@ -80,7 +79,7 @@ class CashflowService
                         DB::raw('payment_methods.id as payment_method_id'),
                         DB::raw('payment_methods.name as payment_method_name')
                     )
-                    ->whereBetween('retur_sellings.created_at', [$startDate, $endDate])
+                    ->whereRaw("DATE(CONVERT_TZ(retur_sellings.created_at, 'UTC', ?)) BETWEEN ? AND ?", [config('setting.timezone'), $startDate, $endDate])
                     ->where('retur_sellings.additional_amount', '>', 0)
                     ->get()
             );
@@ -100,7 +99,7 @@ class CashflowService
                         DB::raw('payment_methods.id as payment_method_id'),
                         DB::raw('payment_methods.name as payment_method_name')
                     )
-                    ->whereBetween('expenses.expense_date', [$startDate, $endDate])
+                    ->whereRaw("DATE(CONVERT_TZ(expenses.expense_date, 'UTC', ?)) BETWEEN ? AND ?", [config('setting.timezone'), $startDate, $endDate])
                     ->get()
             )
             ->merge(
@@ -117,7 +116,7 @@ class CashflowService
                         DB::raw('payment_methods.id as payment_method_id'),
                         DB::raw('payment_methods.name as payment_method_name')
                     )
-                    ->whereBetween('retur_sellings.created_at', [$startDate, $endDate])
+                    ->whereRaw("DATE(CONVERT_TZ(retur_sellings.created_at, 'UTC', ?)) BETWEEN ? AND ?", [config('setting.timezone'), $startDate, $endDate])
                     ->where('retur_sellings.refund_amount', '>', 0)
                     ->get()
             );
