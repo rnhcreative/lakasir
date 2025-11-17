@@ -77,6 +77,8 @@ class Cashier extends Page implements HasForms, HasTable
 
     public ?int $activeCategory = null; // null = All
 
+    public bool $showProductImage = false;
+
     protected $queryString = ['activeCategory' => ['except' => null]];
 
     public function mount()
@@ -140,6 +142,11 @@ class Cashier extends Page implements HasForms, HasTable
         $this->resetTable();
     }
 
+    public function toggleShowProductImage(): void
+    {
+        $this->showProductImage = ! $this->showProductImage;
+    }
+
     protected function getForms(): array
     {
         return [
@@ -152,7 +159,7 @@ class Cashier extends Page implements HasForms, HasTable
         return $form
             ->schema([
                 Select::make('member_id')
-                    ->visible(hasFeatureAndPermission(FeaturesMember::class))
+                    //->visible(hasFeatureAndPermission(FeaturesMember::class))
                     ->label('Member')
                     ->getSearchResultsUsing(function (string $search): array {
                         return Member::query()
@@ -183,8 +190,8 @@ class Cashier extends Page implements HasForms, HasTable
                     ->extraAttributes([
                         'id' => 'voucherInput',
                         'class' => 'hidden',
-                    ])
-                    ->visible(hasFeatureAndPermission(Voucher::class)),
+                    ]),
+                    // ->visible(hasFeatureAndPermission(Voucher::class)),
                 TextInput::make('discount_price')
                     ->mask(RawJs::make('$money($input)'))
                     ->stripCharacters(',')

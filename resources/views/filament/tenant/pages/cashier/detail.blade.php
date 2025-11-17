@@ -3,7 +3,7 @@
 @endphp
 
 <div class="space-y-3">
-  @feature(Member::class)
+
     <div class="flex justify-between hover:underline cursor-pointer"
       x-on:mousedown="$dispatch('open-modal', {
         id: 'edit-detail',
@@ -14,7 +14,7 @@
       <p>{{ __('Member') }}</p>
       <p class="font-bold">{{ $cartDetail['member_label'] ?? __('No Member Selected') }}</p>
     </div>
-  @endfeature
+
   <div class="flex justify-between hover:underline cursor-pointer"
       x-on:mousedown="$dispatch('open-modal', {
        id: 'edit-detail',
@@ -34,7 +34,7 @@
       <div>{!! $cartDetail['table_id'] ?? '-' !!}</div>
     </div>
   @endif
-  @feature(Voucher::class)
+
   <div class="flex justify-between">
     <div>
       <p>{{ __('Voucher') }}</p>
@@ -58,8 +58,8 @@
       @endif
     </div>
   </div>
-  @endfeature
-  @feature(Discount::class)
+
+  @if(false)
   <div class="flex justify-between hover:underline cursor-pointer"
       x-on:mousedown="$dispatch('open-modal', {
         id: 'edit-detail',
@@ -70,7 +70,7 @@
     <p>{{ __('Discount') }}</p>
     <div>{{ $cartDetail['discount_price'] ?? '-' }}</div>
   </div>
-  @endfeature
+  @endif
   <div class="flex justify-between hover:underline cursor-pointer"
       x-on:mousedown="$dispatch('open-modal', {
         id: 'edit-detail',

@@ -15,12 +15,17 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
           <p class="text-xl font-semibold">{{ __('Orders details') }}</p>
           <div class="flex items-center">
             <div class="xl:flex gap-x-2 items-center">
-              <a
+              <x-filament::button
+                wire:navigate
                 href="/member/sellings"
-                class="py-1 px-4 flex justify-center items-center bg-gray-100 rounded-lg gap-x-1 text-gray-500">
-                <x-heroicon-o-arrow-left class="h-4 w-4 text-gray-500"/>
-                  <p class="hidden lg:block">{{ __('Back') }} </p>
-              </a>
+                tag="a"
+                color="gray"
+                size="sm"
+                icon="heroicon-o-arrow-left"
+                :outlined="true"
+              >
+                <span class="hidden lg:block">{{ __('Back') }}</span>
+              </x-filament::button>
             </div>
             <div class="gap-x-2">
               <x-filament::dropdown placement="top-start">
@@ -73,7 +78,7 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
               </div>
               <div class="grid grid-cols-2 items-center text-right space-y-2 py-2">
                 <div class="col-span-2">
-                  @feature(Discount::class)
+                  @if(false)
                   <div class="flex justify-end mb-1">
                     <x-filament::input.wrapper class="w-1/2">
                       <x-filament::input
@@ -87,7 +92,7 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
                         />
                       </x-filament::input.wrapper>
                   </div>
-                  @endfeature
+                  @endif
                   @if($item->discount_price && $item->discount_price > 0)
                     <p class="font-semibold text-lakasir-primary">{{ $item->final_price_format }}</p>
                   @endif
@@ -610,7 +615,7 @@ use App\Features\{PaymentShortcutButton, SellingTax, Discount};
       input.classList.remove('hidden');
     }
     let totalPrice = $refs.total.getAttribute('data-value');
-    if("@js(feature(PaymentShortcutButton::class))" == 'true') {
+    if("true" == 'true') {
       generateButton(totalPrice);
     }
     modalOpened = true;

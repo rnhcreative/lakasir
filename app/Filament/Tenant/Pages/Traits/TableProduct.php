@@ -51,7 +51,7 @@ trait TableProduct
                 // * show the product when the type is procut but that has a 0 stock and then has a is_non_stock true
                 Product::query()
                     ->where(function ($query) {
-                        $query->where('type', 'product')
+                        $query
                             ->where(function ($query) {
                                 $query->where('stock', '>', 0);
                             });
@@ -61,6 +61,7 @@ trait TableProduct
                         $this->activeCategory,
                         fn ($q, $categoryId) => $q->where('category_id', $categoryId)
                     )
+                    ->with(['stocks', 'CartItems'])
                     ->orderBy('name')
                     ->limit(50)
             )
@@ -76,6 +77,7 @@ trait TableProduct
                         ->extraImgAttributes([
                             'class' => 'mb-4 object-cover -mt-4 xl:w-[200px] md:w-[180px] w-[150px]',
                         ])
+                        ->hidden(fn () => ! $this->showProductImage)
                         ->height(100),
                     TextColumn::make('selling_price')
                         ->color('primary')
@@ -96,7 +98,7 @@ trait TableProduct
                                 return '';
                             }
 
-                            return $product->stock < Setting::get('minimum_stock_nofication', 10)
+                            return $product->stock < 10
                                     ? 'heroicon-s-information-circle'
                                 : '';
                         })
@@ -104,7 +106,7 @@ trait TableProduct
                         ->extraAttributes([
                             'class' => 'font-bold',
                         ])
-                        ->formatStateUsing(fn (Product $product) => __('Stock').': '.$product->stocks()->sum('stock')),
+                        ->formatStateUsing(fn (Product $product) => __('Stock').': '.$product->stocks->sum('stock')),
                 ]),
             ])
             ->contentGrid([
@@ -142,21 +144,11 @@ trait TableProduct
                     ->hiddenLabel(),
                 Action::make('cart')
                     ->label(function (Product $product) {
-                        return $product->CartItems()->first()?->qty ?? '';
+                        return $product->CartItems->first()?->qty ?? '';
                     })
                     ->color('white')
                     ->icon('heroicon-o-shopping-bag')
-                    ->hidden(fn (Product $product) => ! $product->CartItems()->exists()),
+                    ->hidden(fn (Product $product) => ! $product->CartItems),
                 ]);
-            // ->filters([
-            //     // filter by category
-            //     SelectFilter::make('category_id')
-            //         ->label(false)
-            //         ->options(
-            //             Category::pluck('name', 'id')->toArray()
-            //         )
-            //         ->placeholder(__('All Categories'))
-            //         ->columnSpanFull(),
-            // ]);
     }
 }
