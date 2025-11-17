@@ -63,7 +63,7 @@ trait TableProduct
                     )
                     ->with(['stocks', 'CartItems'])
                     ->orderBy('name')
-                    ->limit(50)
+                    ->limit(36)
             )
             ->paginated(false)
             ->columns([

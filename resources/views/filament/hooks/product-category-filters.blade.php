@@ -7,7 +7,7 @@
           Semua
       </x-filament::button>
 
-      @foreach(\App\Models\Tenants\Category::all() as $category)
+      @foreach(\App\Models\Tenants\Category::orderBy('name')->get() as $category)
           <x-filament::button
               :outlined="$resource->activeCategory !== $category->id"
               wire:click="setActiveCategory({{ $category->id }})"
