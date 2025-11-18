@@ -61,11 +61,12 @@ trait TableProduct
                         $this->activeCategory,
                         fn ($q, $categoryId) => $q->where('category_id', $categoryId)
                     )
-                    ->with(['stocks', 'CartItems'])
+                    ->withSum('stocks', 'stock')
+                    ->withCount('CartItems')
                     ->orderBy('name')
-                    ->limit(36)
             )
-            ->paginated(false)
+            ->defaultPaginationPageOption(12)
+            ->paginationPageOptions([12, 24, 36, 48])
             ->columns([
                 Stack::make([
                     ImageColumn::make('hero_image_url')
@@ -76,6 +77,7 @@ trait TableProduct
                         ])
                         ->extraImgAttributes([
                             'class' => 'mb-4 object-cover -mt-4 xl:w-[200px] md:w-[180px] w-[150px]',
+                            'loading' => 'lazy',
                         ])
                         ->hidden(fn () => ! $this->showProductImage)
                         ->height(100),
@@ -89,7 +91,7 @@ trait TableProduct
                         ->extraAttributes([
                             'class' => 'font-bold',
                         ]),
-                    TextColumn::make('stock')
+                    TextColumn::make('stocks_sum_stock')
                         ->hidden(function (Product $product) {
                             return $product->is_non_stock;
                         })
@@ -105,8 +107,8 @@ trait TableProduct
                         ->iconColor('danger')
                         ->extraAttributes([
                             'class' => 'font-bold',
-                        ])
-                        ->formatStateUsing(fn (Product $product) => __('Stock').': '.$product->stocks->sum('stock')),
+                        ]),
+                        // ->formatStateUsing(fn (Product $product) => __('Stock').': '.$product->stock),
                 ]),
             ])
             ->contentGrid([
