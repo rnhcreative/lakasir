@@ -63,9 +63,9 @@ trait TableProduct
                     )
                     ->with(['stocks', 'CartItems'])
                     ->orderBy('name')
-                    ->limit(36)
             )
-            ->paginated(false)
+            ->defaultPaginationPageOption(12)
+            ->paginationPageOptions([12, 24, 36, 48])
             ->columns([
                 Stack::make([
                     ImageColumn::make('hero_image_url')
